@@ -1,7 +1,6 @@
 'use client';
-import { Product } from "./ProductTable";
 
-export default function ViewProductModal({ product, onClose }: { product: Product; onClose: ()=>void }) {
+export default function ViewProductModal({ product, onClose }: { product: any; onClose: ()=>void }) {
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg text-gray-700">
