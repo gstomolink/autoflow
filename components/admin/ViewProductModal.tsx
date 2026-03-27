@@ -1,8 +1,7 @@
 'use client';
 
-import { Product } from "./ProductTable";
 
-type Props = { product: Product; onClose: () => void; };
+type Props = { product: any; onClose: () => void; };
 
 export default function ViewProductModal({ product, onClose }: Props) {
   return (
