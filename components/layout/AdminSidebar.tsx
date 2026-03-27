@@ -32,8 +32,8 @@ export default function AdminSidebar() {
 
   return (
     <aside className="w-56 h-screen sticky top-0
-      bg-gradient-to-b from-purple-700 via-blue-700 to-gray-900
-      text-white border-r border-white/10 flex flex-col">
+      bg-[#E3E7ED]
+      text-gray-800 border-r border-white/10 flex flex-col">
       
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
@@ -54,7 +54,7 @@ export default function AdminSidebar() {
                 ${
                   active
                     ? "bg-white text-purple-700"
-                    : "hover:bg-white/10"
+                    : "hover:bg-white/30"
                 }`}
             >
               {item.name}
@@ -68,7 +68,7 @@ export default function AdminSidebar() {
         <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 rounded-lg font-bold tracking-wide
-                     hover:bg-red-600/40 text-red-200"
+                     hover:bg-red-600/20 text-red-600"
         >
           Logout
         </button>
