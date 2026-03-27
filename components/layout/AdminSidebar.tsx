@@ -32,11 +32,10 @@ export default function AdminSidebar() {
 
   return (
     <aside className="w-56 h-screen sticky top-0
-      bg-gradient-to-b from-purple-700 via-blue-700 to-gray-900
-      text-white border-r border-white/10 flex flex-col">
+      bg-[#E3E7ED] text-slate-800 border-r border-slate-300 flex flex-col">
       
       {/* Logo */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-6 border-b border-slate-300">
         <img src="/logo.jpg" alt="Logo" className="h-16 mb-2 m-auto" />
         <h2 className="text-lg font-bold tracking-wide text-center">ADMIN PANEL</h2>
       </div>
@@ -53,8 +52,8 @@ export default function AdminSidebar() {
               className={`block px-4 py-2 rounded-lg transition font-bold tracking-wide
                 ${
                   active
-                    ? "bg-white text-purple-700"
-                    : "hover:bg-white/10"
+                    ? "bg-white text-slate-900"
+                    : "hover:bg-slate-200"
                 }`}
             >
               {item.name}
@@ -64,11 +63,11 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-slate-300">
         <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 rounded-lg font-bold tracking-wide
-                     hover:bg-red-600/40 text-red-200"
+                     hover:bg-red-200 text-red-700"
         >
           Logout
         </button>
