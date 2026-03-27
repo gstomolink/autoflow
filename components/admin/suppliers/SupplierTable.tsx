@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import ViewSupplierModal from "./ViewSupplierModal";
 import EditSupplierModal from "./EditSupplierModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 const data = [
   {
@@ -22,6 +23,7 @@ const data = [
 ];
 
 export default function SupplierTable() {
+  const { t } = useAdminI18n();
   const [search, setSearch] = useState("");
   const [viewItem, setViewItem] = useState<any>(null);
   const [editItem, setEditItem] = useState<any>(null);
@@ -50,7 +52,7 @@ export default function SupplierTable() {
         />
 
         <button className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
-          Search
+          {t("actionSearch")}
         </button>
       </div>
 
@@ -58,12 +60,12 @@ export default function SupplierTable() {
       <table className="w-full bg-white rounded shadow text-gray-700">
         <thead className="bg-white">
           <tr>
-            <th className="p-3">Supplier ID</th>
-            <th className="p-3">Name</th>
-            <th className="p-3">Contact</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Address</th>
-            <th className="p-3">Actions</th>
+            <th className="p-3">{t("tableSupplierID")}</th>
+            <th className="p-3">{t("tableName")}</th>
+            <th className="p-3">{t("tableContact")}</th>
+            <th className="p-3">{t("tableEmail")}</th>
+            <th className="p-3">{t("tableAddress")}</th>
+            <th className="p-3">{t("tableActions")}</th>
           </tr>
         </thead>
 
@@ -81,21 +83,21 @@ export default function SupplierTable() {
                   onClick={() => setViewItem(s)}
                   className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer"
                 >
-                  View
+                  {t("actionView")}
                 </button>
 
                 <button
                   onClick={() => setEditItem(s)}
                   className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer"
                 >
-                  Edit
+                  {t("actionEdit")}
                 </button>
 
                 <button
                   onClick={() => deleteSupplier(s.id)}
                   className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer"
                 >
-                  Delete
+                  {t("actionDelete")}
                 </button>
               </td>
             </tr>

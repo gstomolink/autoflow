@@ -5,20 +5,22 @@ import CategoriesTable from "@/components/admin/categories/CategoriesTable";
 import CategoryFormModal from "@/components/admin/categories/CategoryFormModal";
 import BulkImportCategoryModal from "@/components/admin/categories/BulkImportCategoryModal";
 import CategoryFilters from "@/components/admin/categories/CategoryFilters";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function CategoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [filters, setFilters] = useState<any>({});
+  const { t } = useAdminI18n();
 
   return (
     <div>
       {/* Header */}
       <div className="flex justify-between items-center mb-8 ">
         <div>
-          <h1 className="text-3xl font-bold text-black">Categories</h1>
+          <h1 className="text-3xl font-bold text-black">{t("categoriesTitle")}</h1>
           <p className="text-gray-600">
-            Manage product categories across the store
+            {t("categoriesSubtitle")}
           </p>
         </div>
 
@@ -27,7 +29,7 @@ export default function CategoriesPage() {
             onClick={() => setShowAdd(true)}
             className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors"
           >
-            + Add New Category
+            {t("addNewCategory")}
           </button>
 
           <button
@@ -45,7 +47,7 @@ export default function CategoriesPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
             </svg>
-            <span>Bulk Import CSV</span>
+            <span>{t("bulkImportCsv")}</span>
           </button>
         </div>
       </div>

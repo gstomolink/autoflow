@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import StockAdjustmentModal from "./StockAdjustmentModal";
 import StockTransferModal from "./StockTransferModal";
 import AddStockModal from "./AddStockModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 const data = [
   {
@@ -23,6 +24,7 @@ const data = [
 ];
 
 export default function InventoryTable({ onlyLow }: any) {
+  const { t } = useAdminI18n();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [warehouse, setWarehouse] = useState("");
@@ -64,21 +66,21 @@ export default function InventoryTable({ onlyLow }: any) {
         onClick={() => setShowAdd(true)}
         className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
-        + Add Stock
+        {t("actionAddStock")}
       </button>
 
       <button
         onClick={() => setShowAdjust(true)}
         className="w-44 bg-slate-200 text-slate-700 px-4 py-2 rounded cursor-pointer hover:bg-slate-300 transition-colors"
       >
-        Adjust
+        {t("actionAdjust")}
       </button>
 
       <button
         onClick={() => setShowTransfer(true)}
         className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
-        Transfer
+        {t("actionTransfer")}
       </button>
     </div>
 
@@ -112,14 +114,14 @@ export default function InventoryTable({ onlyLow }: any) {
 
       {/* SEARCH BUTTON */}
       <button className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
-        Search
+        {t("actionSearch")}
       </button>
     </div>
 
     {/* EXPORT */}
     <div className="mb-4">
       <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors">
-        Export CSV
+        {t("actionExportCsv")}
       </button>
     </div>
 
@@ -127,13 +129,13 @@ export default function InventoryTable({ onlyLow }: any) {
     <table className="w-full bg-white rounded shadow text-gray-700 text-left">
       <thead className="bg-white">
         <tr>
-          <th className="p-3">Product</th>
-          <th className="p-3">Warehouse</th>
-          <th className="p-3">Stock</th>
-          <th className="p-3">Reserved</th>
-          <th className="p-3">Available</th>
-          <th className="p-3">Low Stock Level</th>
-          <th className="p-3">Status</th>
+          <th className="p-3">{t("tableProduct")}</th>
+          <th className="p-3">{t("tableWarehouse")}</th>
+          <th className="p-3">{t("tableStock")}</th>
+          <th className="p-3">{t("tableReserved")}</th>
+          <th className="p-3">{t("tableAvailable")}</th>
+          <th className="p-3">{t("tableLowStockLevel")}</th>
+          <th className="p-3">{t("tableStatus")}</th>
         </tr>
       </thead>
 
@@ -152,7 +154,7 @@ export default function InventoryTable({ onlyLow }: any) {
             <td className="p-3">{i.available}</td>
             <td className="p-3">{threshold}</td>
             <td className="p-3 font-bold">
-              {i.status === "Low Stock" ? "Low Stock" : "In Stock"}
+              {i.status === "Low Stock" ? t("statusLowStock") : t("statusInStock")}
             </td>
           </tr>
         ))}

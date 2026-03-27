@@ -1,3 +1,5 @@
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 const items = [
   { name: 'Laptop Stand', stock: 4 },
   { name: 'Mechanical Keyboard', stock: 2 },
@@ -5,9 +7,10 @@ const items = [
 ];
 
 export default function LowStockAlerts() {
+  const { t } = useAdminI18n();
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 border border-rose-100">
-      <h2 className="text-lg font-bold text-rose-600 mb-4">Low Stock Alerts</h2>
+      <h2 className="text-lg font-bold text-rose-600 mb-4">{t("lowStockAlerts")}</h2>
 
       <div className="space-y-3">
         {items.map((item, i) => (
@@ -17,7 +20,7 @@ export default function LowStockAlerts() {
           >
             <span className="text-gray-700">{item.name}</span>
             <span className="font-semibold text-rose-600">
-              {item.stock} left
+              {item.stock} {t("leftSuffix")}
             </span>
           </div>
         ))}

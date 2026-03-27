@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -14,8 +15,9 @@ const menu = [
 
 export default function CustomerSidebar() {
   const router = useRouter();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     //  Clear stored login data
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -30,6 +32,7 @@ export default function CustomerSidebar() {
 
     // Redirect to login
     router.push("/login");
+    setShowLogoutModal(false);
   };
 
   return (
@@ -52,7 +55,7 @@ export default function CustomerSidebar() {
 
         {/* Logout Button */}
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           className="w-full text-left px-4 py-2 rounded-lg hover:bg-red-200 text-red-700 mt-4 inline-flex items-center gap-2"
         >
           <svg
@@ -70,6 +73,32 @@ export default function CustomerSidebar() {
           <span>Logout</span>
         </button>
       </nav>
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] p-4">
+          <div className="w-full max-w-sm bg-white rounded-xl shadow-xl p-5">
+            <h3 className="text-lg font-semibold text-slate-800">Confirm Logout</h3>
+            <p className="text-sm text-slate-600 mt-2">
+              Are you sure you want to logout?
+            </p>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 rounded-lg bg-rose-500 text-rose-50 hover:bg-rose-600 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

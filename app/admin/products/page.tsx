@@ -5,8 +5,10 @@ import ProductTable from "@/components/admin/products/ProductTable";
 import ProductFilters from "@/components/admin/products/ProductFilters";
 import AddProductModal from "@/components/admin/products/AddProductModal";
 import BulkImportProductModal from "@/components/admin/products/BulkImportProductModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function AdminProductsPage() {
+  const { t } = useAdminI18n();
   const [showAdd, setShowAdd] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [filters, setFilters] = useState<any>({});
@@ -16,8 +18,8 @@ export default function AdminProductsPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-700">Product Management</h1>
-          <p className="text-gray-700">Manage all products in your store</p>
+          <h1 className="text-3xl font-bold text-gray-700">{t("productsTitle")}</h1>
+          <p className="text-gray-700">{t("productsSubtitle")}</p>
         </div>
 
         <div className="flex gap-3">
@@ -25,7 +27,7 @@ export default function AdminProductsPage() {
             onClick={() => setShowAdd(true)}
             className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
           >
-            + Add New Product
+            {t("addNewProduct")}
           </button>
 
           <button
@@ -43,7 +45,7 @@ export default function AdminProductsPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
             </svg>
-            <span>Bulk Import CSV</span>
+            <span>{t("bulkImportCsv")}</span>
           </button>
         </div>
       </div>

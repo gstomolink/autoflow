@@ -1,4 +1,7 @@
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 export default function OrderFilters() {
+  const { t } = useAdminI18n();
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
       
@@ -32,7 +35,7 @@ export default function OrderFilters() {
 
       {/* Right side button */}
       <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors">
-        Apply Filters
+        {t("actionApplyFilters")}
       </button>
 
     </div>

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function WarehouseFilters({ onFilter }: any) {
+  const { t } = useAdminI18n();
   const [search, setSearch] = useState('');
   const [warehouse, setWarehouse] = useState('');
 
@@ -32,7 +34,7 @@ export default function WarehouseFilters({ onFilter }: any) {
         onClick={handleSearch}
         className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors"
       >
-        Search
+        {t("actionSearch")}
       </button>
 
     </div>

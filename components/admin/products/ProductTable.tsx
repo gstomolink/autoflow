@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import EditProductModal from "./EditProductModal";
 import ViewProductModal from "./ViewProductModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export type Product = {
   id: string;
@@ -25,6 +26,7 @@ const initialProducts: Product[] = [
 ];
 
 export default function ProductTable({ filters }: any) {
+  const { t } = useAdminI18n();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [editItem, setEditItem] = useState<Product | null>(null);
   const [viewItem, setViewItem] = useState<Product | null>(null);
@@ -55,13 +57,13 @@ export default function ProductTable({ filters }: any) {
         <table className="w-full text-black">
           <thead className="bg-white">
             <tr>
-              <th className="p-3 text-left">Product ID</th>
-              <th className="p-3 text-left">Image</th>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Category</th>
-              <th className="p-3 text-left">Price</th>
-              <th className="p-3 text-left">Supplier ID</th>
-              <th className="p-3 text-left">Actions</th>
+              <th className="p-3 text-left">{t("tableProductId")}</th>
+              <th className="p-3 text-left">{t("tableImage")}</th>
+              <th className="p-3 text-left">{t("tableName")}</th>
+              <th className="p-3 text-left">{t("tableCategory")}</th>
+              <th className="p-3 text-left">{t("tablePrice")}</th>
+              <th className="p-3 text-left">{t("tableSupplierId")}</th>
+              <th className="p-3 text-left">{t("tableActions")}</th>
             </tr>
           </thead>
 
@@ -77,9 +79,9 @@ export default function ProductTable({ filters }: any) {
                 <td className="p-3">${p.price}</td>
                 <td className="p-3">{p.supplier}</td>
                 <td className="p-3 space-x-2">
-                  <button onClick={()=>setViewItem(p)} className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">View</button>
-                  <button onClick={()=>setEditItem(p)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer">Edit</button>
-                  <button onClick={()=>deleteProduct(p.id)} className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer">Delete</button>
+                  <button onClick={()=>setViewItem(p)} className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">{t("actionView")}</button>
+                  <button onClick={()=>setEditItem(p)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer">{t("actionEdit")}</button>
+                  <button onClick={()=>deleteProduct(p.id)} className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer">{t("actionDelete")}</button>
                 </td>
               </tr>
             ))}

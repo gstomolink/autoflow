@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import CategoryFormModal from "./CategoryFormModal";
 import ViewCategoryModal from "./ViewCategoryModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 const initialCategories = [
   {
@@ -23,6 +24,7 @@ const initialCategories = [
 ];
 
 export default function CategoriesTable({ filters }: any) {
+  const { t } = useAdminI18n();
   const [categories, setCategories] = useState(initialCategories);
   const [editItem, setEditItem] = useState<any>(null);
   const [viewItem, setViewItem] = useState<any>(null);
@@ -48,12 +50,12 @@ export default function CategoriesTable({ filters }: any) {
         <table className="w-full">
           <thead className="bg-white text-black text-sm">
             <tr>
-              <th className="p-3 text-left">Category ID</th>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Description</th>
-              <th className="p-3 text-left">Products</th>
-              <th className="p-3 text-left">Created</th>
-              <th className="p-3 text-left">Actions</th>
+              <th className="p-3 text-left">{t("tableCategoryId")}</th>
+              <th className="p-3 text-left">{t("tableName")}</th>
+              <th className="p-3 text-left">{t("tableDescription")}</th>
+              <th className="p-3 text-left">{t("tableProducts")}</th>
+              <th className="p-3 text-left">{t("tableCreated")}</th>
+              <th className="p-3 text-left">{t("tableActions")}</th>
             </tr>
           </thead>
 
@@ -70,19 +72,19 @@ export default function CategoriesTable({ filters }: any) {
                     onClick={() => setViewItem(cat)}
                     className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer"
                   >
-                    View
+                    {t("actionView")}
                   </button>
                   <button
                     onClick={() => setEditItem(cat)}
                     className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer"
                   >
-                    Edit
+                    {t("actionEdit")}
                   </button>
                   <button
                     onClick={() => deleteCategory(cat.id)}
                     className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer"
                   >
-                    Delete
+                    {t("actionDelete")}
                   </button>
                 </td>
               </tr>

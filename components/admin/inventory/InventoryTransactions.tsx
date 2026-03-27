@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 type Props = {
   type: "movement" | "audit";
@@ -72,6 +73,7 @@ const auditData: AuditItem[] = [
 ];
 
 export default function InventoryTransactions({ type }: Props) {
+  const { t } = useAdminI18n();
   const [warehouse, setWarehouse] = useState("");
   const [search, setSearch] = useState("");
 
@@ -123,7 +125,7 @@ export default function InventoryTransactions({ type }: Props) {
   <button
     className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors"
   >
-    Search
+    {t("actionSearch")}
   </button>
 
 </div>
@@ -132,27 +134,27 @@ export default function InventoryTransactions({ type }: Props) {
       <table className="w-full bg-white rounded shadow text-gray-700 text-left">
         <thead className="bg-white">
           <tr>
-            <th className="p-3">Product</th>
-            <th className="p-3">Warehouse</th>
-            <th className="p-3">Type</th>
-            <th className="p-3">Qty</th>
+            <th className="p-3">{t("tableProduct")}</th>
+            <th className="p-3">{t("tableWarehouse")}</th>
+            <th className="p-3">{t("tableType")}</th>
+            <th className="p-3">{t("tableQty")}</th>
 
             {type === "movement" && (
               <>
-                <th className="p-3">From</th>
-                <th className="p-3">To</th>
+                <th className="p-3">{t("tableFrom")}</th>
+                <th className="p-3">{t("tableTo")}</th>
               </>
             )}
 
             {type === "audit" && (
               <>
-                <th className="p-3">Before</th>
-                <th className="p-3">After</th>
-                <th className="p-3">Reference</th>
+                <th className="p-3">{t("tableBefore")}</th>
+                <th className="p-3">{t("tableAfter")}</th>
+                <th className="p-3">{t("tableReference")}</th>
               </>
             )}
 
-            <th className="p-3">Date</th>
+            <th className="p-3">{t("tableDate")}</th>
           </tr>
         </thead>
 

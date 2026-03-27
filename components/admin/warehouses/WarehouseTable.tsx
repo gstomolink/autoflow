@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import ViewWarehouseModal from "./ViewWarehouseModal";
 import EditWarehouseModal from "./EditWarehouseModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 const initialData = [
   {
@@ -45,6 +46,7 @@ const initialData = [
 ];
 
 export default function WarehouseTable({ filters }: any) {
+  const { t } = useAdminI18n();
   const [data, setData] = useState(initialData);
   const [viewItem, setViewItem] = useState<any>(null);
   const [editItem, setEditItem] = useState<any>(null);
@@ -64,12 +66,12 @@ export default function WarehouseTable({ filters }: any) {
         <table className="w-full text-gray-700">
           <thead className="bg-white">
             <tr>
-              <th className="p-3 text-left">Warehouse ID</th>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Address</th>
-              <th className="p-3 text-left">Manager</th>
-              <th className="p-3 text-left">Contact No</th>
-              <th className="p-3 text-left">Actions</th>
+              <th className="p-3 text-left">{t("tableWarehouseId")}</th>
+              <th className="p-3 text-left">{t("tableName")}</th>
+              <th className="p-3 text-left">{t("tableAddress")}</th>
+              <th className="p-3 text-left">{t("tableManager")}</th>
+              <th className="p-3 text-left">{t("tableContactNo")}</th>
+              <th className="p-3 text-left">{t("tableActions")}</th>
             </tr>
           </thead>
 
@@ -87,19 +89,19 @@ export default function WarehouseTable({ filters }: any) {
                     onClick={() => setViewItem(w)}
                     className="px-2 py-1 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
                   >
-                    View
+                    {t("actionView")}
                   </button>
                   <button
                     onClick={() => setEditItem(w)}
                     className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer hover:bg-slate-300 transition-colors"
                   >
-                    Edit
+                    {t("actionEdit")}
                   </button>
                   <button
                     onClick={() => deleteWarehouse(w.id)}
                     className="px-2 py-1 bg-rose-500 text-rose-50 rounded cursor-pointer hover:bg-rose-600 transition-colors"
                   >
-                    Delete
+                    {t("actionDelete")}
                   </button>
                 </td>
               </tr>

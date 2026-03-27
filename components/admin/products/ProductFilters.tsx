@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 type Props = {
   onFilter: (filters: any) => void;
 };
 
 export default function ProductFilters({ onFilter }: Props) {
+  const { t } = useAdminI18n();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
 
@@ -46,7 +48,7 @@ export default function ProductFilters({ onFilter }: Props) {
         onClick={handleSearch}
         className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
       >
-        Search
+        {t("actionSearch")}
       </button>
 
     </div>
