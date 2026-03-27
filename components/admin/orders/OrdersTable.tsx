@@ -1,3 +1,5 @@
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 type Props = {
   onView: (order: any) => void;
 };
@@ -24,19 +26,20 @@ const orders = [
 ];
 
 export default function OrdersTable({ onView }: Props) {
+  const { t } = useAdminI18n();
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <table className="w-full">
-        <thead className="bg-gray-100 text-black text-sm">
+        <thead className="bg-white text-black text-sm">
           <tr>
-            <th className="p-3 text-left">Order ID</th>
-            <th className="p-3 text-left">Date</th>
-            <th className="p-3 text-left">Customer</th>
-            <th className="p-3 text-left">Items</th>
-            <th className="p-3 text-left">Total</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Payment</th>
-            <th className="p-3 text-left">Actions</th>
+            <th className="p-3 text-left">{t("tableOrderId")}</th>
+            <th className="p-3 text-left">{t("tableDate")}</th>
+            <th className="p-3 text-left">{t("tableCustomer")}</th>
+            <th className="p-3 text-left">{t("tableItems")}</th>
+            <th className="p-3 text-left">{t("tableTotal")}</th>
+            <th className="p-3 text-left">{t("tableStatus")}</th>
+            <th className="p-3 text-left">{t("tablePayment")}</th>
+            <th className="p-3 text-left">{t("tableActions")}</th>
           </tr>
         </thead>
 
@@ -57,7 +60,7 @@ export default function OrdersTable({ onView }: Props) {
                     ? "bg-green-100 text-green-700"
                     : "bg-gray-100 text-gray-700"
                 }`}>
-                  {o.status}
+                  {o.status === "Pending" ? t("statusPending") : o.status === "Delivered" ? t("statusDelivered") : o.status}
                 </span>
               </td>
 
@@ -66,19 +69,19 @@ export default function OrdersTable({ onView }: Props) {
               <td className="p-3 space-x-2 text-gray-700">
                 <button
                   onClick={() => onView(o)}
-                  className="px-3 py-1 bg-blue-600 text-white rounded cursor-pointer"
+                  className="px-3 py-1 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
                 >
-                  View
+                  {t("actionView")}
                 </button>
 
                 {o.status === "Pending" && (
-                  <button className="px-3 py-1 bg-red-600 text-white rounded cursor-pointer">
-                    Cancel
+                  <button className="px-3 py-1 bg-rose-500 text-rose-50 rounded cursor-pointer hover:bg-rose-600 transition-colors">
+                    {t("actionCancel")}
                   </button>
                 )}
 
-                <button className="px-3 py-1 bg-purple-600 text-white rounded cursor-pointer">
-                  Refund
+                <button className="px-3 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer hover:bg-slate-300 transition-colors">
+                  {t("actionRefund")}
                 </button>
               </td>
             </tr>

@@ -7,7 +7,15 @@ export default function AddSupplierModal({ onClose }: any) {
         
         <div className="flex justify-between mb-4">
           <h2 className="font-bold">Add Supplier</h2>
-          <button onClick={onClose} className="cursor-pointer text-black items-center mb-4">⨯</button>
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
         </div>
 
         <div className="space-y-3">
@@ -18,7 +26,7 @@ export default function AddSupplierModal({ onClose }: any) {
           <input placeholder="Address" className="w-full border p-2 rounded"/>
         </div>
 
-        <button className="mt-4 w-full bg-purple-600 text-white py-2 rounded">
+        <button className="mt-4 w-full bg-sky-500 text-sky-50 py-2 rounded hover:bg-sky-600 transition-colors">
           Save
         </button>
       </div>

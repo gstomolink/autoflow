@@ -1,31 +1,39 @@
 
+'use client';
+
 import StatCard from "@/components/admin/StatCard";
 import RevenueChart from "@/components/admin/RevenueChart";
 import TopProducts from "@/components/admin/TopProducts";
 import LowStockAlerts from "@/components/admin/LowStockAlerts";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function AdminDashboardPage() {
+  const { t } = useAdminI18n();
   return (
     <div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">{t("dashboardTitle")}</h1>
+        <p className="text-gray-600">{t("dashboardSubtitle")}</p>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
         <StatCard
-          title="Total Sales Today"
+          title={t("statTotalSalesToday")}
           value="$12,540"
-          change="+12% from yesterday"
+          change={t("statSalesFromYesterday")}
         />
         <StatCard
-          title="Orders Count"
+          title={t("statOrdersCount")}
           value="326"
-          change="+8% growth"
+          change={t("statOrdersGrowth")}
         />
         <StatCard
-          title="Total Revenue"
+          title={t("statTotalRevenue")}
           value="$320,845"
         />
         <StatCard
-          title="Active Customers"
+          title={t("statActiveCustomers")}
           value="1,240"
         />
       </div>

@@ -34,8 +34,14 @@ export default function AddProductModal({ onClose }: Props) {
           Add New Product
         </h2>
 
-          <button onClick={onClose} className="cursor-pointer text-black items-center">
-            ⨯
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
 
@@ -48,7 +54,7 @@ export default function AddProductModal({ onClose }: Props) {
             <input
               required
               type="text"
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
               placeholder="Enter product name"
             />
           </div>
@@ -58,7 +64,7 @@ export default function AddProductModal({ onClose }: Props) {
             <label className="block text-sm text-gray-700 mb-1">
               Category
             </label>
-            <select className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700">
+            <select className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700">
               <option>Electronics</option>
               <option>Accessories</option>
               <option>Apparel</option>
@@ -75,7 +81,7 @@ export default function AddProductModal({ onClose }: Props) {
               <input
                 required
                 type="number"
-                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
                 placeholder="0.00"
               />
             </div>
@@ -87,7 +93,7 @@ export default function AddProductModal({ onClose }: Props) {
               <input
                 required
                 type="number"
-                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
                 placeholder="0"
               />
             </div>
@@ -100,7 +106,7 @@ export default function AddProductModal({ onClose }: Props) {
             </label>
             <input
               type="text"
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
               placeholder="Supplier name"
             />
           </div>
@@ -112,7 +118,7 @@ export default function AddProductModal({ onClose }: Props) {
             </label>
             <textarea
               rows={3}
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
               placeholder="Product description"
             />
           </div>
@@ -124,7 +130,7 @@ export default function AddProductModal({ onClose }: Props) {
             </label>
 
             <div className="flex items-center gap-4">
-              <label className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <label className="cursor-pointer px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors">
                 Upload Image
                 <input
                   type="file"
@@ -149,14 +155,14 @@ export default function AddProductModal({ onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-white border border-purple-600 hover:bg-purple-100 text-purple-600"
+              className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
+              className="px-4 py-2 rounded-lg bg-sky-500 text-sky-50 hover:bg-sky-600 transition-colors"
             >
               Save Product
             </button>

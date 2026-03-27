@@ -1,33 +1,38 @@
 'use client';
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { TranslationKey, useAdminI18n } from "./AdminI18nProvider";
 
-const menu = [
-  { name: "Dashboard", href: "/admin/dashboard" },
-  { name: "Categories", href: "/admin/categories" },
-  { name: "Products", href: "/admin/products" },
-  { name: "Warehouse", href: "/admin/warehouses" },
-  { name: "Inventory", href: "/admin/inventory" },
-  { name: "Inventory Orders", href: "/admin/inventory-orders" },
-  { name: "Customer Orders", href: "/admin/orders" },
+const menu: { key: TranslationKey; href: string }[] = [
+  { key: "menuDashboard", href: "/admin/dashboard" },
+  { key: "menuCategories", href: "/admin/categories" },
+  { key: "menuProducts", href: "/admin/products" },
+  { key: "menuWarehouse", href: "/admin/warehouses" },
+  { key: "menuInventory", href: "/admin/inventory" },
+  { key: "menuInventoryOrders", href: "/admin/inventory-orders" },
+  { key: "menuCustomerOrders", href: "/admin/orders" },
   // { name: "Customers", href: "/admin/customers" },
-  { name: "Suppliers", href: "/admin/suppliers" },
+  { key: "menuSuppliers", href: "/admin/suppliers" },
   // { name: "Purchases", href: "/admin/purchases" },
   // { name: "Reports", href: "/admin/reports" },
-  { name: "Users & Roles", href: "/admin/users-roles" },
-  { name: "Settings", href: "/admin/settings" },
+  { key: "menuUsersRoles", href: "/admin/users-roles" },
+  { key: "menuSettings", href: "/admin/settings" },
   // { name: "Audit Logs", href: "/admin/audit-logs" },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useAdminI18n();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
     router.push("/login");
+    setShowLogoutModal(false);
   };
 
   return (
@@ -37,7 +42,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-slate-800">
         <img src="/logo.jpg" alt="Logo" className="h-16 mb-2 m-auto" />
-        <h2 className="text-lg font-bold tracking-wide text-center text-slate-200">ADMIN PANEL</h2>
+        <h2 className="text-lg font-bold tracking-wide text-center text-slate-200">{t("adminPanel")}</h2>
       </div>
 
       {/* Menu */}
@@ -47,7 +52,7 @@ export default function AdminSidebar() {
 
           return (
             <Link
-              key={item.name}
+              key={item.key}
               href={item.href}
               className={`block px-4 py-2 rounded-lg transition font-bold tracking-wide
                 ${
@@ -56,7 +61,7 @@ export default function AdminSidebar() {
                     : "text-slate-300 hover:bg-slate-800"
                 }`}
             >
-              {item.name}
+              {t(item.key)}
             </Link>
           );
         })}
@@ -65,7 +70,7 @@ export default function AdminSidebar() {
       {/* Logout */}
       <div className="p-4 border-t border-slate-800">
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           className="w-full text-left px-4 py-2 rounded-lg font-bold tracking-wide
                      hover:bg-red-500/20 text-red-400 inline-flex items-center gap-2"
         >
@@ -81,9 +86,35 @@ export default function AdminSidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 17l5-5m0 0-5-5m5 5H9" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
           </svg>
-          <span>Logout</span>
+          <span>{t("logout")}</span>
         </button>
       </div>
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] p-4">
+          <div className="w-full max-w-sm bg-white rounded-xl shadow-xl p-5">
+            <h3 className="text-lg font-semibold text-slate-800">Confirm Logout</h3>
+            <p className="text-sm text-slate-600 mt-2">
+              Are you sure you want to logout?
+            </p>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 rounded-lg bg-rose-500 text-rose-50 hover:bg-rose-600 transition-colors"
+              >
+                {t("logout")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

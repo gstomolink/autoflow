@@ -9,8 +9,14 @@ export default function ViewWarehouseModal({ data, onClose }: any) {
           Warehouse Details
         </h2>
 
-          <button onClick={onClose} className="cursor-pointer text-black items-center">
-            ⨯
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
 
@@ -24,7 +30,7 @@ export default function ViewWarehouseModal({ data, onClose }: any) {
         </div>
 
         <div className="flex justify-end mt-4">
-          <button onClick={onClose} className="px-4 py-2 border border-purple-600 text-purple-600 bg-purple-100 hover:bg-purple-200 rounded cursor-pointer">
+          <button onClick={onClose} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded cursor-pointer transition-colors">
             Close
           </button>
         </div>

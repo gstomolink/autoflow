@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function WarehouseFilters({ onFilter }: any) {
+  const { t } = useAdminI18n();
   const [search, setSearch] = useState('');
   const [warehouse, setWarehouse] = useState('');
 
@@ -24,15 +26,15 @@ export default function WarehouseFilters({ onFilter }: any) {
         placeholder="Search warehouse..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="flex-1 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+        className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
       />
 
       {/* Search Button */}
       <button
         onClick={handleSearch}
-        className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700"
+        className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors"
       >
-        Search
+        {t("actionSearch")}
       </button>
 
     </div>
