@@ -9,7 +9,7 @@ export default function RevenueChart() {
         {data.map((value, i) => (
           <div key={i} className="flex-1 flex flex-col items-center">
             <div
-              className="w-full bg-gradient-to-t from-sky-300 to-blue-400 rounded-t-md"
+              className="w-full bg-gradient-to-t from-sky-200 to-sky-400 rounded-t-md"
               style={{ height: `${value * 1.5}px` }}
             />
             <span className="text-xs text-gray-500 mt-2">M{i + 1}</span>

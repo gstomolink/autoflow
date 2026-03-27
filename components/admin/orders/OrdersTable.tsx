@@ -27,7 +27,7 @@ export default function OrdersTable({ onView }: Props) {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <table className="w-full">
-        <thead className="bg-gray-100 text-black text-sm">
+        <thead className="bg-white text-black text-sm">
           <tr>
             <th className="p-3 text-left">Order ID</th>
             <th className="p-3 text-left">Date</th>
@@ -66,18 +66,18 @@ export default function OrdersTable({ onView }: Props) {
               <td className="p-3 space-x-2 text-gray-700">
                 <button
                   onClick={() => onView(o)}
-                  className="px-3 py-1 bg-blue-600 text-white rounded cursor-pointer"
+                  className="px-3 py-1 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
                 >
                   View
                 </button>
 
                 {o.status === "Pending" && (
-                  <button className="px-3 py-1 bg-red-600 text-white rounded cursor-pointer">
+                  <button className="px-3 py-1 bg-rose-500 text-rose-50 rounded cursor-pointer hover:bg-rose-600 transition-colors">
                     Cancel
                   </button>
                 )}
 
-                <button className="px-3 py-1 bg-purple-600 text-white rounded cursor-pointer">
+                <button className="px-3 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer hover:bg-slate-300 transition-colors">
                   Refund
                 </button>
               </td>

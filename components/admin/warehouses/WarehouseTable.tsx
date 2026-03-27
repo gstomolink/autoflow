@@ -62,7 +62,7 @@ export default function WarehouseTable({ filters }: any) {
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-gray-700">
-          <thead className="bg-gray-100">
+          <thead className="bg-white">
             <tr>
               <th className="p-3 text-left">Warehouse ID</th>
               <th className="p-3 text-left">Name</th>
@@ -85,19 +85,19 @@ export default function WarehouseTable({ filters }: any) {
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() => setViewItem(w)}
-                    className="px-2 py-1 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700"
+                    className="px-2 py-1 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
                   >
                     View
                   </button>
                   <button
                     onClick={() => setEditItem(w)}
-                    className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer hover:bg-yellow-600"
+                    className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer hover:bg-slate-300 transition-colors"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteWarehouse(w.id)}
-                    className="px-2 py-1 bg-red-600 text-white rounded cursor-pointer hover:bg-red-700"
+                    className="px-2 py-1 bg-rose-500 text-rose-50 rounded cursor-pointer hover:bg-rose-600 transition-colors"
                   >
                     Delete
                   </button>

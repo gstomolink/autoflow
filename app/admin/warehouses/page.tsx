@@ -24,7 +24,7 @@ export default function WarehousePage() {
 
         <button
           onClick={() => setShowAdd(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700"
+          className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg cursor-pointer hover:bg-sky-600 transition-colors"
         >
           + Add Warehouse
         </button>

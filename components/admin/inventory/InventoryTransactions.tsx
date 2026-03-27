@@ -104,7 +104,7 @@ export default function InventoryTransactions({ type }: Props) {
       placeholder="Search product..."
       value={search}
       onChange={(e) => setSearch(e.target.value)}
-      className="flex-1 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+    className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
     />
 
     <select
@@ -121,7 +121,7 @@ export default function InventoryTransactions({ type }: Props) {
 
   {/* Right side button */}
   <button
-    className="bg-purple-600 text-white px-4 py-2 rounded cursor-pointer whitespace-nowrap"
+    className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors"
   >
     Search
   </button>
@@ -130,7 +130,7 @@ export default function InventoryTransactions({ type }: Props) {
 
       {/* TABLE */}
       <table className="w-full bg-white rounded shadow text-gray-700 text-left">
-        <thead className="bg-gray-100">
+        <thead className="bg-white">
           <tr>
             <th className="p-3">Product</th>
             <th className="p-3">Warehouse</th>

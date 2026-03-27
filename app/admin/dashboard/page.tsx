@@ -7,6 +7,10 @@ import LowStockAlerts from "@/components/admin/LowStockAlerts";
 export default function AdminDashboardPage() {
   return (
     <div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-gray-600">Overview of your store performance</p>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">

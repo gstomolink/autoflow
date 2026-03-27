@@ -25,20 +25,26 @@ export default function EditProductModal({ product, onClose }: Props) {
           Edit Product
         </h2>
 
-          <button onClick={onClose} className="cursor-pointer text-black items-center">
-            ⨯
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
 
         <div className="space-y-3">
           <div>
             <label className="text-sm text-gray-600">Name</label>
-            <input name="name" value={form.name} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"/>
+            <input name="name" value={form.name} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
           </div>
 
           <div>
             <label className="text-sm text-gray-600">Category</label>
-            <select name="category" value={form.category} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700">
+            <select name="category" value={form.category} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700">
               <option>Electronics</option>
               <option>Accessories</option>
               <option>Apparel</option>
@@ -47,18 +53,18 @@ export default function EditProductModal({ product, onClose }: Props) {
 
           <div>
             <label className="text-sm text-gray-600">Price ($)</label>
-            <input type="number" name="price" value={form.price} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"/>
+            <input type="number" name="price" value={form.price} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
           </div>
 
           <div>
             <label className="text-sm text-gray-600">Supplier</label>
-            <input name="supplier" value={form.supplier} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-700"/>
+            <input name="supplier" value={form.supplier} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
           </div>
         </div>
 
         <div className="flex justify-end mt-4 space-x-2">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-white border border-purple-600 hover:bg-purple-100 text-purple-600">Cancel</button>
-          <button onClick={handleSave} className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Save</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors">Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 rounded-lg bg-sky-500 text-sky-50 hover:bg-sky-600 transition-colors">Save</button>
         </div>
       </div>
     </div>

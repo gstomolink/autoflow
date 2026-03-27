@@ -31,7 +31,7 @@ export default function OrderFilters() {
       </div>
 
       {/* Right side button */}
-      <button className="px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer whitespace-nowrap">
+      <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors">
         Apply Filters
       </button>
 

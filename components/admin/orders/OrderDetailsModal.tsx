@@ -86,18 +86,18 @@ export default function OrderDetailsModal({ order, onClose }: Props) {
 
         {/* Actions */}
         <div className="flex justify-end gap-3">
-          <button className="px-4 py-2 bg-purple-600 text-white rounded">
+          <button className="px-4 py-2 bg-slate-200 text-slate-700 border border-slate-300 rounded hover:bg-slate-300 transition-colors">
             Refund
           </button>
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors"
           >
             Print Invoice
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-purple-100 text-purple-600 border border-purple-100 rounded"
+            className="px-4 py-2 bg-slate-200 text-slate-600 border border-slate-300 rounded hover:bg-slate-300 transition-colors"
           >
             Close
           </button>

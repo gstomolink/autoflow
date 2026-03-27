@@ -17,7 +17,7 @@ export default function SupplierPage() {
 
         <button
           onClick={() => setShowAdd(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
+          className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
         >
           + Add New Supplier
         </button>

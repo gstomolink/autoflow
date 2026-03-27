@@ -17,7 +17,7 @@ export default function InventoryTabs() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 cursor-pointer ${
               activeTab === tab
-                ? "border-b-2 border-purple-600 text-purple-600"
+                ? "border-b-2 border-sky-500 text-sky-600"
                 : "text-gray-600"
             }`}
           >

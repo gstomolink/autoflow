@@ -44,7 +44,7 @@ export default function ProductFilters({ onFilter }: Props) {
       {/* Search Button */}
       <button
         onClick={handleSearch}
-        className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
+        className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
       >
         Search
       </button>

@@ -14,7 +14,7 @@ export default function TopProducts() {
         {products.map((p, i) => (
           <div key={i} className="flex justify-between items-center">
             <span className="text-gray-700">{p.name}</span>
-            <span className="font-semibold text-purple-600">
+            <span className="font-semibold text-sky-600">
               {p.sales} sales
             </span>
           </div>

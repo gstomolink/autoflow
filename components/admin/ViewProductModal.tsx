@@ -19,7 +19,7 @@ export default function ViewProductModal({ product, onClose }: Props) {
         </div>
 
         <div className="flex justify-end mt-4">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-white border border-purple-600 hover:bg-purple-100 text-purple-600">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors">
             Close
           </button>
         </div>

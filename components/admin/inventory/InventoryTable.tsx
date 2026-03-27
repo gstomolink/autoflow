@@ -62,21 +62,21 @@ export default function InventoryTable({ onlyLow }: any) {
     <div className="flex justify-end mb-4 gap-2">
       <button
         onClick={() => setShowAdd(true)}
-        className="w-44 bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
+        className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
         + Add Stock
       </button>
 
       <button
         onClick={() => setShowAdjust(true)}
-        className="w-44 bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer"
+        className="w-44 bg-slate-200 text-slate-700 px-4 py-2 rounded cursor-pointer hover:bg-slate-300 transition-colors"
       >
         Adjust
       </button>
 
       <button
         onClick={() => setShowTransfer(true)}
-        className="w-44 bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
+        className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
         Transfer
       </button>
@@ -111,21 +111,21 @@ export default function InventoryTable({ onlyLow }: any) {
       </div>
 
       {/* SEARCH BUTTON */}
-      <button className="w-44 bg-purple-600 text-white px-5 py-2 rounded cursor-pointer">
+      <button className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
         Search
       </button>
     </div>
 
     {/* EXPORT */}
     <div className="mb-4">
-      <button className="px-4 py-2 bg-purple-600 text-white rounded cursor-pointer">
+      <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors">
         Export CSV
       </button>
     </div>
 
     {/* TABLE */}
     <table className="w-full bg-white rounded shadow text-gray-700 text-left">
-      <thead className="bg-gray-100">
+      <thead className="bg-white">
         <tr>
           <th className="p-3">Product</th>
           <th className="p-3">Warehouse</th>
