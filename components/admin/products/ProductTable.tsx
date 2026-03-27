@@ -81,7 +81,7 @@ export default function ProductTable({ filters }: any) {
                 <td className="p-3 space-x-2">
                   <button onClick={()=>setViewItem(p)} className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">{t("actionView")}</button>
                   <button onClick={()=>setEditItem(p)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer">{t("actionEdit")}</button>
-                  <button onClick={()=>deleteProduct(p.id)} className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer">{t("actionDelete")}</button>
+                  <button onClick={()=>deleteProduct(p.id)} className="px-2 py-1 bg-rose-500 text-rose-50 hover:bg-rose-600 rounded  transition-colors cursor-pointer">{t("actionDelete")}</button>
                 </td>
               </tr>
             ))}
