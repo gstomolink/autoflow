@@ -26,7 +26,7 @@ export default function ProductFilters({ onFilter }: Props) {
         placeholder="Search by product name..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="border border-gray-300 px-3 py-2 rounded-lg flex-1 text-gray-700"
+        className="border border-gray-300 px-3 py-2 rounded-lg w-72 text-gray-700"
       />
 
       {/* Category Filter */}
@@ -44,7 +44,7 @@ export default function ProductFilters({ onFilter }: Props) {
       {/* Search Button */}
       <button
         onClick={handleSearch}
-        className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 cursor-pointer"
+        className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
       >
         Search
       </button>

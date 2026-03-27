@@ -23,16 +23,27 @@ export default function AdminProductsPage() {
         <div className="flex gap-3">
           <button
             onClick={() => setShowAdd(true)}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg cursor-pointer"
+            className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
           >
             + Add New Product
           </button>
 
           <button
             onClick={() => setShowBulk(true)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer"
+            className="px-4 py-2 bg-transparent text-slate-700 border border-slate-500 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2 cursor-pointer"
           >
-            Bulk Import CSV
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="w-4 h-4"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span>Bulk Import CSV</span>
           </button>
         </div>
       </div>

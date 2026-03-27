@@ -25,14 +25,14 @@ export default function CategoriesPage() {
         <div className="flex gap-3">
           <button
             onClick={() => setShowAdd(true)}
-            className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
+            className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors"
           >
             + Add New Category
           </button>
 
           <button
             onClick={() => setShowBulk(true)}
-            className="px-4 py-2 bg-transparent text-slate-700 border border-slate-500 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2"
+            className="px-4 py-2 bg-transparent text-slate-600 border border-slate-400 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

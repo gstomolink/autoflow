@@ -63,7 +63,7 @@ export default function BulkImportCategoryModal({ onClose }: any) {
 
         <label
           htmlFor="categoryCsvFile"
-          className="w-64 mb-4 px-4 py-2 text-white border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
+          className="w-64 mb-4 px-4 py-2 text-sky-50 border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,10 +81,10 @@ export default function BulkImportCategoryModal({ onClose }: any) {
         <input id="categoryCsvFile" type="file" accept=".csv" className="hidden" />
 
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-700 border border-slate-300 hover:bg-slate-300 rounded transition-colors cursor-pointer">
+          <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-600 border border-slate-300 hover:bg-slate-300 rounded transition-colors cursor-pointer">
             Cancel
           </button>
-          <button className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 transition-colors cursor-pointer">
+          <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">
             Upload
           </button>
         </div>

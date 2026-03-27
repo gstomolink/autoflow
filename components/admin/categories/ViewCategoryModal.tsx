@@ -40,7 +40,7 @@ export default function ViewCategoryModal({ data, onClose }: any) {
         </div>
 
         <div className="flex justify-end mt-6">
-          <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer border border-slate-300">
+          <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-600 rounded hover:bg-slate-300 transition-colors cursor-pointer border border-slate-300">
             Close
           </button>
         </div>

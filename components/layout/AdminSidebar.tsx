@@ -32,12 +32,12 @@ export default function AdminSidebar() {
 
   return (
     <aside className="w-56 h-screen sticky top-0
-      bg-[#E3E7ED] text-slate-800 border-r border-slate-300 flex flex-col">
+      bg-[#0F172A] text-slate-200 border-r border-slate-800 flex flex-col">
       
       {/* Logo */}
-      <div className="p-6 border-b border-slate-300">
+      <div className="p-6 border-b border-slate-800">
         <img src="/logo.jpg" alt="Logo" className="h-16 mb-2 m-auto" />
-        <h2 className="text-lg font-bold tracking-wide text-center">ADMIN PANEL</h2>
+        <h2 className="text-lg font-bold tracking-wide text-center text-slate-200">ADMIN PANEL</h2>
       </div>
 
       {/* Menu */}
@@ -53,7 +53,7 @@ export default function AdminSidebar() {
                 ${
                   active
                     ? "bg-white text-slate-900"
-                    : "hover:bg-slate-200"
+                    : "text-slate-300 hover:bg-slate-800"
                 }`}
             >
               {item.name}
@@ -63,13 +63,25 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-slate-300">
+      <div className="p-4 border-t border-slate-800">
         <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 rounded-lg font-bold tracking-wide
-                     hover:bg-red-200 text-red-700"
+                     hover:bg-red-500/20 text-red-400 inline-flex items-center gap-2"
         >
-          Logout
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16 17l5-5m0 0-5-5m5 5H9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+          </svg>
+          <span>Logout</span>
         </button>
       </div>
     </aside>

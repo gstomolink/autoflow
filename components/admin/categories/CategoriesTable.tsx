@@ -68,19 +68,19 @@ export default function CategoriesTable({ filters }: any) {
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() => setViewItem(cat)}
-                    className="px-2 py-1 bg-sky-500 text-white rounded hover:bg-sky-600 transition-colors cursor-pointer"
+                    className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer"
                   >
                     View
                   </button>
                   <button
                     onClick={() => setEditItem(cat)}
-                    className="px-2 py-1 bg-slate-200 text-slate-800 rounded hover:bg-slate-300 transition-colors cursor-pointer"
+                    className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteCategory(cat.id)}
-                    className="px-2 py-1 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors cursor-pointer"
+                    className="px-2 py-1 bg-rose-500 text-rose-50 rounded hover:bg-rose-600 transition-colors cursor-pointer"
                   >
                     Delete
                   </button>
