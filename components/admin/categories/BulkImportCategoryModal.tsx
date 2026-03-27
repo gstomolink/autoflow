@@ -20,29 +20,71 @@ export default function BulkImportCategoryModal({ onClose }: any) {
             Bulk Import Categories
           </h2>
 
-          <button onClick={onClose} className="cursor-pointer text-black">
-            ⨯
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              className="w-6 h-6"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
 
         <button
           onClick={downloadSample}
-          className=" w-54 px-4 py-2 bg-white text-purple-600 border border-purple-600 rounded mb-4 cursor-pointer"
+          className="w-64 px-4 py-2 bg-white text-slate-700 border border-slate-400 rounded mb-4 hover:bg-slate-100 transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
         >
-          Download Sample CSV
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <span className="whitespace-nowrap">Download Sample CSV</span>
         </button>
 
         <p className="text-sm text-gray-600 mb-4">
           Note: Uploaded file must follow the sample CSV structure.
         </p>
 
-        <input type="file" accept=".csv" className="w-54 mb-4 p-2 text-white border bg-blue-600 hover:bg-blue-700 rounded cursor-pointer" />
+        <label
+          htmlFor="categoryCsvFile"
+          className="w-64 mb-4 px-4 py-2 text-white border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <span>Choose File</span>
+        </label>
+        <input id="categoryCsvFile" type="file" accept=".csv" className="hidden" />
 
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 bg-purple-100 text-purple-600 border border-purple-600 hover:bg-purple-200 rounded cursor-pointer">
+          <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-700 border border-slate-300 hover:bg-slate-300 rounded transition-colors cursor-pointer">
             Cancel
           </button>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 cursor-pointer">
+          <button className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 transition-colors cursor-pointer">
             Upload
           </button>
         </div>

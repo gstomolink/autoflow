@@ -46,7 +46,7 @@ export default function CategoriesTable({ filters }: any) {
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-100 text-black text-sm">
+          <thead className="bg-white text-black text-sm">
             <tr>
               <th className="p-3 text-left">Category ID</th>
               <th className="p-3 text-left">Name</th>
@@ -68,19 +68,19 @@ export default function CategoriesTable({ filters }: any) {
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() => setViewItem(cat)}
-                    className="px-2 py-1 bg-blue-600 text-white rounded cursor-pointer"
+                    className="px-2 py-1 bg-sky-500 text-white rounded hover:bg-sky-600 transition-colors cursor-pointer"
                   >
                     View
                   </button>
                   <button
                     onClick={() => setEditItem(cat)}
-                    className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer"
+                    className="px-2 py-1 bg-slate-200 text-slate-800 rounded hover:bg-slate-300 transition-colors cursor-pointer"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteCategory(cat.id)}
-                    className="px-2 py-1 bg-red-600 text-white rounded cursor-pointer"
+                    className="px-2 py-1 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors cursor-pointer"
                   >
                     Delete
                   </button>
