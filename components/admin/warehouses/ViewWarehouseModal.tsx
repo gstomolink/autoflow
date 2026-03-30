@@ -25,7 +25,6 @@ export default function ViewWarehouseModal({ data, onClose }: any) {
           <p><b>Address:</b> {data.address}</p>
           <p><b>Manager:</b> {data.manager}</p>
           <p><b>Contact:</b> {data.contact}</p>
-          <p><b>Status:</b> {data.status}</p>
           
         </div>
 
