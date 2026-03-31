@@ -2,99 +2,140 @@
 
 import { useState } from "react";
 
-export default function AddStockModal({ onClose }: any) {
-  const [form, setForm] = useState({
-    product: "",
-    warehouse: "",
-    quantity: "",
-    supplier: "",
-  });
+export default function AddIngredientModal({ onClose }: any) {
 
-  const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [expiryEnabled, setExpiryEnabled] = useState(false);
+  const [alertValue, setAlertValue] = useState(14);
+  const [alertUnit, setAlertUnit] = useState("days");
+  const [expiryDate, setExpiryDate] = useState("");
+
+  const getAlertDays = () => {
+    if (alertUnit === "weeks") return alertValue * 7;
+    if (alertUnit === "months") return alertValue * 30;
+    return alertValue;
   };
 
-  const handleSubmit = () => {
-    if (!form.product || !form.quantity) {
-      alert("Please fill required fields");
-      return;
-    }
+  const getAlertDate = () => {
+    if (!expiryDate) return "";
 
-    alert("Stock Added Successfully!");
-    onClose();
+    const exp = new Date(expiryDate);
+    exp.setDate(exp.getDate() - getAlertDays());
+
+    return exp.toISOString().split("T")[0];
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-xl w-full max-w-md text-gray-700 shadow-xl">
+    <div className="fixed inset-0 bg-black/30 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-xl w-full max-w-2xl text-gray-700 overflow-y-auto max-h-[90vh]">
 
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Add New Stock</h2>
-          <button
-            onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
-            aria-label="Close modal"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
-            </svg>
-          </button>
+        <div className="flex justify-between mb-4">
+          <h2 className="font-bold">Add Ingredient</h2>
+          <button onClick={onClose}>✕</button>
         </div>
 
-        {/* Form */}
-        <div className="space-y-3">
+        {/* BASIC */}
+        <h3 className="font-semibold mb-2">Basic Info</h3>
+        <input placeholder="Ingredient Name *" className="w-full border border-gray-300 p-2 rounded mb-2"/>
+        <input placeholder="SKU *" className="w-full border border-gray-300 p-2 rounded mb-2"/>
+        <textarea placeholder="Description" className="w-full border border-gray-300 p-2 rounded mb-3"/>
 
+        {/* UNIT */}
+        <h3 className="font-semibold mb-2">Unit & Measurement</h3>
+        <select className="w-full border border-gray-300 p-2 rounded mb-2">
+          <option>Weight (kg)</option>
+          <option>Volume (liter)</option>
+          <option>Quantity (pcs)</option>
+        </select>
+
+        {/* INVENTORY */}
+        <h3 className="font-semibold mb-2">Inventory</h3>
+        <input placeholder="Initial Stock" className="w-full border border-gray-300 p-2 rounded mb-2"/>
+        <input placeholder="Reorder Level" className="w-full border border-gray-300 p-2 rounded mb-2"/>
+        <input placeholder="Safety Stock" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+
+        {/* PRICING */}
+        <h3 className="font-semibold mb-2">Pricing</h3>
+        <input placeholder="Cost Price" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+
+        {/* SUPPLIER */}
+        <h3 className="font-semibold mb-2">Supplier</h3>
+        <input placeholder="Supplier Name" className="w-full border border-gray-300 p-2 rounded mb-2"/>
+        <input placeholder="Lead Time (days)" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+
+        {/* TOGGLE */}
+        <label className="flex items-center gap-2 mb-3">
           <input
-            name="product"
-            placeholder="Product Name"
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
+            type="checkbox"
+            checked={expiryEnabled}
+            onChange={() => setExpiryEnabled(!expiryEnabled)}
           />
+          Enable Expiry Tracking
+        </label>
 
-          <select
-            name="warehouse"
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
-          >
-            <option value="">Select Warehouse</option>
-            <option>Main Warehouse</option>
-            <option>Galle Branch</option>
-            <option>Matara Depot</option>
-          </select>
+        {expiryEnabled && (
+          <div className="space-y-3">
 
-          <input
-            name="quantity"
-            type="number"
-            placeholder="Quantity"
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
-          />
+            <div>
+              <label className="text-sm">Expiry Date</label>
+              <input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded"
+              />
+            </div>
 
-          <input
-            name="supplier"
-            placeholder="Supplier ID"
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
-          />
-        </div>
+            <div>
+              <label className="text-sm">Shelf Life (Days)</label>
+              <input
+                type="number"
+                placeholder="e.g. 30"
+                className="w-full border border-gray-300 px-3 py-2 rounded"
+              />
+            </div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2 mt-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded cursor-pointer transition-colors"
-          >
+            <div>
+              <label className="text-sm">Expiry Alert Before</label>
+
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="number"
+                  value={alertValue}
+                  onChange={(e) => setAlertValue(Number(e.target.value))}
+                  className="w-24 border border-gray-300 px-3 py-2 rounded"
+                />
+
+                <select
+                  value={alertUnit}
+                  onChange={(e) => setAlertUnit(e.target.value)}
+                  className="border border-gray-300 px-3 py-2 rounded"
+                >
+                  <option value="days">Days</option>
+                  <option value="weeks">Weeks</option>
+                  <option value="months">Months</option>
+                </select>
+              </div>
+            </div>
+
+            {expiryDate && (
+              <div className="bg-yellow-50 p-3 rounded border border-yellow-300 text-sm">
+                ⚠️ Alert will trigger on: <b>{getAlertDate()}</b>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-2 mt-6">
+          <button onClick={onClose} className="border border-gray-300 px-4 py-2 rounded">
             Cancel
           </button>
-
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
-          >
+          <button className="bg-sky-500 text-white px-4 py-2 rounded">
             Save
           </button>
         </div>
+
       </div>
     </div>
   );
