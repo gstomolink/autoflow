@@ -163,19 +163,19 @@ export default function InventoryTable({ onlyLow }: any) {
         <td className="p-2 border-t border-gray-300 flex gap-2">
           <button
             onClick={() => { setSelectedItem(i); setShowView(true); }}
-            className="bg-blue-500 text-white px-2 py-1 rounded"
+            className=" px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer"
           >
             View
           </button>
           <button
             onClick={() => { setSelectedItem(i); setShowEdit(true); }}
-            className="bg-yellow-500 text-white px-2 py-1 rounded"
+            className=" px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors cursor-pointer"
           >
             Edit
           </button>
           <button
             onClick={() => handleDelete(i.id)}
-            className="bg-red-500 text-white px-2 py-1 rounded"
+            className=" px-2 py-1 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors cursor-pointer"
           >
             Delete
           </button>
