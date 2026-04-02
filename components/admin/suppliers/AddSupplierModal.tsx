@@ -19,14 +19,14 @@ export default function AddSupplierModal({ onClose }: any) {
         </div>
 
         <div className="space-y-3">
-          <input placeholder="Supplier ID" className="w-full border p-2 rounded"/>
-          <input placeholder="Name" className="w-full border p-2 rounded"/>
-          <input placeholder="Contact" className="w-full border p-2 rounded"/>
-          <input placeholder="Email" className="w-full border p-2 rounded"/>
-          <input placeholder="Address" className="w-full border p-2 rounded"/>
+          <input placeholder="Supplier ID" className="w-full border border-gray-300 p-2 rounded"/>
+          <input placeholder="Name" className="w-full border border-gray-300 p-2 rounded"/>
+          <input placeholder="Contact" className="w-full border border-gray-300 p-2 rounded"/>
+          <input placeholder="Email" className="w-full border border-gray-300 p-2 rounded"/>
+          <input placeholder="Address" className="w-full border border-gray-300 p-2 rounded"/>
         </div>
 
-        <button className="mt-4 w-full bg-sky-500 text-sky-50 py-2 rounded hover:bg-sky-600 transition-colors">
+        <button className="mt-4 w-full bg-sky-500 text-sky-50 py-2 rounded hover:bg-sky-600 transition-colors cursor-pointer">
           Save
         </button>
       </div>

@@ -41,7 +41,7 @@ export default function ManualOrdersTable() {
 
       {/* TABLE */}
       <table className="w-full bg-white shadow rounded text-gray-700">
-        <thead className="bg-gray-100">
+        <thead className="bg-white text-left">
           <tr>
             <th className="p-2">Order ID</th>
             <th className="p-2">Product</th>

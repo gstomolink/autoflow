@@ -58,20 +58,22 @@ export default function UsersTable() {
     </button>
   </div>
 
-  {/* SEARCH + FILTER ROW */}
-  <div className="flex justify-between items-center mb-4">
+{/* SEARCH + FILTER ROW */}
+<div className="bg-white p-4 rounded shadow mb-4">
 
-    {/* LEFT SIDE (search + filter) */}
+  <div className="flex justify-between items-center">
+
+    {/* search + filter */}
     <div className="flex gap-2">
       <input
         placeholder="Search name, email, phone..."
-        className="border px-3 py-2 rounded"
+        className="border border-gray-300 px-3 py-2 rounded"
         onChange={(e) => setSearch(e.target.value)}
       />
 
       <select
         onChange={(e) => setRole(e.target.value)}
-        className="border px-3 py-2 rounded"
+        className="border border-gray-300 px-3 py-2 rounded"
       >
         <option value="">All Roles</option>
         <option>Admin</option>
@@ -82,16 +84,18 @@ export default function UsersTable() {
     </div>
 
     {/* RIGHT SIDE (search button) */}
-    <button className="bg-sky-500 text-sky-50 px-4 py-2 rounded">
+    <button className="bg-sky-500 text-sky-50 px-4 py-2 rounded hover:bg-sky-600 transition-colors cursor-pointer">
       Search
     </button>
+
   </div>
+</div>
 
 </div>
 
       {/* TABLE */}
       <table className="w-full bg-white shadow rounded text-gray-700">
-        <thead className="bg-gray-100">
+        <thead className="bg-white text-left">
           <tr>
             <th className="p-2">User ID</th>
             <th className="p-2">Name</th>

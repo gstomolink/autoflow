@@ -130,8 +130,8 @@ export default function InventoryTable({ onlyLow }: any) {
       </div>
 
       {/* TABLE */}
-      <table className="w-full bg-white shadow rounded text-gray-700">
-  <thead className="bg-gray-100 text-left">
+      <table className="w-full bg-white rounded shadow text-gray-700">
+  <thead className="bg-white text-left">
     <tr>
       <th className="p-2 border-t border-gray-300">ID</th>
       <th className="p-2 border-t border-gray-300">Ingredient</th>
