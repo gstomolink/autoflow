@@ -95,4 +95,6 @@
   "statusDelivered": "配達済み",
   "statusInStock": "在庫あり",
   "statusLowStock": "在庫少"
+
+  
 }
