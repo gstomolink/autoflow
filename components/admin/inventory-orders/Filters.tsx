@@ -1,6 +1,10 @@
 'use client';
 
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 export default function Filters() {
+  const { t } = useAdminI18n();
+
   return (
     <div className="bg-white p-4 rounded-xl shadow mb-6">
       <div className="flex flex-wrap gap-3 items-center justify-between">
@@ -27,9 +31,10 @@ export default function Filters() {
 
         {/* RIGHT */}
         <div className="flex gap-2">
-          <button className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-4 py-2 rounded cursor-pointer">
-             Search
+          <button className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600">
+            {t("actionSearch") || "Search"}
           </button>
+          
 
         </div>
       </div>

@@ -1,16 +1,20 @@
 'use client';
 
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 export default function SettingsTabs({ active, setActive }: any) {
+  const { t } = useAdminI18n();
+
   const menu = [
-    { key: "general", label: "General" },
-    { key: "features", label: "Feature Controls" },
-    { key: "inventory", label: "Inventory" },
-    { key: "auto", label: "Auto Order" },
-    { key: "warehouse", label: "Warehouse" },
-    { key: "supplier", label: "Supplier" },
-    { key: "notification", label: "Notification" },
-    { key: "security", label: "Security" },
-    { key: "system", label: "System" },
+    { key: "general", label: t("settingsGeneral") },
+    { key: "features", label: t("settingsFeatures") },
+    { key: "inventory", label: t("settingsInventory") },
+    { key: "auto", label: t("settingsAutoOrder") },
+    { key: "warehouse", label: t("settingsWarehouse") },
+    { key: "supplier", label: t("settingsSupplier") },
+    { key: "notification", label: t("settingsNotification") },
+    { key: "security", label: t("settingsSecurity") },
+    { key: "system", label: t("settingsSystem") },
   ];
 
   return (

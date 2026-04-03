@@ -86,17 +86,17 @@ export default function RecipesTable({ filters }: any) {
   return (
     <div>
 
-      {/* 1️⃣ Add Recipe Button */}
+      {/* Add Recipe Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={()=>setAdd(true)}
-          className="bg-sky-500 text-white px-4 py-2 rounded"
+          className="bg-sky-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-sky-600 transition-colors cursor-pointer"
         >
           + Add Recipe
         </button>
       </div>
 
-      {/* 2️⃣ SEARCH BAR */}
+      {/*  SEARCH BAR */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
         <input
           type="text"
@@ -108,7 +108,7 @@ export default function RecipesTable({ filters }: any) {
         <select
           value={filters.category}
           onChange={(e)=>filters.setCategory(e.target.value)}
-          className="border px-3 py-2 rounded-lg"
+          className="border border-gray-300 px-3 py-2 rounded-lg cursor-pointer"
         >
           <option value="">All Categories</option>
           <option value="Burger">Burger</option>
@@ -119,15 +119,15 @@ export default function RecipesTable({ filters }: any) {
 
         <button
           onClick={()=>{}}
-          className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600"
+          className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600 cursor-pointer"
         >
           Search
         </button>
       </div>
 
-      {/* 3️⃣ RECIPES TABLE */}
+      {/* RECIPES TABLE */}
       <table className="w-full bg-white shadow rounded">
-        <thead className="bg-gray-100">
+        <thead className="bg-white text-left">
           <tr>
             <th className="p-2">Recipe ID</th>
             <th className="p-2">Product Name</th>
@@ -141,7 +141,7 @@ export default function RecipesTable({ filters }: any) {
 
         <tbody>
           {filtered.map((r, i)=>(
-            <tr key={i} className="border-t">
+            <tr key={i} className="border-t border-gray-300">
               <td className="p-2">{r.id}</td>
               <td className="p-2">{r.name}</td>
               <td className="p-2">{r.category}</td>
@@ -152,9 +152,9 @@ export default function RecipesTable({ filters }: any) {
               <td className="p-2">{r.updated}</td>
 
               <td className="p-2 flex gap-2">
-                <button onClick={()=>setView(r)} className="bg-blue-500 text-white px-2 py-1 rounded">View</button>
-                <button onClick={()=>setEdit(r)} className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-                <button className="bg-rose-500 text-white px-2 py-1 rounded">Delete</button>
+                <button onClick={()=>setView(r)} className="bg-sky-500 text-white hover:bg-sky-600 cursor-pointer px-2 py-1 rounded">View</button>
+                <button onClick={()=>setEdit(r)} className="bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer px-2 py-1 rounded">Edit</button>
+                <button className="bg-rose-500 text-white hover:bg-rose-600 cursor-pointer px-2 py-1 rounded">Delete</button>
               </td>
             </tr>
           ))}

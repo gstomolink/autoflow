@@ -43,24 +43,28 @@ export default function SupplierTable() {
 
   return (
     <>
-      {/* SEARCH LINE */}
-      <div className="flex justify-between items-center mb-4">
-        <input
-          placeholder="Search suppliers..."
-          onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
-        />
+{/* SEARCH LINE */}
+<div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+  <div className="flex justify-between items-center">
+    
+    <input
+      placeholder="Search suppliers..."
+      onChange={(e) => setSearch(e.target.value)}
+      className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72"
+    />
 
-        <button className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
-          {t("actionSearch")}
-        </button>
-      </div>
+    <button className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors">
+      {t("actionSearch")}
+    </button>
+
+  </div>
+</div>
 
       {/* TABLE */}
       <table className="w-full bg-white rounded shadow text-gray-700">
-        <thead className="bg-white">
+        <thead className="bg-white text-left">
           <tr>
-            <th className="p-3">{t("tableSupplierID")}</th>
+            <th className="p-3">{t("tableSupplierId")}</th>
             <th className="p-3">{t("tableName")}</th>
             <th className="p-3">{t("tableContact")}</th>
             <th className="p-3">{t("tableEmail")}</th>

@@ -14,7 +14,7 @@ type AdminI18nContextType = {
   t: (key: TranslationKey) => string;
 };
 
-const translations: Record<Language, Record<TranslationKey, string>> = {
+const translations: Record<Language, Partial<Record<TranslationKey, string>>> = {
   en: enTranslations,
   ja: jaTranslations,
 };
@@ -40,7 +40,8 @@ export function AdminI18nProvider({ children }: { children: React.ReactNode }) {
     () => ({
       language,
       setLanguage: handleSetLanguage,
-      t: (key) => translations[language][key] ?? translations.en[key],
+      t: (key) =>
+        translations[language][key] ?? translations.en[key] ?? "",
     }),
     [language]
   );
