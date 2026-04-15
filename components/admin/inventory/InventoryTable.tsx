@@ -1,68 +1,95 @@
 'use client';
 
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import StockAdjustmentModal from "./StockAdjustmentModal";
 import StockTransferModal from "./StockTransferModal";
 import AddStockModal from "./AddStockModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { apiFetch } from "@/lib/api";
 
-const data = [
-  {
-    product: "Laptop",
-    warehouse: "Main Warehouse",
-    stock: 50,
-    reserved: 10,
-    reorder: 20,
-  },
-  {
-    product: "Headphones",
-    warehouse: "Galle Branch",
-    stock: 15,
-    reserved: 5,
-    reorder: 20,
-  },
-];
+type Row = {
+  id: number;
+  productName: string;
+  warehouseName: string;
+  quantityOnHand: number;
+  reservedQuantity: number;
+  available: number;
+  reorderPoint: number;
+  status: string;
+};
 
-export default function InventoryTable({ onlyLow }: any) {
+export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const { t } = useAdminI18n();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [warehouse, setWarehouse] = useState("");
   const [threshold, setThreshold] = useState(20);
+  const [rows, setRows] = useState<Row[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [showAdjust, setShowAdjust] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
 
+  const load = useCallback(async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const r = await apiFetch("/inventory-stock");
+      if (!r.ok) throw new Error(await r.text());
+      setRows(await r.json());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
   const filtered = useMemo(() => {
-    let d = data.map((item) => ({
+    let d = rows.map((item) => ({
       ...item,
-      available: item.stock - item.reserved,
-      status: item.stock < threshold ? "Low Stock" : "In Stock",
+      status:
+        item.quantityOnHand < threshold ? "Low Stock" : "In Stock",
     }));
 
     if (onlyLow) {
-      d = d.filter((i) => i.stock < threshold);
+      d = d.filter((i) => i.quantityOnHand < threshold);
     }
 
     if (search) {
       d = d.filter((i) =>
-        i.product.toLowerCase().includes(search.toLowerCase())
+        i.productName.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (warehouse) {
-      d = d.filter((i) => i.warehouse === warehouse);
+      d = d.filter((i) => i.warehouseName === warehouse);
     }
 
     return d;
-  }, [search, warehouse, threshold, onlyLow]);
+  }, [search, warehouse, threshold, onlyLow, rows]);
+
+  const warehouses = useMemo(() => {
+    const s = new Set(rows.map((r) => r.warehouseName));
+    return [...s];
+  }, [rows]);
+
+  if (loading) {
+    return <p className="text-slate-500">Loading…</p>;
+  }
 
   return (
   <div>
-    {/* ACTION BUTTONS */}
+    {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
     <div className="flex justify-end mb-4 gap-2">
       <button
+        type="button"
         onClick={() => setShowAdd(true)}
         className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
@@ -70,6 +97,7 @@ export default function InventoryTable({ onlyLow }: any) {
       </button>
 
       <button
+        type="button"
         onClick={() => setShowAdjust(true)}
         className="w-44 bg-slate-200 text-slate-700 px-4 py-2 rounded cursor-pointer hover:bg-slate-300 transition-colors"
       >
@@ -77,6 +105,7 @@ export default function InventoryTable({ onlyLow }: any) {
       </button>
 
       <button
+        type="button"
         onClick={() => setShowTransfer(true)}
         className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
       >
@@ -84,14 +113,13 @@ export default function InventoryTable({ onlyLow }: any) {
       </button>
     </div>
 
-    {/* SEARCH + FILTERS + SEARCH BUTTON */}
     <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-      {/* LEFT SIDE */}
       <div className="flex gap-2 flex-wrap">
         <input
           placeholder="Search product..."
           className="border border-gray-300 text-gray-700 px-3 py-2 rounded cursor-pointer"
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onBlur={() => setSearch(searchInput)}
         />
 
         <select
@@ -99,8 +127,9 @@ export default function InventoryTable({ onlyLow }: any) {
           className="border border-gray-300 text-gray-700 px-3 py-2 rounded cursor-pointer"
         >
           <option value="">All Warehouses</option>
-          <option>Main Warehouse</option>
-          <option>Galle Branch</option>
+          {warehouses.map((w) => (
+            <option key={w} value={w}>{w}</option>
+          ))}
         </select>
 
         <input
@@ -112,20 +141,17 @@ export default function InventoryTable({ onlyLow }: any) {
         />
       </div>
 
-      {/* SEARCH BUTTON */}
-      <button className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
+      <button type="button" onClick={() => void load()} className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
         {t("actionSearch")}
       </button>
     </div>
 
-    {/* EXPORT */}
     <div className="mb-4">
-      <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors">
+      <button type="button" className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors">
         {t("actionExportCsv")}
       </button>
     </div>
 
-    {/* TABLE */}
     <table className="w-full bg-white rounded shadow text-gray-700 text-left">
       <thead className="bg-white">
         <tr>
@@ -140,17 +166,17 @@ export default function InventoryTable({ onlyLow }: any) {
       </thead>
 
       <tbody>
-        {filtered.map((i, idx) => (
+        {filtered.map((i) => (
           <tr
-            key={idx}
+            key={i.id}
             className={`border-t border-gray-300 ${
               i.status === "Low Stock" ? "bg-red-100" : ""
             }`}
           >
-            <td className="p-3">{i.product}</td>
-            <td className="p-3">{i.warehouse}</td>
-            <td className="p-3">{i.stock}</td>
-            <td className="p-3">{i.reserved}</td>
+            <td className="p-3">{i.productName}</td>
+            <td className="p-3">{i.warehouseName}</td>
+            <td className="p-3">{i.quantityOnHand}</td>
+            <td className="p-3">{i.reservedQuantity}</td>
             <td className="p-3">{i.available}</td>
             <td className="p-3">{threshold}</td>
             <td className="p-3 font-bold">
@@ -161,8 +187,7 @@ export default function InventoryTable({ onlyLow }: any) {
       </tbody>
     </table>
 
-    {/* MODALS */}
-    {showAdd && <AddStockModal onClose={() => setShowAdd(false)} />}
+    {showAdd && <AddStockModal onClose={() => { setShowAdd(false); void load(); }} />}
     {showAdjust && <StockAdjustmentModal onClose={() => setShowAdjust(false)} />}
     {showTransfer && <StockTransferModal onClose={() => setShowTransfer(false)} />}
   </div>

@@ -10,6 +10,7 @@ export default function WarehousePage() {
   const { t } = useAdminI18n();
   const [filters, setFilters] = useState<any>({});
   const [showAdd, setShowAdd] = useState(false);
+  const [tableKey, setTableKey] = useState(0);
 
   return (
     <div>
@@ -31,10 +32,13 @@ export default function WarehousePage() {
       </div>
 
       <WarehouseFilters onFilter={setFilters} />
-      <WarehouseTable filters={filters} />
+      <WarehouseTable key={tableKey} filters={filters} />
 
       {showAdd && (
-        <AddWarehouseModal onClose={() => setShowAdd(false)} />
+        <AddWarehouseModal
+          onClose={() => setShowAdd(false)}
+          onSaved={() => setTableKey((k) => k + 1)}
+        />
       )}
     </div>
   );

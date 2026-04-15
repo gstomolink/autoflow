@@ -1,58 +1,32 @@
 'use client';
 
-import { useState } from "react";
-
-// USERS COMPONENTS
 import UsersTable from "@/components/admin/users/UsersTable";
-
-// ROLES COMPONENTS
-import RolesTable from "@/components/admin/roles/RolesTable";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
+import { getScopedShopId } from "@/lib/shop-scope";
 
 export default function UsersRolesPage() {
-  const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
+  const user = getStoredUser();
+  const isSuper = user?.role === USER_ROLES.SUPER_ADMIN;
+  const scope = isSuper ? getScopedShopId() : user?.shopId ?? null;
 
   return (
     <div className="text-gray-700">
-
-      {/* HEADER */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Users & Roles</h1>
+        <h1 className="text-3xl font-bold">Users</h1>
         <p className="text-gray-500">
-          Manage system users, roles, and permissions
+          System users (roles are fixed in the database: 1 Super Admin, 2 Store Admin, 3 Store Staff).
+          {isSuper
+            ? " As super admin, the list shows users for the shop you selected (same scope as categories)."
+            : null}
         </p>
+        {scope ? (
+          <p className="text-sm text-slate-600 mt-2">
+            <span className="font-medium text-slate-700">Shop scope:</span>{" "}
+            <span className="font-mono">{scope}</span>
+          </p>
+        ) : null}
       </div>
-
-      {/* TABS */}
-<div className="flex gap-6 mb-6 border-b border-gray-200">
-  <button
-    onClick={() => setActiveTab("users")}
-    className={`pb-2 cursor-pointer ${
-      activeTab === "users"
-        ? "text-sky-500 border-b-2 border-sky-500 font-medium"
-        : "text-gray-500 hover:text-sky-500"
-    }`}
-  >
-    Users
-  </button>
-
-  <button
-    onClick={() => setActiveTab("roles")}
-    className={`pb-2 cursor-pointer ${
-      activeTab === "roles"
-        ? "text-sky-500 border-b-2 border-sky-500 font-medium"
-        : "text-gray-500 hover:text-sky-500"
-    }`}
-  >
-    Roles
-  </button>
-</div>
-
-      {/* CONTENT */}
-      <div>
-        {activeTab === "users" && <UsersTable />}
-        {activeTab === "roles" && <RolesTable />}
-      </div>
-
+      <UsersTable />
     </div>
   );
 }

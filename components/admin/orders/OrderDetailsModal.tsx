@@ -1,104 +1,69 @@
 'use client';
 
-type Props = {
-  order: any;
-  onClose: () => void;
+type Line = {
+  id: number;
+  quantity: number;
+  unitPrice: string;
+  lineTotal: string;
+  product?: { name: string; sku: string };
 };
 
-export default function OrderDetailsModal({ order, onClose }: Props) {
-  const items = [
-    { name: "Wireless Mouse", qty: 1, price: 40 },
-    { name: "Keyboard", qty: 1, price: 80 },
-    { name: "Headset", qty: 1, price: 120 },
-  ];
+type Order = {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  status: string;
+  paymentStatus: string;
+  totalAmount: string;
+  lines?: Line[];
+};
 
-  const subtotal = 240;
-  const discount = 20;
-  const tax = 10;
-  const total = subtotal - discount + tax;
+export default function OrderDetailsModal({
+  order,
+  onClose,
+}: {
+  order: Order;
+  onClose: () => void;
+}) {
+  const lines = order.lines ?? [];
+  const total = Number(order.totalAmount);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <div className="bg-white rounded-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-black mb-4">
-          Order Details — {order.id}
+          Order Details — {order.orderNumber}
         </h2>
 
-        {/* Order Items */}
+        <div className="text-sm text-gray-700 space-y-1 mb-4">
+          <p><b>Customer:</b> {order.customerName}</p>
+          <p><b>Email:</b> {order.customerEmail ?? "—"}</p>
+          <p><b>Phone:</b> {order.customerPhone ?? "—"}</p>
+          <p><b>Status:</b> {order.status}</p>
+          <p><b>Payment:</b> {order.paymentStatus}</p>
+        </div>
+
         <div className="mb-6">
           <h3 className="font-semibold mb-2 text-black">Order Items</h3>
           <div className="space-y-2">
-            {items.map((item, i) => (
-              <div key={i} className="flex justify-between bg-gray-50 p-2 rounded text-gray-700">
-                <span>{item.name} × {item.qty}</span>
-                <span>${item.price}</span>
+            {lines.map((item) => (
+              <div key={item.id} className="flex justify-between bg-gray-50 p-2 rounded text-gray-700">
+                <span>{item.product?.name ?? "Product"} × {item.quantity}</span>
+                <span>${Number(item.lineTotal).toFixed(2)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Pricing */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2 text-black">Pricing</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between text-gray-700">
-              <span>Subtotal</span><span>${subtotal}</span>
-            </div>
-            <div className="flex justify-between text-gray-700">
-              <span>Discount</span><span>-${discount}</span>
-            </div>
-            <div className="flex justify-between text-gray-700">
-              <span>Tax</span><span>${tax}</span>
-            </div>
-            <div className="flex justify-between font-bold text-black">
-              <span>Total</span><span>${total}</span>
-            </div>
-          </div>
+        <div className="flex justify-between font-semibold text-lg">
+          <span>Total</span>
+          <span>${total.toFixed(2)}</span>
         </div>
 
-        {/* Payment */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2 text-black">Payment Details</h3>
-          <p className="text-gray-700">Method: Credit Card</p>
-          <p className="text-gray-700">Status: Paid</p>
-          <p className="text-gray-700">Transaction ID: TXN123456</p>
-        </div>
-
-        {/* Customer */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2 text-black">Customer Info</h3>
-          <p className="text-gray-700">Name: {order.customer}</p>
-          <p className="text-gray-700">Email: john@example.com</p>
-          <p className="text-gray-700">Phone: +1 234 567 890</p>
-          <p className="text-gray-700">Address: 123 Main Street, NY</p>
-        </div>
-
-        {/* Timeline */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2 text-black">Order Timeline</h3>
-          <ul className="list-disc list-inside text-sm text-gray-700">
-            <li>Order Placed</li>
-            <li>Payment Confirmed</li>
-            <li>Processing</li>
-            <li>Shipped</li>
-          </ul>
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-3">
-          <button className="px-4 py-2 bg-slate-200 text-slate-700 border border-slate-300 rounded hover:bg-slate-300 transition-colors">
-            Refund
-          </button>
-          <button
-            onClick={() => window.print()}
-            className="px-4 py-2 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors"
-          >
-            Print Invoice
-          </button>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-slate-200 text-slate-600 border border-slate-300 rounded hover:bg-slate-300 transition-colors"
-          >
+        <div className="flex justify-end mt-6">
+          <button type="button" onClick={onClose} className="px-4 py-2 bg-sky-500 text-sky-50 rounded">
             Close
           </button>
         </div>

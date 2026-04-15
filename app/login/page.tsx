@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { envConfig } from "@/config/env";
+import { getStoredUser, isLoggedIn, resolveAfterLoginPath } from "@/lib/auth";
 
 export default function LoginPage() {
   const [userId, setUserId] = useState("");
@@ -11,6 +12,16 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (!isLoggedIn()) return;
+    const user = getStoredUser();
+    if (user) {
+      const next = searchParams.get("next");
+      router.replace(resolveAfterLoginPath(next, user.role));
+    }
+  }, [router, searchParams]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +48,10 @@ export default function LoginPage() {
       const data = await response.json();
       localStorage.setItem("autoflow_access_token", data.accessToken);
       localStorage.setItem("autoflow_user", JSON.stringify(data.user));
-      router.push("/admin/dashboard");
+      const next = searchParams.get("next");
+      router.push(
+        resolveAfterLoginPath(next, data.user.role as number),
+      );
     } catch {
       setErrorMessage("Invalid credentials. Check user id, password, and shop id.");
     } finally {
