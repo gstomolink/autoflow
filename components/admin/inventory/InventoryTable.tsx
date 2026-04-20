@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useMemo } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+
 import StockAdjustmentModal from "./StockAdjustmentModal";
 import StockTransferModal from "./StockTransferModal";
 import AddStockModal from "./AddStockModal";
 import ViewStockModal from "./ViewStockModal";
 import EditStockModal from "./EditStockModal";
 
-// ✅ TYPE (IMPORTANT FIX)
 type StockItem = {
   id: string;
   name: string;
@@ -34,6 +35,8 @@ const initialData: StockItem[] = [
 
 export default function InventoryTable({ onlyLow }: any) {
 
+  const { t } = useAdminI18n();
+
   const [data, setData] = useState<StockItem[]>(initialData);
 
   const [search, setSearch] = useState("");
@@ -49,16 +52,13 @@ export default function InventoryTable({ onlyLow }: any) {
   const [showTransfer, setShowTransfer] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
 
-  //  FILTER FIX
   const filtered = useMemo(() => {
     let d = data.map((i) => ({
       ...i,
       status: i.stock <= threshold,
     }));
 
-    if (onlyLow) {
-      d = d.filter((i) => i.stock <= threshold);
-    }
+    if (onlyLow) d = d.filter((i) => i.stock <= threshold);
 
     if (search) {
       d = d.filter(
@@ -75,9 +75,8 @@ export default function InventoryTable({ onlyLow }: any) {
     return d;
   }, [data, search, threshold, onlyLow, warehouse]);
 
-  // DELETE
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure to delete?")) {
+    if (confirm(t("confirmDelete" as any))) {
       setData(prev => prev.filter(i => i.id !== id));
     }
   };
@@ -87,16 +86,22 @@ export default function InventoryTable({ onlyLow }: any) {
 
       {/* ACTION BUTTONS */}
       <div className="flex justify-end gap-2 mb-4">
-        <button onClick={()=>setShowAdd(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600"> Add Stock</button>
-        <button onClick={()=>setShowAdjust(true)} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"> Adjust Stock</button>
-        <button onClick={()=>setShowTransfer(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600"> Transfer</button>
+        <button onClick={()=>setShowAdd(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600">
+          {t("inventoryAddStock")}
+        </button>
+        <button onClick={()=>setShowAdjust(true)} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
+          {t("inventoryAdjustStock")}
+        </button>
+        <button onClick={()=>setShowTransfer(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600">
+          {t("inventoryTransfer")}
+        </button>
       </div>
 
       {/* FILTER */}
       <div className="bg-white p-4 rounded-xl shadow mb-6 flex items-center gap-4 flex-wrap">
 
         <input
-          placeholder="Search Ingredient / ID..."
+          placeholder={t("inventorySearchPlaceholder")}
           value={search}
           onChange={(e)=>setSearch(e.target.value)}
           className="border border-gray-300 px-3 py-2 rounded w-60"
@@ -107,7 +112,7 @@ export default function InventoryTable({ onlyLow }: any) {
           onChange={(e)=>setWarehouse(e.target.value)}
           className="border border-gray-300 px-3 py-2 rounded"
         >
-          <option value="">All Warehouses</option>
+          <option value="">{t("inventoryAllWarehouses")}</option>
           <option>Main Store</option>
           <option>Galle Branch</option>
           <option>Matara Depot</option>
@@ -115,7 +120,7 @@ export default function InventoryTable({ onlyLow }: any) {
         </select>
 
         <div className="flex items-center gap-2">
-          <label>Low Stock:</label>
+          <label>{t("inventoryLowStockLabel")}</label>
           <input
             type="number"
             value={threshold}
@@ -125,82 +130,60 @@ export default function InventoryTable({ onlyLow }: any) {
         </div>
 
         <button className="ml-auto bg-sky-500 text-white px-5 py-2 rounded hover:bg-sky-600">
-          Search
+          {t("actionSearch")}
         </button>
       </div>
 
       {/* TABLE */}
-      <table className="w-full bg-white shadow rounded text-gray-700">
-  <thead className="bg-gray-100 text-left">
-    <tr>
-      <th className="p-2 border-t border-gray-300">ID</th>
-      <th className="p-2 border-t border-gray-300">Ingredient</th>
-      <th className="p-2 border-t border-gray-300">Warehouse</th>
-      <th className="p-2 border-t border-gray-300">Stock</th>
-      <th className="p-2 border-t border-gray-300">Unit</th> 
-      <th className="p-2 border-t border-gray-300">Cost</th>   
-      <th className="p-2 border-t border-gray-300">Supplier</th>
-      <th className="p-2 border-t border-gray-300">Expiry</th>
-      <th className="p-2 border-t border-gray-300">Status</th>
-      <th className="p-2 border-t border-gray-300">Actions</th>
-    </tr>
-  </thead>
+      <table className="w-full bg-white rounded shadow text-gray-700">
+        <thead className="bg-white text-left">
+          <tr>
+            <th className="p-2 border-t border-gray-300">{t("tableProductId")}</th>
+            <th className="p-2 border-t border-gray-300">Ingredient</th>
+            <th className="p-2 border-t border-gray-300">{t("tableWarehouse")}</th>
+            <th className="p-2 border-t border-gray-300">{t("tableStock")}</th>
+            <th className="p-2 border-t border-gray-300">Unit</th>
+            <th className="p-2 border-t border-gray-300">{t("tablePrice")}</th>
+            <th className="p-2 border-t border-gray-300">{t("menuSuppliers")}</th>
+            <th className="p-2 border-t border-gray-300">Expiry</th>
+            <th className="p-2 border-t border-gray-300">{t("tableStatus")}</th>
+            <th className="p-2 border-t border-gray-300">{t("tableActions")}</th>
+          </tr>
+        </thead>
 
-  <tbody>
-    {filtered.map((i) => (
-      <tr key={i.id} className={`border-t border-gray-300 ${i.status ? "bg-red-100" : ""}`}>
-        <td className="p-2 border-t border-gray-300">{i.id}</td>
-        <td className="p-2 border-t border-gray-300">{i.name}</td>
-        <td className="p-2 border-t border-gray-300">{i.warehouse}</td>
-        <td className="p-2 border-t border-gray-300">{i.stock}</td>
-        <td className="p-2 border-t border-gray-300">{i.unit}</td>   
-        <td className="p-2 border-t border-gray-300">Rs. {i.cost}</td> 
-        <td className="p-2 border-t border-gray-300">{i.supplier}</td>
-        <td className="p-2 border-t border-gray-300">{i.expiry}</td>
-        <td className="p-2 border-t border-gray-300 font-bold">
-          {i.status ? "Low Stock" : "OK"}
-        </td>
-        <td className="p-2 border-t border-gray-300 flex gap-2">
-          <button
-            onClick={() => { setSelectedItem(i); setShowView(true); }}
-            className=" px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer"
-          >
-            View
-          </button>
-          <button
-            onClick={() => { setSelectedItem(i); setShowEdit(true); }}
-            className=" px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors cursor-pointer"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDelete(i.id)}
-            className=" px-2 py-1 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors cursor-pointer"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+        <tbody>
+          {filtered.map((i) => (
+            <tr key={i.id} className={`border-t border-gray-300 ${i.status ? "bg-red-100" : ""}`}>
+              <td className="p-2 border-t border-gray-300">{i.id}</td>
+              <td className="p-2 border-t border-gray-300">{i.name}</td>
+              <td className="p-2 border-t border-gray-300">{i.warehouse}</td>
+              <td className="p-2 border-t border-gray-300">{i.stock}</td>
+              <td className="p-2 border-t border-gray-300">{i.unit}</td>
+              <td className="p-2 border-t border-gray-300">Rs. {i.cost}</td>
+              <td className="p-2 border-t border-gray-300">{i.supplier}</td>
+              <td className="p-2 border-t border-gray-300">{i.expiry}</td>
+              <td className="p-2 border-t border-gray-300 font-bold">
+                {i.status ? t("inventoryLowStockLabel") : "OK"}
+              </td>
+              <td className="p-2 border-t border-gray-300 flex gap-2">
+                <button onClick={() => { setSelectedItem(i); setShowView(true); }} className="px-2 py-1 bg-sky-500 text-white rounded">
+                  {t("actionView")}
+                </button>
+                <button onClick={() => { setSelectedItem(i); setShowEdit(true); }} className="px-2 py-1 bg-gray-200 rounded">
+                  {t("actionEdit")}
+                </button>
+                <button onClick={() => handleDelete(i.id)} className="px-2 py-1 bg-rose-500 text-white rounded">
+                  {t("actionDelete")}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* MODALS */}
       {showView && selectedItem && <ViewStockModal data={selectedItem} onClose={()=>setShowView(false)} />}
-      
-      {showEdit && selectedItem && (
-        <EditStockModal
-          data={selectedItem}
-          onClose={()=>setShowEdit(false)}
-          onSave={(updated: StockItem)=>{
-            setData(prev =>
-              prev.map(i => i.id === updated.id ? updated : i)
-            );
-            setShowEdit(false);
-          }}
-        />
-      )}
-
+      {showEdit && selectedItem && <EditStockModal data={selectedItem} onClose={()=>setShowEdit(false)} onSave={(updated: StockItem)=>{ setData(prev => prev.map(i => i.id === updated.id ? updated : i)); setShowEdit(false); }} />}
       {showAdd && <AddStockModal onClose={()=>setShowAdd(false)} />}
       {showAdjust && <StockAdjustmentModal onClose={()=>setShowAdjust(false)} />}
       {showTransfer && <StockTransferModal onClose={()=>setShowTransfer(false)} />}

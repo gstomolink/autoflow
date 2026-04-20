@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 type ProductItem = {
   name: string;
@@ -28,28 +29,20 @@ const initialOrders: Order[] = [
       { name: "Chicken", quantity: 50, unit: "kg", cost: 900 },
     ],
   },
-  {
-    orderId: "ORD002",
-    supplierId: "SUP002",
-    supplierName: "XYZ Traders",
-    createdDate: "2026-03-28",
-    items: [
-      { name: "Sugar", quantity: 40, unit: "kg", cost: 200 },
-      { name: "Salt", quantity: 30, unit: "kg", cost: 100 },
-    ],
-  },
 ];
 
 export default function AutomatedOrdersTable() {
+
+  const { t } = useAdminI18n();
+
   const [orders, setOrders] = useState(initialOrders);
   const [viewOrder, setViewOrder] = useState<Order | null>(null);
   const [proceedOrder, setProceedOrder] = useState<Order | null>(null);
-  const [modalOrder, setModalOrder] = useState<Order | null>(null); // local copy
+  const [modalOrder, setModalOrder] = useState<Order | null>(null);
 
-  // Copy order into modal when opened
   useEffect(() => {
     if (proceedOrder) {
-      setModalOrder(JSON.parse(JSON.stringify(proceedOrder))); // deep copy
+      setModalOrder(JSON.parse(JSON.stringify(proceedOrder)));
     }
   }, [proceedOrder]);
 
@@ -60,14 +53,19 @@ export default function AutomatedOrdersTable() {
 
   const handleRemoveItem = (index: number) => {
     if (!modalOrder) return;
-    setModalOrder(prev => prev ? { ...prev, items: prev.items.filter((_, i) => i !== index) } : null);
+    setModalOrder(prev => prev ? {
+      ...prev,
+      items: prev.items.filter((_, i) => i !== index)
+    } : null);
   };
 
   const handleUpdateQuantity = (index: number, qty: number) => {
     if (!modalOrder) return;
     setModalOrder(prev => prev ? {
       ...prev,
-      items: prev.items.map((item, i) => i === index ? { ...item, quantity: qty } : item)
+      items: prev.items.map((item, i) =>
+        i === index ? { ...item, quantity: qty } : item
+      )
     } : null);
   };
 
@@ -76,22 +74,31 @@ export default function AutomatedOrdersTable() {
 
   const handleProceed = () => {
     if (!modalOrder) return;
-    setOrders(prev => prev.map(o => o.orderId === modalOrder.orderId ? modalOrder : o));
-    alert(`Order Placed Successfully!\nSupplier: ${modalOrder.supplierName}\nTotal Cost: Rs:${calculateTotal(modalOrder.items)}`);
+
+    setOrders(prev =>
+      prev.map(o => o.orderId === modalOrder.orderId ? modalOrder : o)
+    );
+
+    alert(
+      `${t("menuSuppliers") || "Supplier"}: ${modalOrder.supplierName}\n`
+    );
+
     setProceedOrder(null);
     setModalOrder(null);
   };
 
   return (
     <div className="text-gray-700">
-      <table className="w-full bg-white rounded shadow text-gray-700">
-        <thead className="bg-gray-100">
+
+      {/* TABLE */}
+      <table className="w-full bg-white rounded shadow">
+        <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-2 border-t border-gray-300">Automate Order ID</th>
-            <th className="p-2 border-t border-gray-300">Supplier ID</th>
-            <th className="p-2 border-t border-gray-300">No of Items</th>
-            <th className="p-2 border-t border-gray-300">Order Created Date</th>
-            <th className="p-2 border-t border-gray-300">Actions</th>
+            <th className="p-2">{t("tableAutomateOrderId") || "Automate Order ID"}</th>
+            <th className="p-2">{t("tableSupplierId") || "Supplier ID"}</th>
+            <th className="p-2">{t("tableNoOfItems") || "No of Items"}</th>
+            <th className="p-2">{t("tableOrderCreatedDate") || "Order Created Date"}</th>
+            <th className="p-2">{t("tableActions") || "Actions"}</th>
           </tr>
         </thead>
         <tbody>
@@ -102,17 +109,19 @@ export default function AutomatedOrdersTable() {
               <td className="p-2 border-t border-gray-300">{order.items.length}</td>
               <td className="p-2 border-t border-gray-300">{order.createdDate}</td>
               <td className="p-2 border-t border-gray-300 flex gap-2">
+                
                 <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded"
                   onClick={() => setViewOrder(order)}
+                  className="px-3 py-1 bg-sky-500 text-white hover:bg-sky-600 rounded"
                 >
-                  View
+                  {t("actionView") || "View"}
                 </button>
+
                 <button
                   className="bg-green-500 text-white px-2 py-1 rounded"
                   onClick={() => setProceedOrder(order)}
                 >
-                  Proceed
+                  {t("actionProceed") || "Proceed"}
                 </button>
               </td>
             </tr>

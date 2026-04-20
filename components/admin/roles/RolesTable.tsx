@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import RoleFormModal from "./RoleFormModal";
 import ViewPermissionsModal from "./ViewPermissionsModal";
 
@@ -12,6 +13,7 @@ const roles = [
 export default function RolesTable() {
   const [add, setAdd] = useState(false);
   const [view, setView] = useState<any>(null);
+  const { t } = useAdminI18n();
 
   return (
     <div>
@@ -22,18 +24,18 @@ export default function RolesTable() {
           onClick={() => setAdd(true)}
           className="bg-sky-500 text-white px-4 py-2 rounded"
         >
-          + Create Role
+          + {t("rolesCreateRole")}
         </button>
       </div>
 
       {/* TABLE */}
       <table className="w-full bg-white shadow rounded text-gray-700">
-        <thead className="bg-gray-100">
+        <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-2">Role</th>
-            <th className="p-2">Users</th>
-            <th className="p-2">Created</th>
-            <th className="p-2">Actions</th>
+            <th className="p-2">{t("rolesColumnRole")}</th>
+            <th className="p-2">{t("rolesColumnUsers")}</th>
+            <th className="p-2">{t("rolesColumnCreated")}</th>
+            <th className="p-2">{t("rolesColumnActions")}</th>
           </tr>
         </thead>
 
@@ -44,18 +46,21 @@ export default function RolesTable() {
               <td className="p-2">{r.users}</td>
               <td className="p-2">{r.date}</td>
 
-              <td className="p-2 flex gap-2">
+              <td className="p-2 flex gap-2 flex-wrap">
 
-                <button onClick={()=>setView(r)} className="bg-sky-500 text-sky-50 px-3 py-1 rounded">
-                  View Permissions
+                <button
+                  onClick={() => setView(r)}
+                  className="bg-sky-500 text-sky-50 px-3 py-1 rounded"
+                >
+                  {t("rolesViewPermissions")}
                 </button>
 
                 <button className="bg-gray-500 text-gray-50 px-3 py-1 rounded">
-                  Edit
+                  {t("rolesEdit")}
                 </button>
 
                 <button className="bg-rose-500 text-white px-3 py-1 rounded">
-                  Delete
+                  {t("rolesDelete")}
                 </button>
 
               </td>
@@ -64,9 +69,8 @@ export default function RolesTable() {
         </tbody>
       </table>
 
-      {add && <RoleFormModal onClose={()=>setAdd(false)} />}
-      {view && <ViewPermissionsModal data={view} onClose={()=>setView(null)} />}
-
+      {add && <RoleFormModal onClose={() => setAdd(false)} />}
+      {view && <ViewPermissionsModal data={view} onClose={() => setView(null)} />}
     </div>
   );
 }
