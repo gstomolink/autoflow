@@ -68,7 +68,7 @@ export default function SupplierTable() {
   return (
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-xl shadow-sm">
         <input
           placeholder="Search suppliers..."
           onChange={(e) => setSearch(e.target.value)}

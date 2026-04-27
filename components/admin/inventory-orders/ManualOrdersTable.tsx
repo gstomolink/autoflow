@@ -125,7 +125,7 @@ export default function ManualOrdersTable({
       </div>
 
       <table className="w-full bg-white shadow rounded text-gray-700">
-        <thead className="bg-gray-100">
+        <thead className="bg-white text-left border-b border-gray-200">
           <tr>
             <th className="p-2">Order ID</th>
             <th className="p-2">Source</th>

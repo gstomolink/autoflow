@@ -55,20 +55,98 @@ export default function AddWarehouseModal({
           </button>
         </div>
 
-        <form className="space-y-3" onSubmit={submit}>
-          <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Warehouse Name" className="w-full border border-gray-300 p-2 rounded" />
-          <input required value={code} onChange={(e) => setCode(e.target.value)} placeholder="Code (unique per shop)" className="w-full border border-gray-300 p-2 rounded" />
-          <input required value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Full Address" className="w-full border border-gray-300 p-2 rounded" />
-          <input required value={managerName} onChange={(e) => setManagerName(e.target.value)} placeholder="Manager Name" className="w-full border border-gray-300 p-2 rounded" />
-          <input required value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Manager Contact" className="w-full border border-gray-300 p-2 rounded" />
-          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-          <div className="flex justify-end mt-4 gap-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded cursor-pointer transition-colors">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-sky-500 text-sky-50 hover:bg-sky-600 rounded cursor-pointer transition-colors disabled:opacity-50">
-              {saving ? "Saving…" : "Save"}
-            </button>
-          </div>
-        </form>
+<form className="space-y-4" onSubmit={submit}>
+
+  {/* WAREHOUSE NAME */}
+  <div>
+    <label className="block text-sm text-gray-600 mb-1">
+      Warehouse Name 
+    </label>
+    <input
+      required
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+    />
+  </div>
+
+  {/* CODE */}
+  <div>
+    <label className="block text-sm text-gray-600 mb-1">
+      Warehouse Code 
+    </label>
+    <input
+      required
+      value={code}
+      onChange={(e) => setCode(e.target.value)}
+      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+    />
+  </div>
+
+  {/* ADDRESS */}
+  <div>
+    <label className="block text-sm text-gray-600 mb-1">
+      Address 
+    </label>
+    <input
+      required
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+    />
+  </div>
+
+  {/* MANAGER NAME */}
+  <div>
+    <label className="block text-sm text-gray-600 mb-1">
+      Manager Name 
+    </label>
+    <input
+      required
+      value={managerName}
+      onChange={(e) => setManagerName(e.target.value)}
+      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+    />
+  </div>
+
+  {/* CONTACT */}
+  <div>
+    <label className="block text-sm text-gray-600 mb-1">
+      Manager Contact 
+    </label>
+    <input
+      required
+      value={contactPhone}
+      onChange={(e) => setContactPhone(e.target.value)}
+      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+    />
+  </div>
+
+  {/* ERROR */}
+  {error && (
+    <p className="text-sm text-rose-600">{error}</p>
+  )}
+
+  {/* ACTIONS */}
+  <div className="flex justify-end mt-4 gap-2">
+    <button
+      type="button"
+      onClick={onClose}
+      className="px-4 py-2 border border-gray-300 text-gray-700 rounded cursor-pointer"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      disabled={saving}
+      className="px-4 py-2 bg-sky-500 text-sky-50 hover:bg-sky-600 rounded cursor-pointer disabled:opacity-50"
+    >
+      {saving ? "Saving…" : "Save"}
+    </button>
+  </div>
+
+</form>
       </div>
     </div>
   );

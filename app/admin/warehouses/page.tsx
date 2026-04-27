@@ -4,12 +4,14 @@ import { useState } from "react";
 import WarehouseTable from "@/components/admin/warehouses/WarehouseTable";
 import WarehouseFilters from "@/components/admin/warehouses/WarehouseFilters";
 import AddWarehouseModal from "@/components/admin/warehouses/AddWarehouseModal";
+import BulkImportWarehouseModal from "@/components/admin/warehouses/BulkImportWarehouseModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function WarehousePage() {
   const { t } = useAdminI18n();
   const [filters, setFilters] = useState<any>({});
   const [showAdd, setShowAdd] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
   const [tableKey, setTableKey] = useState(0);
 
   return (
@@ -23,12 +25,32 @@ export default function WarehousePage() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowAdd(true)}
-          className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg cursor-pointer hover:bg-sky-600 transition-colors"
-        >
-          {t("addWarehouse")}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowAdd(true)}
+            className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg cursor-pointer hover:bg-sky-600 transition-colors"
+          >
+            {t("addWarehouse")}
+          </button>
+
+          <button
+            onClick={() => setShowBulk(true)}
+            className="px-4 py-2 bg-transparent text-slate-600 border border-slate-400 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="w-4 h-4"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span>{t("bulkImportCsv")}</span>
+          </button>
+        </div>
       </div>
 
       <WarehouseFilters onFilter={setFilters} />
@@ -40,6 +62,10 @@ export default function WarehousePage() {
           onSaved={() => setTableKey((k) => k + 1)}
         />
       )}
+
+      {showBulk && (
+        <BulkImportWarehouseModal onClose={() => setShowBulk(false)} />
+      )}
     </div>
   );
-}
+}

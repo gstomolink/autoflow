@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AddUserModal from "./AddUserModal";
 import EditUserModal from "./EditUserModal";
 import ViewUserModal from "./ViewUserModal";
+import ResetPasswordModal from "./ResetPasswordModal";
 import { apiFetch } from "@/lib/api";
 import { roleLabel } from "@/lib/auth";
 
@@ -27,6 +28,7 @@ export default function UsersTable() {
   const [rows, setRows] = useState<ApiUser[]>([]);
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [resetUser, setResetUser] = useState<any>(null);
 
   const load = useCallback(async () => {
     setLoadError("");
@@ -82,18 +84,18 @@ export default function UsersTable() {
         </button>
       </div>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
         <div className="flex gap-2">
           <input
             placeholder="Search name, email, phone..."
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
             onChange={(e) => setSearch(e.target.value)}
           />
 
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">All Roles</option>
             <option value="Super Admin">Super Admin</option>
@@ -105,9 +107,9 @@ export default function UsersTable() {
         <button
           type="button"
           onClick={() => void load()}
-          className="bg-slate-200 text-slate-800 px-4 py-2 rounded"
+          className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
         >
-          Refresh
+          Search
         </button>
       </div>
 
@@ -115,14 +117,14 @@ export default function UsersTable() {
         <p className="text-slate-500">Loading…</p>
       ) : (
         <table className="w-full bg-white shadow rounded text-gray-700">
-          <thead className="bg-gray-100">
+          <thead className="bg-white text-left border-b border-gray-200">
             <tr>
               <th className="p-2">User ID</th>
               <th className="p-2">Name</th>
               <th className="p-2">Email</th>
               <th className="p-2">Phone</th>
               <th className="p-2">Role</th>
-              <th className="p-2">Shop</th>
+              <th className="p-2">Shop ID</th>
               <th className="p-2">Actions</th>
             </tr>
           </thead>
@@ -152,6 +154,13 @@ export default function UsersTable() {
                     className="px-3 py-1 bg-gray-500 text-gray-50 rounded"
                   >
                     Edit
+                  </button>
+
+                  <button
+                    onClick={() => setResetUser(u)}
+                    className="bg-purple-500 text-white px-2 py-1 rounded cursor-pointer"
+                  >
+                    Reset Password
                   </button>
                 </td>
               </tr>
@@ -183,6 +192,13 @@ export default function UsersTable() {
           }}
         />
       )}
+
+      {resetUser && (
+  <ResetPasswordModal
+    user={resetUser}
+    onClose={() => setResetUser(null)}
+  />
+)}
     </div>
   );
 }

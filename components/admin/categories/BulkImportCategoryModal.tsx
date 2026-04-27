@@ -1,8 +1,16 @@
 'use client';
 
+import { useState } from "react";
+
 export default function BulkImportCategoryModal({ onClose }: any) {
+  const [csvData, setCsvData] = useState<string[][]>([]);
+  const [error, setError] = useState("");
+  const [fileName, setFileName] = useState("");
+
+  const headers = ["Category ID", "Category Name", "Description", "Status"];
+
   const downloadSample = () => {
-    const csv = "Category ID,Category Name,Description,Status\n";
+    const csv = headers.join(",") + "\n" + "C001,Electronics,Electronic items,Active";
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
 
@@ -12,9 +20,52 @@ export default function BulkImportCategoryModal({ onClose }: any) {
     a.click();
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFileName(file.name);
+    setError("");
+    setCsvData([]);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const allLines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+      if (allLines.length === 0) {
+        setError("File is empty");
+        return;
+      }
+
+      const lines = allLines.map(line => line.split(",").map(cell => cell.trim()));
+      const fileHeaders = lines[0];
+      
+      const isValid = headers.every((h, i) => fileHeaders[i]?.toLowerCase() === h.toLowerCase());
+
+      if (!isValid) {
+        setError("error format not match");
+        return;
+      }
+
+      setCsvData(lines.slice(1).filter(line => line.length === headers.length));
+    };
+    reader.readAsText(file);
+  };
+
+  const handleUpload = () => {
+    if (csvData.length === 0) {
+      setError("No data to upload");
+      return;
+    }
+    // Mock upload logic
+    console.log("Uploading data:", csvData);
+    alert("Data imported successfully (mocked)");
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg">
+    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-black">
             Bulk Import Categories
@@ -61,34 +112,64 @@ export default function BulkImportCategoryModal({ onClose }: any) {
           Note: Uploaded file must follow the sample CSV structure.
         </p>
 
-        <label
-          htmlFor="categoryCsvFile"
-          className="w-64 mb-4 px-4 py-2 text-sky-50 border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-4 h-4"
-            aria-hidden="true"
+        <div className="flex flex-col gap-2 mb-4">
+          <label
+            htmlFor="categoryCsvFile"
+            className="w-64 px-4 py-2 text-sky-50 border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-          </svg>
-          <span>Choose File</span>
-        </label>
-        <input id="categoryCsvFile" type="file" accept=".csv" className="hidden" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="w-4 h-4"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
+          </label>
+          <input id="categoryCsvFile" type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
+          {error && <p className="text-rose-500 text-sm font-semibold">{error}</p>}
+        </div>
 
-        <div className="flex justify-end gap-3">
+        {csvData.length > 0 && (
+          <div className="flex-1 overflow-auto border border-gray-200 rounded-lg mb-4">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  {headers.map((h) => (
+                    <th key={h} className="p-2 border-b font-semibold text-gray-700">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {csvData.map((row, i) => (
+                  <tr key={i} className="hover:bg-gray-50 border-b last:border-0">
+                    {row.map((cell, j) => (
+                      <td key={j} className="p-2 text-gray-600">{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3 mt-auto pt-2 border-t border-gray-100">
           <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-600 border border-slate-300 hover:bg-slate-300 rounded transition-colors cursor-pointer">
             Cancel
           </button>
-          <button className="px-4 py-2 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">
+          <button 
+            onClick={handleUpload}
+            disabled={csvData.length === 0}
+            className={`px-4 py-2 rounded transition-colors cursor-pointer ${csvData.length > 0 ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+          >
             Upload
           </button>
         </div>
       </div>
     </div>
   );
-}
+}

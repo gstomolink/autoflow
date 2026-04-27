@@ -113,7 +113,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </button>
     </div>
 
-    <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+    <div className="flex justify-between items-center mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
       <div className="flex gap-2 flex-wrap">
         <input
           placeholder="Search product..."
