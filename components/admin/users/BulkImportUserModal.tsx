@@ -1,12 +1,14 @@
 'use client';
-
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 
 export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () => void, onSaved?: () => void }) {
   const [csvData, setCsvData] = useState<string[][]>([]);
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
   const [isUploaded, setIsUploaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const headers = ["fullName", "userId", "email", "phone", "password", "role", "shopId", "staffType"];
 
@@ -45,7 +47,6 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
       const lines = allLines.map(line => line.split(",").map(cell => cell.trim()));
       const fileHeaders = lines[0];
       
-      // Check if headers match (case-insensitive, trimmed)
       const isMatch = headers.length === fileHeaders.length && 
                       headers.every((h, i) => fileHeaders[i]?.toLowerCase() === h.toLowerCase());
 
@@ -65,16 +66,54 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
     reader.readAsText(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (csvData.length === 0) {
       setError("No data to upload");
       return;
     }
-    // Mock upload logic
-    console.log("Uploading users:", csvData);
-    
-    setIsUploaded(true);
-    if (onSaved) onSaved();
+
+    setLoading(true);
+    setError("");
+    let successCount = 0;
+
+    for (let i = 0; i < csvData.length; i++) {
+      const row = csvData[i];
+      const payload = {
+        fullName: row[0],
+        userId: row[1],
+        email: row[2] || undefined,
+        phone: row[3] || undefined,
+        password: row[4],
+        role: parseInt(row[5]),
+        shopId: row[6] || undefined,
+        staffType: row[7] || undefined,
+      };
+
+      try {
+        const res = await apiFetch("/users", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          successCount++;
+        } else {
+          const errText = await res.text();
+          console.error(`Failed to upload row ${i + 1}:`, errText);
+        }
+      } catch (err) {
+        console.error(`Error uploading row ${i + 1}:`, err);
+      }
+      setProgress(Math.round(((i + 1) / csvData.length) * 100));
+    }
+
+    setLoading(false);
+    if (successCount > 0) {
+      setIsUploaded(true);
+      if (onSaved) onSaved();
+    } else {
+      setError("Failed to upload any records. Check console for details.");
+    }
   };
 
   return (
@@ -115,7 +154,7 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
               className="w-64 px-4 py-2 bg-white text-slate-700 border border-slate-400 rounded mb-4 hover:bg-slate-100 transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
               </svg>
               Download Sample CSV
             </button>
@@ -127,7 +166,7 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
             <div className="flex flex-col gap-2 mb-4">
               <label className="w-64 px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors text-center inline-flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
                 </svg>
                 <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
                 <input type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
@@ -160,19 +199,27 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
           </div>
         )}
 
-        <div className="flex justify-end gap-2 mt-auto pt-2 border-t border-gray-100">
-          <button onClick={onClose} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors">
-            {isUploaded ? "Close" : "Cancel"}
-          </button>
-          {!isUploaded && (
-            <button 
-              onClick={handleUpload}
-              disabled={csvData.length === 0}
-              className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-            >
-              Upload
-            </button>
+        <div className="flex flex-col gap-2 mt-auto pt-2 border-t border-gray-100">
+          {loading && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+              <div className="bg-sky-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+              <p className="text-xs text-center mt-1">Uploading... {progress}%</p>
+            </div>
           )}
+          <div className="flex justify-end gap-2">
+            <button onClick={onClose} disabled={loading} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors disabled:opacity-50">
+              {isUploaded ? "Close" : "Cancel"}
+            </button>
+            {!isUploaded && (
+              <button 
+                onClick={handleUpload}
+                disabled={csvData.length === 0 || loading}
+                className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 && !loading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'}`}
+              >
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
