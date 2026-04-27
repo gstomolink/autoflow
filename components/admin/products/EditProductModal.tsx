@@ -1,70 +1,95 @@
 'use client';
 
 import { useState } from "react";
-import { Product } from "./ProductTable";
+import { apiFetch } from "@/lib/api";
 
-type Props = { product: Product; onClose: () => void; };
+type Row = {
+  id: number;
+  sku: string;
+  name: string;
+  imageUrl: string | null;
+  basePrice: string;
+  categoryName: string;
+  supplierCode: string;
+};
 
-export default function EditProductModal({ product, onClose }: Props) {
-  const [form, setForm] = useState(product);
+export default function EditProductModal({
+  product,
+  onClose,
+}: {
+  product: Row;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(product.name);
+  const [sku, setSku] = useState(product.sku);
+  const [basePrice, setBasePrice] = useState(product.basePrice);
+  const [imageUrl, setImageUrl] = useState(product.imageUrl ?? "");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = () => {
-    alert("Product updated!");
-    onClose();
+  const handleSave = async () => {
+    setError("");
+    setSaving(true);
+    try {
+      const r = await apiFetch(`/products/${product.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          name,
+          sku,
+          basePrice,
+          imageUrl: imageUrl || null,
+        }),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg">
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-bold text-black mb-1">
-          Edit Product
-        </h2>
-
-          <button
-            onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
-            aria-label="Close modal"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
-            </svg>
-          </button>
-        </div>
-
+        <h2 className="text-xl font-bold text-black mb-4">Edit Product</h2>
         <div className="space-y-3">
-          <div>
-            <label className="text-sm text-gray-600">Name</label>
-            <input name="name" value={form.name} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-600">Category</label>
-            <select name="category" value={form.category} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700">
-              <option>Electronics</option>
-              <option>Accessories</option>
-              <option>Apparel</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-600">Price ($)</label>
-            <input type="number" name="price" value={form.price} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-600">Supplier</label>
-            <input name="supplier" value={form.supplier} onChange={handleChange} className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"/>
-          </div>
+          <input
+            value={sku}
+            onChange={(e) => setSku(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            placeholder="SKU"
+          />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            placeholder="Name"
+          />
+          <input
+            value={basePrice}
+            onChange={(e) => setBasePrice(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            placeholder="Base price"
+          />
+          <input
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            placeholder="Image URL"
+          />
+          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
         </div>
-
-        <div className="flex justify-end mt-4 space-x-2">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors">Cancel</button>
-          <button onClick={handleSave} className="px-4 py-2 rounded-lg bg-sky-500 text-sky-50 hover:bg-sky-600 transition-colors">Save</button>
+        <div className="flex justify-end gap-2 mt-4">
+          <button type="button" onClick={onClose} className="px-4 py-2 border rounded-lg">Cancel</button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void handleSave()}
+            className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
         </div>
       </div>
     </div>

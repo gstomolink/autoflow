@@ -16,7 +16,7 @@ export default function CategoriesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex justify-between items-center mb-8 ">
+      <div className="flex justify-between items-center mb-8 flex-nowrap shrink-0">
         <div>
           <h1 className="text-3xl font-bold text-black">{t("categoriesTitle")}</h1>
           <p className="text-gray-600">
@@ -67,6 +67,7 @@ export default function CategoriesPage() {
       {showBulk && (
         <BulkImportCategoryModal
           onClose={() => setShowBulk(false)}
+          onSaved={() => setFilters({ ...filters })}
         />
       )}
     </div>

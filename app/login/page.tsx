@@ -1,19 +1,62 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { envConfig } from "@/config/env";
+import { getStoredUser, isLoggedIn, resolveAfterLoginPath } from "@/lib/auth";
 
 export default function LoginPage() {
-  const [role, setRole] = useState("admin");
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [shopId, setShopId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (role === "admin") {
-      router.push("/admin/dashboard");
-      return;
+  useEffect(() => {
+    if (!isLoggedIn()) return;
+    const user = getStoredUser();
+    if (user) {
+      const next = searchParams.get("next");
+      router.replace(resolveAfterLoginPath(next, user.role));
     }
-    router.push("/customer/dashboard");
+  }, [router, searchParams]);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${envConfig.apiBaseUrl}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          password,
+          shopId: shopId.trim() || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await response.json();
+      localStorage.setItem("autoflow_access_token", data.accessToken);
+      localStorage.setItem("autoflow_user", JSON.stringify(data.user));
+      const next = searchParams.get("next");
+      router.push(
+        resolveAfterLoginPath(next, data.user.role as number),
+      );
+    } catch {
+      setErrorMessage("Invalid credentials. Check user id, password, and shop id.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -32,35 +75,19 @@ export default function LoginPage() {
           <div className="w-full max-w-md mx-auto">
             <h2 className="text-4xl font-bold text-slate-900 mb-2">Log In</h2>
             <p className="text-slate-500 mb-6">
-              Enter your email and password to login to your dashboard.
+              Enter your user id and password to login to your dashboard.
             </p>
-
-            {/* <div className="flex bg-slate-100 rounded-lg p-1 mb-6">
-              <button
-                onClick={() => setRole("customer")}
-                className={`w-1/2 py-2 rounded-md font-medium transition ${
-                  role === "customer" ? "bg-sky-500 text-sky-50" : "text-slate-600"
-                }`}
-              >
-                Customer
-              </button>
-              <button
-                onClick={() => setRole("admin")}
-                className={`w-1/2 py-2 rounded-md font-medium transition ${
-                  role === "admin" ? "bg-sky-500 text-sky-50" : "text-slate-600"
-                }`}
-              >
-                Admin
-              </button>
-            </div> */}
 
             <form className="space-y-4" onSubmit={handleLogin}>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">User ID</label>
                 <input
-                  type="email"
-                  placeholder="info@example.com"
+                  type="text"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  placeholder="admin"
                   className="w-full px-4 py-2.5 border rounded-lg border-slate-300 text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                  required
                 />
               </div>
 
@@ -69,8 +96,11 @@ export default function LoginPage() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     className="w-full px-4 py-2.5 border rounded-lg pr-10 border-slate-300 text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    required
                   />
                   <button
                     type="button"
@@ -81,6 +111,23 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Shop ID (leave empty for super admin)
+                </label>
+                <input
+                  type="text"
+                  value={shopId}
+                  onChange={(e) => setShopId(e.target.value)}
+                  placeholder="shop-001"
+                  className="w-full px-4 py-2.5 border rounded-lg border-slate-300 text-slate-700 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                />
+              </div>
+
+              {errorMessage ? (
+                <p className="text-sm text-red-600">{errorMessage}</p>
+              ) : null}
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 text-slate-600">
@@ -94,9 +141,10 @@ export default function LoginPage() {
 
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full py-2.5 rounded-lg font-semibold text-sky-50 bg-sky-500 hover:bg-sky-600 transition-colors"
               >
-                Sign In
+                {isSubmitting ? "Signing In..." : "Sign In"}
               </button>
             </form>
 

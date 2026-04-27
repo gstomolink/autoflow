@@ -1,5 +1,6 @@
 'use client';
 
+import ShopScopeSelect from "./ShopScopeSelect";
 import { Language, useAdminI18n } from "./AdminI18nProvider";
 
 export default function AdminHeader() {
@@ -7,11 +8,12 @@ export default function AdminHeader() {
 
   return (
     <header className="bg-white rounded-xl shadow-sm p-2 mb-2 flex justify-between items-center">
-      <div>
-        <h1 className="text-medium font-bold text-gray-800 ml-4">{t("helloAdmin")}</h1>
+      <div className="flex items-center gap-4 ml-4">
+        <h1 className="text-medium font-bold text-gray-800">{t("helloAdmin")}</h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap justify-end">
+        <ShopScopeSelect />
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value as Language)}

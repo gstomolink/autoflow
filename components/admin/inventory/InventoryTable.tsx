@@ -1,110 +1,128 @@
 'use client';
 
-import { useState, useMemo } from "react";
-import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
-
+import { useCallback, useEffect, useMemo, useState } from "react";
 import StockAdjustmentModal from "./StockAdjustmentModal";
 import StockTransferModal from "./StockTransferModal";
 import AddStockModal from "./AddStockModal";
-import ViewStockModal from "./ViewStockModal";
-import EditStockModal from "./EditStockModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { apiFetch } from "@/lib/api";
 
-type StockItem = {
-  id: string;
-  name: string;
-  warehouse: string;
-  unit: string;
-  stock: number;
-  cost: number;
-  supplier: string;
-  expiry: string;
+type Row = {
+  id: number;
+  productName: string;
+  warehouseName: string;
+  quantityOnHand: number;
+  reservedQuantity: number;
+  available: number;
+  reorderPoint: number;
+  status: string;
 };
 
-const initialData: StockItem[] = [
-  { id:"ING001", name:"Flour", warehouse:"Main Store", unit:"kg", stock:50, cost:250, supplier:"ABC Suppliers", expiry:"2026-06-01" },
-  { id:"ING002", name:"Sugar", warehouse:"Galle Branch", unit:"kg", stock:40, cost:200, supplier:"ABC Suppliers", expiry:"2026-07-10" },
-  { id:"ING003", name:"Salt", warehouse:"Main Store", unit:"kg", stock:30, cost:100, supplier:"XYZ Traders", expiry:"2027-01-01" },
-  { id:"ING004", name:"Milk", warehouse:"Matara Depot", unit:"liter", stock:60, cost:300, supplier:"Dairy Farm", expiry:"2026-04-02" },
-  { id:"ING005", name:"Butter", warehouse:"Main Store", unit:"kg", stock:20, cost:800, supplier:"Dairy Farm", expiry:"2026-04-05" },
-  { id:"ING006", name:"Eggs", warehouse:"Galle Branch", unit:"pcs", stock:200, cost:30, supplier:"Farm Fresh", expiry:"2026-04-03" },
-  { id:"ING007", name:"Chicken", warehouse:"Kandy Branch", unit:"kg", stock:35, cost:900, supplier:"Meat House", expiry:"2026-04-01" },
-  { id:"ING008", name:"Tomatoes", warehouse:"Galle Branch", unit:"kg", stock:45, cost:150, supplier:"Veg Market", expiry:"2026-04-04" },
-  { id:"ING009", name:"Onions", warehouse:"Main Store", unit:"kg", stock:55, cost:120, supplier:"Veg Market", expiry:"2026-05-01" },
-  { id:"ING010", name:"Cheese", warehouse:"Kandy Branch", unit:"kg", stock:15, cost:1200, supplier:"Dairy Farm", expiry:"2026-04-10" },
-];
-
-export default function InventoryTable({ onlyLow }: any) {
-
+export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const { t } = useAdminI18n();
 
-  const [data, setData] = useState<StockItem[]>(initialData);
+  const [data, setData] = useState<Row[]>([]);
 
   const [search, setSearch] = useState("");
-  const [threshold, setThreshold] = useState(25);
+  const [searchInput, setSearchInput] = useState("");
+  const [threshold, setThreshold] = useState(20);
   const [warehouse, setWarehouse] = useState("");
-
-  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
-
-  const [showView, setShowView] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  const [rows, setRows] = useState<Row[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [showAdjust, setShowAdjust] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
 
+  const load = useCallback(async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const r = await apiFetch("/inventory-stock");
+      if (!r.ok) throw new Error(await r.text());
+      setRows(await r.json());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
   const filtered = useMemo(() => {
-    let d = data.map((i) => ({
-      ...i,
-      status: i.stock <= threshold,
+    let d = rows.map((item) => ({
+      ...item,
+      status:
+        item.quantityOnHand < threshold ? "Low Stock" : "In Stock",
     }));
 
-    if (onlyLow) d = d.filter((i) => i.stock <= threshold);
+    if (onlyLow) {
+      d = d.filter((i) => i.quantityOnHand < threshold);
+    }
 
     if (search) {
-      d = d.filter(
-        (i) =>
-          i.name.toLowerCase().includes(search.toLowerCase()) ||
-          i.id.toLowerCase().includes(search.toLowerCase())
+      d = d.filter((i) =>
+        i.productName.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (warehouse) {
-      d = d.filter((i) => i.warehouse === warehouse);
+      d = d.filter((i) => i.warehouseName === warehouse);
     }
 
     return d;
-  }, [data, search, threshold, onlyLow, warehouse]);
+  }, [search, warehouse, threshold, onlyLow, rows]);
 
-  const handleDelete = (id: string) => {
-    if (confirm(t("confirmDelete" as any))) {
-      setData(prev => prev.filter(i => i.id !== id));
-    }
-  };
+  const warehouses = useMemo(() => {
+    const s = new Set(rows.map((r) => r.warehouseName));
+    return [...s];
+  }, [rows]);
+
+  if (loading) {
+    return <p className="text-slate-500">Loading…</p>;
+  }
 
   return (
-    <div className="text-gray-700">
+  <div>
+    {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
+    <div className="flex justify-end mb-4 gap-2">
+      <button
+        type="button"
+        onClick={() => setShowAdd(true)}
+        className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
+      >
+        {t("actionAddStock")}
+      </button>
 
-      {/* ACTION BUTTONS */}
-      <div className="flex justify-end gap-2 mb-4">
-        <button onClick={()=>setShowAdd(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600">
-          {t("inventoryAddStock")}
-        </button>
-        <button onClick={()=>setShowAdjust(true)} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
-          {t("inventoryAdjustStock")}
-        </button>
-        <button onClick={()=>setShowTransfer(true)} className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600">
-          {t("inventoryTransfer")}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setShowAdjust(true)}
+        className="w-44 bg-slate-200 text-slate-700 px-4 py-2 rounded cursor-pointer hover:bg-slate-300 transition-colors"
+      >
+        {t("actionAdjust")}
+      </button>
 
-      {/* FILTER */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6 flex items-center gap-4 flex-wrap">
+      <button
+        type="button"
+        onClick={() => setShowTransfer(true)}
+        className="w-44 bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
+      >
+        {t("actionTransfer")}
+      </button>
+    </div>
 
+    <div className="flex justify-between items-center mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
+      <div className="flex gap-2 flex-wrap">
         <input
-          placeholder={t("inventorySearchPlaceholder")}
-          value={search}
-          onChange={(e)=>setSearch(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded w-60"
+          placeholder="Search product..."
+          className="border border-gray-300 text-gray-700 px-3 py-2 rounded cursor-pointer"
+          onChange={(e) => setSearchInput(e.target.value)}
+          onBlur={() => setSearch(searchInput)}
         />
 
         <select
@@ -112,15 +130,14 @@ export default function InventoryTable({ onlyLow }: any) {
           onChange={(e)=>setWarehouse(e.target.value)}
           className="border border-gray-300 px-3 py-2 rounded"
         >
-          <option value="">{t("inventoryAllWarehouses")}</option>
-          <option>Main Store</option>
-          <option>Galle Branch</option>
-          <option>Matara Depot</option>
-          <option>Kandy Branch</option>
+          <option value="">All Warehouses</option>
+          {warehouses.map((w) => (
+            <option key={w} value={w}>{w}</option>
+          ))}
         </select>
 
         <div className="flex items-center gap-2">
-          <label>{t("inventoryLowStockLabel")}</label>
+          <label>{t("tableLowStockLevel")}</label>
           <input
             type="number"
             value={threshold}
@@ -134,60 +151,55 @@ export default function InventoryTable({ onlyLow }: any) {
         </button>
       </div>
 
-      {/* TABLE */}
-      <table className="w-full bg-white rounded shadow text-gray-700">
-        <thead className="bg-white text-left">
-          <tr>
-            <th className="p-2 border-t border-gray-300">{t("tableProductId")}</th>
-            <th className="p-2 border-t border-gray-300">Ingredient</th>
-            <th className="p-2 border-t border-gray-300">{t("tableWarehouse")}</th>
-            <th className="p-2 border-t border-gray-300">{t("tableStock")}</th>
-            <th className="p-2 border-t border-gray-300">Unit</th>
-            <th className="p-2 border-t border-gray-300">{t("tablePrice")}</th>
-            <th className="p-2 border-t border-gray-300">{t("menuSuppliers")}</th>
-            <th className="p-2 border-t border-gray-300">Expiry</th>
-            <th className="p-2 border-t border-gray-300">{t("tableStatus")}</th>
-            <th className="p-2 border-t border-gray-300">{t("tableActions")}</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {filtered.map((i) => (
-            <tr key={i.id} className={`border-t border-gray-300 ${i.status ? "bg-red-100" : ""}`}>
-              <td className="p-2 border-t border-gray-300">{i.id}</td>
-              <td className="p-2 border-t border-gray-300">{i.name}</td>
-              <td className="p-2 border-t border-gray-300">{i.warehouse}</td>
-              <td className="p-2 border-t border-gray-300">{i.stock}</td>
-              <td className="p-2 border-t border-gray-300">{i.unit}</td>
-              <td className="p-2 border-t border-gray-300">Rs. {i.cost}</td>
-              <td className="p-2 border-t border-gray-300">{i.supplier}</td>
-              <td className="p-2 border-t border-gray-300">{i.expiry}</td>
-              <td className="p-2 border-t border-gray-300 font-bold">
-                {i.status ? t("inventoryLowStockLabel") : "OK"}
-              </td>
-              <td className="p-2 border-t border-gray-300 flex gap-2">
-                <button onClick={() => { setSelectedItem(i); setShowView(true); }} className="px-2 py-1 bg-sky-500 text-white rounded">
-                  {t("actionView")}
-                </button>
-                <button onClick={() => { setSelectedItem(i); setShowEdit(true); }} className="px-2 py-1 bg-gray-200 rounded">
-                  {t("actionEdit")}
-                </button>
-                <button onClick={() => handleDelete(i.id)} className="px-2 py-1 bg-rose-500 text-white rounded">
-                  {t("actionDelete")}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* MODALS */}
-      {showView && selectedItem && <ViewStockModal data={selectedItem} onClose={()=>setShowView(false)} />}
-      {showEdit && selectedItem && <EditStockModal data={selectedItem} onClose={()=>setShowEdit(false)} onSave={(updated: StockItem)=>{ setData(prev => prev.map(i => i.id === updated.id ? updated : i)); setShowEdit(false); }} />}
-      {showAdd && <AddStockModal onClose={()=>setShowAdd(false)} />}
-      {showAdjust && <StockAdjustmentModal onClose={()=>setShowAdjust(false)} />}
-      {showTransfer && <StockTransferModal onClose={()=>setShowTransfer(false)} />}
-
+      <button type="button" onClick={() => void load()} className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
+        {t("actionSearch")}
+      </button>
     </div>
-  );
+
+    <div className="mb-4">
+      <button type="button" className="px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors">
+        {t("actionExportCsv")}
+      </button>
+    </div>
+
+    <table className="w-full bg-white rounded shadow text-gray-700 text-left">
+      <thead className="bg-white">
+        <tr>
+          <th className="p-3">{t("tableProduct")}</th>
+          <th className="p-3">{t("tableWarehouse")}</th>
+          <th className="p-3">{t("tableStock")}</th>
+          <th className="p-3">{t("tableReserved")}</th>
+          <th className="p-3">{t("tableAvailable")}</th>
+          <th className="p-3">{t("tableLowStockLevel")}</th>
+          <th className="p-3">{t("tableStatus")}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {filtered.map((i) => (
+          <tr
+            key={i.id}
+            className={`border-t border-gray-300 ${
+              i.status === "Low Stock" ? "bg-red-100" : ""
+            }`}
+          >
+            <td className="p-3">{i.productName}</td>
+            <td className="p-3">{i.warehouseName}</td>
+            <td className="p-3">{i.quantityOnHand}</td>
+            <td className="p-3">{i.reservedQuantity}</td>
+            <td className="p-3">{i.available}</td>
+            <td className="p-3">{threshold}</td>
+            <td className="p-3 font-bold">
+              {i.status === "Low Stock" ? t("statusLowStock") : t("statusInStock")}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    {showAdd && <AddStockModal onClose={() => { setShowAdd(false); void load(); }} />}
+    {showAdjust && <StockAdjustmentModal onClose={() => setShowAdjust(false)} />}
+    {showTransfer && <StockTransferModal onClose={() => setShowTransfer(false)} />}
+  </div>
+);
 }

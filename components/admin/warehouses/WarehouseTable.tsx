@@ -1,67 +1,69 @@
 'use client';
 
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ViewWarehouseModal from "./ViewWarehouseModal";
 import EditWarehouseModal from "./EditWarehouseModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { apiFetch } from "@/lib/api";
 
-const initialData = [
-  {
-    id: "WH-001",
-    name: "Main Warehouse",
-    address: "12/4 Main Street, Colombo",
-    manager: "John Silva",
-    contact: "0771234567",
+type Wh = {
+  id: number;
+  name: string;
+  code: string;
+  address: string | null;
+  managerName: string | null;
+  contactPhone: string | null;
+};
 
-  },
-  {
-    id: "WH-002",
-    name: "Galle Branch",
-    address: "45 Beach Road, Galle",
-    manager: "Nimal Perera",
-    contact: "0779876543",
-
-  },
-  {
-    id: "WH-003",
-    name: "Matara Depot",
-    address: "78 Station Road, Matara",
-    manager: "Kasun Fernando",
-    contact: "0712345678",
-  },
-  {
-    id: "WH-004",
-    name: "Kandy Storage",
-    address: "22 Hill Street, Kandy",
-    manager: "Saman Kumara",
-    contact: "0763456789",
-  },
-  {
-    id: "WH-005",
-    name: "Negombo Hub",
-    address: "9 Lagoon Road, Negombo",
-    manager: "Ruwan Jayasuriya",
-    contact: "0756789123",
-  },
-];
-
-export default function WarehouseTable({ filters }: any) {
+export default function WarehouseTable({ filters }: { filters: Record<string, string> }) {
   const { t } = useAdminI18n();
-  const [data, setData] = useState(initialData);
-  const [viewItem, setViewItem] = useState<any>(null);
-  const [editItem, setEditItem] = useState<any>(null);
+  const [data, setData] = useState<Wh[]>([]);
+  const [viewItem, setViewItem] = useState<Wh | null>(null);
+  const [editItem, setEditItem] = useState<Wh | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const r = await apiFetch("/warehouses");
+      if (!r.ok) throw new Error(await r.text());
+      setData(await r.json());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const filtered = useMemo(() => {
     if (!filters?.name) return data;
     return data.filter((w) => w.name === filters.name);
   }, [filters, data]);
 
-  const deleteWarehouse = (id: string) => {
-    setData(data.filter((w) => w.id !== id));
+  const deleteWarehouse = async (id: number) => {
+    if (!confirm("Delete warehouse?")) return;
+    const r = await apiFetch(`/warehouses/${id}`, { method: "DELETE" });
+    if (!r.ok) {
+      alert(await r.text());
+      return;
+    }
+    void load();
   };
+
+  if (loading) {
+    return <p className="text-slate-500">Loading…</p>;
+  }
 
   return (
     <>
+      {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-gray-700">
           <thead className="bg-white">
@@ -76,28 +78,31 @@ export default function WarehouseTable({ filters }: any) {
           </thead>
 
           <tbody>
-            {filtered.map((w, i) => (
-              <tr key={i} className="border-t border-gray-200">
+            {filtered.map((w) => (
+              <tr key={w.id} className="border-t border-gray-200">
                 <td className="p-3">{w.id}</td>
                 <td className="p-3 font-medium">{w.name}</td>
-                <td className="p-3">{w.address}</td>
-                <td className="p-3">{w.manager}</td>
-                <td className="p-3">{w.contact}</td>
+                <td className="p-3">{w.address ?? "—"}</td>
+                <td className="p-3">{w.managerName ?? "—"}</td>
+                <td className="p-3">{w.contactPhone ?? "—"}</td>
 
                 <td className="p-3 space-x-2">
                   <button
+                    type="button"
                     onClick={() => setViewItem(w)}
                     className="px-2 py-1 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors"
                   >
                     {t("actionView")}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setEditItem(w)}
                     className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer hover:bg-slate-300 transition-colors"
                   >
                     {t("actionEdit")}
                   </button>
                   <button
+                    type="button"
                     onClick={() => deleteWarehouse(w.id)}
                     className="px-2 py-1 bg-rose-500 text-rose-50 rounded cursor-pointer hover:bg-rose-600 transition-colors"
                   >
@@ -120,7 +125,10 @@ export default function WarehouseTable({ filters }: any) {
       {editItem && (
         <EditWarehouseModal
           data={editItem}
-          onClose={() => setEditItem(null)}
+          onClose={() => {
+            setEditItem(null);
+            void load();
+          }}
         />
       )}
     </>
