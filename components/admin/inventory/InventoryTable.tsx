@@ -137,7 +137,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
         </select>
 
         <div className="flex items-center gap-2">
-          <label>Low Stock Threshold</label>
+          <label>{t("tableLowStockLevel")}</label>
           <input
             type="number"
             value={threshold}
