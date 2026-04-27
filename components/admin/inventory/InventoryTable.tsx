@@ -20,8 +20,11 @@ type Row = {
 
 export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const { t } = useAdminI18n();
-  const [searchInput, setSearchInput] = useState("");
+
+  const [data, setData] = useState<StockItem[]>(initialData);
+
   const [search, setSearch] = useState("");
+  const [threshold, setThreshold] = useState(25);
   const [warehouse, setWarehouse] = useState("");
   const [threshold, setThreshold] = useState(20);
   const [rows, setRows] = useState<Row[]>([]);
@@ -123,8 +126,9 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
         />
 
         <select
-          onChange={(e) => setWarehouse(e.target.value)}
-          className="border border-gray-300 text-gray-700 px-3 py-2 rounded cursor-pointer"
+          value={warehouse}
+          onChange={(e)=>setWarehouse(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded"
         >
           <option value="">All Warehouses</option>
           {warehouses.map((w) => (
@@ -132,13 +136,19 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
           ))}
         </select>
 
-        <input
-          type="number"
-          value={threshold}
-          onChange={(e) => setThreshold(Number(e.target.value))}
-          className="border border-gray-300 text-gray-700 px-2 py-2 rounded w-28 cursor-pointer"
-          title="Low stock threshold"
-        />
+        <div className="flex items-center gap-2">
+          <label>{t("inventoryLowStockLabel")}</label>
+          <input
+            type="number"
+            value={threshold}
+            onChange={(e)=>setThreshold(Number(e.target.value))}
+            className="border border-gray-300 px-2 py-2 rounded w-24"
+          />
+        </div>
+
+        <button className="ml-auto bg-sky-500 text-white px-5 py-2 rounded hover:bg-sky-600">
+          {t("actionSearch")}
+        </button>
       </div>
 
       <button type="button" onClick={() => void load()} className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">

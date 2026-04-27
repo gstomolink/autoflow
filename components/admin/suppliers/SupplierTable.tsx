@@ -81,9 +81,9 @@ export default function SupplierTable() {
       </div>
 
       <table className="w-full bg-white rounded shadow text-gray-700">
-        <thead className="bg-white">
+        <thead className="bg-white text-left">
           <tr>
-            <th className="p-3">{t("tableSupplierID")}</th>
+            <th className="p-3">{t("tableSupplierId")}</th>
             <th className="p-3">{t("tableName")}</th>
             <th className="p-3">{t("tableContact")}</th>
             <th className="p-3">{t("tableEmail")}</th>

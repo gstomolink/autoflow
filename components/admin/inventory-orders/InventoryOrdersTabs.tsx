@@ -15,6 +15,7 @@ export default function InventoryOrdersTabs({
   return (
     <div>
       <div className="flex gap-4 border-b mb-4">
+        
         <button
           type="button"
           onClick={() => setTab("all")}
@@ -26,10 +27,13 @@ export default function InventoryOrdersTabs({
         <button
           type="button"
           onClick={() => setTab("auto")}
-          className={`pb-2 text-gray-600  ${tab === "auto" && "border-b-2 border-sky-600 text-sky-600"}`}
+          className={`pb-2 text-gray-600 ${
+            tab === "auto" ? "border-b-2 border-sky-600 text-sky-600" : ""
+          }`}
         >
-          Automated Orders
+          {t("inventoryAutomatedOrders") || "Automated Orders"}
         </button>
+
       </div>
 
       {tab === "all" ? (

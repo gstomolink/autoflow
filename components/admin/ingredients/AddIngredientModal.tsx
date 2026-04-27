@@ -35,13 +35,13 @@ export default function AddIngredientModal({ onClose }: any) {
 
         {/* BASIC */}
         <h3 className="font-semibold mb-2">Basic Info</h3>
-        <input placeholder="Ingredient Name *" className="w-full border border-gray-300 p-2 rounded mb-2"/>
-        <input placeholder="SKU *" className="w-full border border-gray-300 p-2 rounded mb-2"/>
-        <textarea placeholder="Description" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+        <input placeholder="Ingredient Name *" className="w-full border p-2 rounded mb-2"/>
+        <input placeholder="SKU *" className="w-full border p-2 rounded mb-2"/>
+        <textarea placeholder="Description" className="w-full border p-2 rounded mb-3"/>
 
         {/* UNIT */}
         <h3 className="font-semibold mb-2">Unit & Measurement</h3>
-        <select className="w-full border border-gray-300 p-2 rounded mb-2">
+        <select className="w-full border p-2 rounded mb-2">
           <option>Weight (kg)</option>
           <option>Volume (liter)</option>
           <option>Quantity (pcs)</option>
@@ -49,18 +49,18 @@ export default function AddIngredientModal({ onClose }: any) {
 
         {/* INVENTORY */}
         <h3 className="font-semibold mb-2">Inventory</h3>
-        <input placeholder="Initial Stock" className="w-full border border-gray-300 p-2 rounded mb-2"/>
-        <input placeholder="Reorder Level" className="w-full border border-gray-300 p-2 rounded mb-2"/>
-        <input placeholder="Safety Stock" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+        <input placeholder="Initial Stock" className="w-full border p-2 rounded mb-2"/>
+        <input placeholder="Reorder Level" className="w-full border p-2 rounded mb-2"/>
+        <input placeholder="Safety Stock" className="w-full border p-2 rounded mb-3"/>
 
         {/* PRICING */}
         <h3 className="font-semibold mb-2">Pricing</h3>
-        <input placeholder="Cost Price" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+        <input placeholder="Cost Price" className="w-full border p-2 rounded mb-3"/>
 
         {/* SUPPLIER */}
         <h3 className="font-semibold mb-2">Supplier</h3>
-        <input placeholder="Supplier Name" className="w-full border border-gray-300 p-2 rounded mb-2"/>
-        <input placeholder="Lead Time (days)" className="w-full border border-gray-300 p-2 rounded mb-3"/>
+        <input placeholder="Supplier Name" className="w-full border p-2 rounded mb-2"/>
+        <input placeholder="Lead Time (days)" className="w-full border p-2 rounded mb-3"/>
 
         {/* TOGGLE */}
         <label className="flex items-center gap-2 mb-3">
@@ -81,7 +81,7 @@ export default function AddIngredientModal({ onClose }: any) {
                 type="date"
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
-                className="w-full border border-gray-300 px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded"
               />
             </div>
 
@@ -90,7 +90,7 @@ export default function AddIngredientModal({ onClose }: any) {
               <input
                 type="number"
                 placeholder="e.g. 30"
-                className="w-full border border-gray-300 px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded"
               />
             </div>
 
@@ -102,13 +102,13 @@ export default function AddIngredientModal({ onClose }: any) {
                   type="number"
                   value={alertValue}
                   onChange={(e) => setAlertValue(Number(e.target.value))}
-                  className="w-24 border border-gray-300 px-3 py-2 rounded"
+                  className="w-24 border px-3 py-2 rounded"
                 />
 
                 <select
                   value={alertUnit}
                   onChange={(e) => setAlertUnit(e.target.value)}
-                  className="border border-gray-300 px-3 py-2 rounded"
+                  className="border px-3 py-2 rounded"
                 >
                   <option value="days">Days</option>
                   <option value="weeks">Weeks</option>
@@ -118,7 +118,7 @@ export default function AddIngredientModal({ onClose }: any) {
             </div>
 
             {expiryDate && (
-              <div className="bg-yellow-50 p-3 rounded border border-yellow-300 text-sm">
+              <div className="bg-yellow-50 p-3 rounded border text-sm">
                 ⚠️ Alert will trigger on: <b>{getAlertDate()}</b>
               </div>
             )}
@@ -128,7 +128,7 @@ export default function AddIngredientModal({ onClose }: any) {
 
         {/* ACTIONS */}
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="border border-gray-300 px-4 py-2 rounded">
+          <button onClick={onClose} className="border px-4 py-2 rounded">
             Cancel
           </button>
           <button className="bg-sky-500 text-white px-4 py-2 rounded">

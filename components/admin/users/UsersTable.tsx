@@ -20,6 +20,8 @@ type ApiUser = {
 };
 
 export default function UsersTable() {
+  const { t } = useAdminI18n();
+
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [add, setAdd] = useState(false);

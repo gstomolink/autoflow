@@ -29,47 +29,19 @@ type AuditItem = {
 };
 
 const movementData: MovementItem[] = [
-  {
-    product: "Laptop",
-    warehouse: "Main Warehouse",
-    type: "Transfer",
-    qty: -5,
-    from: "Main Warehouse",
-    to: "Galle Branch",
-    date: "2026-03-26",
-  },
-  {
-    product: "Headphones",
-    warehouse: "Galle Branch",
-    type: "Adjustment",
-    qty: +3,
-    from: "-",
-    to: "-",
-    date: "2026-03-25",
-  },
+  { product: "Flour", warehouse: "Main Warehouse", type: "Transfer", qty: -10, from: "Main Warehouse", to: "Outlet 1", date: "2026-03-26" },
+  { product: "Sugar", warehouse: "Galle Branch", type: "Adjustment", qty: +5, from: "-", to: "-", date: "2026-03-25" },
+  { product: "Salt", warehouse: "Main Warehouse", type: "Transfer", qty: -8, from: "Main Warehouse", to: "Matara Depot", date: "2026-03-24" },
+  { product: "Milk", warehouse: "Kandy Branch", type: "Adjustment", qty: +12, from: "-", to: "-", date: "2026-03-23" },
+  { product: "Eggs", warehouse: "Main Warehouse", type: "Transfer", qty: -20, from: "Main Warehouse", to: "Outlet 1", date: "2026-03-22" },
 ];
 
 const auditData: AuditItem[] = [
-  {
-    product: "Laptop",
-    warehouse: "Main Warehouse",
-    type: "Sale",
-    qty: -2,
-    before: 50,
-    after: 48,
-    ref: "ORD-001",
-    date: "2026-03-25",
-  },
-  {
-    product: "Mouse",
-    warehouse: "Galle Branch",
-    type: "Purchase",
-    qty: +10,
-    before: 20,
-    after: 30,
-    ref: "PUR-002",
-    date: "2026-03-24",
-  },
+  { product: "Flour", warehouse: "Main Warehouse", type: "Sale", qty: -15, before: 50, after: 35, ref: "ORD-101", date: "2026-03-26" },
+  { product: "Sugar", warehouse: "Matara Depot", type: "Purchase", qty: +20, before: 40, after: 60, ref: "PUR-102", date: "2026-03-25" },
+  { product: "Salt", warehouse: "Main Warehouse", type: "Sale", qty: -5, before: 30, after: 25, ref: "ORD-103", date: "2026-03-24" },
+  { product: "Milk", warehouse: "Kandy Branch", type: "Adjustment", qty: +10, before: 60, after: 70, ref: "ADJ-104", date: "2026-03-23" },
+  { product: "Eggs", warehouse: "Main Warehouse", type: "Sale", qty: -50, before: 200, after: 150, ref: "ORD-105", date: "2026-03-22" },
 ];
 
 export default function InventoryTransactions({ type }: Props) {
