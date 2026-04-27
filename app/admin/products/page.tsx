@@ -22,7 +22,7 @@ export default function AdminProductsPage() {
           <p className="text-gray-700">{t("productsSubtitle")}</p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-nowrap shrink-0">
           <button
             onClick={() => setShowAdd(true)}
             className="px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
@@ -54,7 +54,12 @@ export default function AdminProductsPage() {
       <ProductTable filters={filters} />
 
       {showAdd && <AddProductModal onClose={() => setShowAdd(false)} />}
-      {showBulk && <BulkImportProductModal onClose={() => setShowBulk(false)} />}
+      {showBulk && (
+        <BulkImportProductModal 
+          onClose={() => setShowBulk(false)} 
+          onSaved={() => setFilters({ ...filters })}
+        />
+      )}
     </div>
   );
 }

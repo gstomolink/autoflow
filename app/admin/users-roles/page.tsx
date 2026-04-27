@@ -14,7 +14,7 @@ export default function UsersRolesPage() {
 
   return (
     <div className="text-gray-700">
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-6 flex-nowrap shrink-0">
         <div>
           <h1 className="text-3xl font-bold">Users</h1>
           <p className="text-gray-500">
@@ -52,7 +52,7 @@ export default function UsersRolesPage() {
       
       <UsersTable />
 
-      {showBulk && <BulkImportUserModal onClose={() => setShowBulk(false)} />}
+      {showBulk && <BulkImportUserModal onClose={() => setShowBulk(false)} onSaved={() => window.location.reload()} />}
     </div>
   );
 }

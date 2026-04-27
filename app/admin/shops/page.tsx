@@ -20,7 +20,7 @@ export default function AdminShopsPage() {
           <p className="text-gray-600 mt-1 mr-12">{t("shopsPageSubtitle")}</p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-nowrap shrink-0">
           <button
             type="button"
             onClick={() => setShowAdd(true)}
@@ -59,7 +59,10 @@ export default function AdminShopsPage() {
       ) : null}
 
       {showBulk && (
-        <BulkImportShopModal onClose={() => setShowBulk(false)} />
+        <BulkImportShopModal 
+          onClose={() => setShowBulk(false)} 
+          onSaved={() => setTableKey((k) => k + 1)}
+        />
       )}
     </div>
   );
