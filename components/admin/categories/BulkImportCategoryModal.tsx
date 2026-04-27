@@ -130,7 +130,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
                 className="w-4 h-4"
                 aria-hidden="true"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
               </svg>
               <span className="whitespace-nowrap">Download Sample CSV</span>
             </button>
@@ -153,7 +153,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
                   className="w-4 h-4"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
                 </svg>
                 <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
               </label>
