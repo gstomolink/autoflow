@@ -21,12 +21,12 @@ type Row = {
 export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const { t } = useAdminI18n();
 
-  const [data, setData] = useState<StockItem[]>(initialData);
+  const [data, setData] = useState<Row[]>([]);
 
   const [search, setSearch] = useState("");
-  const [threshold, setThreshold] = useState(25);
-  const [warehouse, setWarehouse] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [threshold, setThreshold] = useState(20);
+  const [warehouse, setWarehouse] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -137,7 +137,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
         </select>
 
         <div className="flex items-center gap-2">
-          <label>{t("inventoryLowStockLabel")}</label>
+          <label>Low Stock Threshold</label>
           <input
             type="number"
             value={threshold}
