@@ -26,6 +26,8 @@
   "inventoryTitle": "Inventory Management",
   "ordersTitle": "Orders Management",
   "dashboardTitle": "Dashboard",
+    "inventoryAllOrders": "All Orders",
+  "inventoryAutomatedOrders": "Automated Orders",
   "dashboardSubtitle": "Overview of your store performance",
   "statTotalSalesToday": "Total Sales Today",
   "statOrdersCount": "Orders Count",
