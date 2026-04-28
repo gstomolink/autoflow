@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 
 export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose: () => void, onSaved?: () => void }) {
   const [csvData, setCsvData] = useState<string[][]>([]);
@@ -66,16 +67,46 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
     reader.readAsText(file);
   };
 
-  const handleUpload = () => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async () => {
     if (csvData.length === 0) {
       setError("No data to upload");
       return;
     }
-    // Mock upload logic
-    console.log("Uploading data:", csvData);
     
-    setIsUploaded(true);
-    if (onSaved) onSaved();
+    setIsUploading(true);
+    setError("");
+
+    try {
+      let successCount = 0;
+      for (const row of csvData) {
+        // headers = ["Category ID", "Category Name", "Description", "Status"]
+        const payload = {
+          name: row[1],
+          description: row[2] || undefined,
+        };
+        const r = await apiFetch("/categories", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        if (r.ok) {
+          successCount++;
+        }
+      }
+
+      if (successCount === 0) {
+        setError("Failed to upload any records");
+        return;
+      }
+      
+      setIsUploaded(true);
+      if (onSaved) onSaved();
+    } catch (err) {
+      setError("Upload failed");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -193,10 +224,10 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
           {!isUploaded && (
             <button 
               onClick={handleUpload}
-              disabled={csvData.length === 0}
-              className={`px-4 py-2 rounded transition-colors cursor-pointer ${csvData.length > 0 ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+              disabled={csvData.length === 0 || isUploading}
+              className={`px-4 py-2 rounded transition-colors cursor-pointer ${csvData.length > 0 && !isUploading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             >
-              Upload
+              {isUploading ? "Uploading..." : "Upload"}
             </button>
           )}
         </div>

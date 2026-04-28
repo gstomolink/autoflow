@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 
 export default function BulkImportProductModal({ onClose, onSaved }: { onClose: () => void, onSaved?: () => void }) {
   const [csvData, setCsvData] = useState<string[][]>([]);
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
   const [isUploaded, setIsUploaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const headers = ["productid", "product_name", "categoryID", "supplierID", "stock", "price"];
 
@@ -65,16 +68,45 @@ export default function BulkImportProductModal({ onClose, onSaved }: { onClose: 
     reader.readAsText(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (csvData.length === 0) {
       setError("No data to upload");
       return;
     }
-    // Mock upload logic
-    console.log("Uploading data:", csvData);
-    
-    setIsUploaded(true);
-    if (onSaved) onSaved();
+
+    setLoading(true);
+    setError("");
+    let successCount = 0;
+
+    for (let i = 0; i < csvData.length; i++) {
+      const row = csvData[i];
+      const payload = {
+        sku: row[0],
+        name: row[1],
+        categoryId: row[2] ? parseInt(row[2], 10) : undefined,
+        primarySupplierId: row[3] ? parseInt(row[3], 10) : undefined,
+        basePrice: row[5] || undefined,
+      };
+
+      try {
+        const res = await apiFetch("/products", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) successCount++;
+      } catch (err) {
+        console.error("Error uploading product:", err);
+      }
+      setProgress(Math.round(((i + 1) / csvData.length) * 100));
+    }
+
+    setLoading(false);
+    if (successCount > 0) {
+      setIsUploaded(true);
+      if (onSaved) onSaved();
+    } else {
+      setError("Failed to upload any records.");
+    }
   };
 
   return (
@@ -160,19 +192,27 @@ export default function BulkImportProductModal({ onClose, onSaved }: { onClose: 
           </div>
         )}
 
-        <div className="flex justify-end gap-2 mt-auto pt-2 border-t border-gray-100">
-          <button onClick={onClose} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors">
-            {isUploaded ? "Close" : "Cancel"}
-          </button>
-          {!isUploaded && (
-            <button 
-              onClick={handleUpload}
-              disabled={csvData.length === 0}
-              className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-            >
-              Upload
-            </button>
+        <div className="flex flex-col gap-2 mt-auto pt-2 border-t border-gray-100">
+          {loading && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+              <div className="bg-sky-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+              <p className="text-xs text-center mt-1">Uploading... {progress}%</p>
+            </div>
           )}
+          <div className="flex justify-end gap-2">
+            <button onClick={onClose} disabled={loading} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors disabled:opacity-50">
+              {isUploaded ? "Close" : "Cancel"}
+            </button>
+            {!isUploaded && (
+              <button 
+                onClick={handleUpload}
+                disabled={csvData.length === 0 || loading}
+                className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 && !loading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'}`}
+              >
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
