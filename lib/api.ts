@@ -20,7 +20,8 @@ export async function apiFetch(
   if (
     init?.body !== undefined &&
     init.body !== null &&
-    !headers.has("Content-Type")
+    !headers.has("Content-Type") &&
+    !(init.body instanceof FormData)
   ) {
     headers.set("Content-Type", "application/json");
   }
