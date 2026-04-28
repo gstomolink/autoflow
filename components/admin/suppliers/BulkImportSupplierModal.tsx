@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 
-export default function BulkImportSupplierModal({ onClose }: { onClose: ()=>void }) {
+export default function BulkImportSupplierModal({ onClose, onSaved }: { onClose: ()=>void, onSaved?: ()=>void }) {
   const [csvData, setCsvData] = useState<string[][]>([]);
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const headers = ["Name", "Code", "Phone", "Email", "Address", "LeadTimeDays"];
 
@@ -51,23 +55,65 @@ export default function BulkImportSupplierModal({ onClose }: { onClose: ()=>void
     reader.readAsText(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (csvData.length === 0) {
       setError("No data to upload");
       return;
     }
-    console.log("Uploading suppliers:", csvData);
-    alert("Suppliers imported successfully (mocked)");
-    onClose();
+    
+    setLoading(true);
+    setError("");
+    let successCount = 0;
+
+    for (let i = 0; i < csvData.length; i++) {
+      const row = csvData[i];
+      const payload = {
+        name: row[0],
+        code: row[1] || undefined,
+        phone: row[2] || undefined,
+        email: row[3] || undefined,
+        address: row[4] || undefined,
+        defaultLeadTimeDays: parseInt(row[5] || "1", 10),
+      };
+
+      try {
+        const res = await apiFetch("/suppliers", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) successCount++;
+      } catch (err) {
+        console.error("Error uploading supplier:", err);
+      }
+      setProgress(Math.round(((i + 1) / csvData.length) * 100));
+    }
+
+    setLoading(false);
+    if (successCount > 0) {
+      setIsUploaded(true);
+      if (onSaved) onSaved();
+    } else {
+      setError("Failed to upload any records.");
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl text-gray-700 flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-bold text-black mb-1">
-            Bulk Import Suppliers
-          </h2>
+          <div>
+            <h2 className="text-xl font-bold text-black mb-1">
+              Bulk Import Suppliers
+            </h2>
+            {isUploaded && (
+              <p className="text-emerald-600 font-medium flex items-center gap-1 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
+                </svg>
+                Successfully uploaded {csvData.length} records
+              </p>
+            )}
+          </div>
 
           <button
             onClick={onClose}
@@ -80,7 +126,9 @@ export default function BulkImportSupplierModal({ onClose }: { onClose: ()=>void
           </button>
         </div>
 
-        <p className="mb-3">Download sample CSV file structure:</p>
+        {!isUploaded && (
+          <>
+            <p className="mb-3">Download sample CSV file structure:</p>
 
         <button
           onClick={downloadSample}
@@ -97,15 +145,17 @@ export default function BulkImportSupplierModal({ onClose }: { onClose: ()=>void
         </p>
 
         <div className="flex flex-col gap-2 mb-4">
-          <label className="w-64 px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors text-center inline-flex items-center justify-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-            </svg>
-            <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
-            <input type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
-          </label>
-          {error && <p className="text-rose-500 text-sm font-semibold">{error}</p>}
-        </div>
+            <label className="w-64 px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors text-center inline-flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+              </svg>
+              <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
+              <input type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
+            </label>
+            {error && <p className="text-rose-500 text-sm font-semibold">{error}</p>}
+          </div>
+          </>
+        )}
 
         {csvData.length > 0 && (
           <div className="flex-1 overflow-auto border border-gray-200 rounded-lg mb-4">
@@ -130,15 +180,27 @@ export default function BulkImportSupplierModal({ onClose }: { onClose: ()=>void
           </div>
         )}
 
-        <div className="flex justify-end gap-2 mt-auto pt-2 border-t border-gray-100">
-          <button onClick={onClose} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors">Cancel</button>
-          <button 
-            onClick={handleUpload}
-            disabled={csvData.length === 0}
-            className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-          >
-            Upload
-          </button>
+        <div className="flex flex-col gap-2 mt-auto pt-2 border-t border-gray-100">
+          {loading && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+              <div className="bg-sky-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+              <p className="text-xs text-center mt-1">Uploading... {progress}%</p>
+            </div>
+          )}
+          <div className="flex justify-end gap-2">
+            <button onClick={onClose} disabled={loading} className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg cursor-pointer transition-colors disabled:opacity-50">
+              {isUploaded ? "Close" : "Cancel"}
+            </button>
+            {!isUploaded && (
+              <button 
+                onClick={handleUpload}
+                disabled={csvData.length === 0 || loading}
+                className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${csvData.length > 0 && !loading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'}`}
+              >
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AddOrderModal from "./AddOrderModal";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import EditOrderModal from "./EditOrderModal";
 import ViewOrderModal from "./ViewOrderModal";
 import ProceedModal from "./ProceedModal";
@@ -39,6 +40,7 @@ export default function ManualOrdersTable({
 }: {
   filters: InventoryOrdersFilterValues;
 }) {
+  const t = useAdminI18n();
   const [add, setAdd] = useState(false);
   const [view, setView] = useState<InvOrder | null>(null);
   const [edit, setEdit] = useState<InvOrder | null>(null);
@@ -120,7 +122,7 @@ export default function ManualOrdersTable({
           onClick={() => setAdd(true)}
           className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-4 py-2 rounded"
         >
-          {t("inventoryAddNewOrder") || "+ Add New Order"}
+          "+ Add New Order"
         </button>
       </div>
 

@@ -16,16 +16,16 @@ const initialFilters: InventoryOrdersFilterValues = {
 
 export default function InventoryOrdersPage() {
   const [filters, setFilters] = useState<InventoryOrdersFilterValues>(initialFilters);
+  const { t } = useAdminI18n();
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-700">
-          {t("inventoryOrdersTitle") || "Inventory Orders"}
+          Inventory Orders
         </h1>
         <p className="text-gray-500">
-          {t("inventoryOrdersSubtitle") ||
-            "View and manage all inventory orders, both manual and automated"}
+          View and manage all inventory orders, both manual and automated
         </p>
       </div>
 
