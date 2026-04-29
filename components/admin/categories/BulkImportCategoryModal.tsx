@@ -4,10 +4,10 @@ import { useState } from "react";
 import { apiFetch } from "@/lib/api";
 
 export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose: () => void, onSaved?: () => void }) {
-  const [csvData, setCsvData] = useState<string[][]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
-  const [fileName, setFileName] = useState("");
   const [isUploaded, setIsUploaded] = useState(false);
+  const [successCount, setSuccessCount] = useState(0);
 
   const headers = ["Category ID", "Category Name", "Description", "Status"];
 
@@ -27,51 +27,19 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    setFileName(file.name);
+    setFile(selectedFile);
     setError("");
-    setCsvData([]);
     setIsUploaded(false);
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const allLines = text.split(/\r?\n/).filter(line => line.trim() !== "");
-      if (allLines.length === 0) {
-        setError("File is empty");
-        return;
-      }
-
-      const lines = allLines.map(line => line.split(",").map(cell => cell.trim()));
-      const fileHeaders = lines[0];
-      
-      // Check if headers match (case-insensitive, trimmed)
-      const isMatch = headers.length === fileHeaders.length && 
-                      headers.every((h, i) => fileHeaders[i]?.toLowerCase() === h.toLowerCase());
-
-      if (!isMatch) {
-        setError(`Format mismatch. Expected columns: ${headers.join(", ")}`);
-        return;
-      }
-
-      const dataRows = lines.slice(1).filter(line => line.length === headers.length);
-      if (dataRows.length === 0) {
-        setError("No data rows found after header");
-        return;
-      }
-
-      setCsvData(dataRows);
-    };
-    reader.readAsText(file);
   };
 
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async () => {
-    if (csvData.length === 0) {
-      setError("No data to upload");
+    if (!file) {
+      setError("No file selected");
       return;
     }
     
@@ -79,31 +47,31 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
     setError("");
 
     try {
-      let successCount = 0;
-      for (const row of csvData) {
-        // headers = ["Category ID", "Category Name", "Description", "Status"]
-        const payload = {
-          name: row[1],
-          description: row[2] || undefined,
-        };
-        const r = await apiFetch("/categories", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
-        if (r.ok) {
-          successCount++;
-        }
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const r = await apiFetch("/categories/bulk-upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!r.ok) {
+        throw new Error("Upload failed on the server");
       }
 
-      if (successCount === 0) {
-        setError("Failed to upload any records");
+      const responseData = await r.json();
+      
+      if (responseData.successCount === 0) {
+        setError("Failed to upload any records. Ensure the CSV format is correct.");
         return;
       }
       
+      setSuccessCount(responseData.successCount);
       setIsUploaded(true);
       if (onSaved) onSaved();
     } catch (err) {
       setError("Upload failed");
+      console.error(err);
     } finally {
       setIsUploading(false);
     }
@@ -122,7 +90,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                   <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
                 </svg>
-                Successfully uploaded {csvData.length} records
+                Successfully uploaded {successCount} records
               </p>
             )}
           </div>
@@ -186,7 +154,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
                 </svg>
-                <span className="truncate max-w-[200px]">{fileName || "Choose File"}</span>
+                <span className="truncate max-w-[200px]">{file ? file.name : "Choose File"}</span>
               </label>
               <input id="categoryCsvFile" type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
               {error && <p className="text-rose-500 text-sm font-semibold">{error}</p>}
@@ -194,28 +162,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
           </>
         )}
 
-        {csvData.length > 0 && (
-          <div className="flex-1 overflow-auto border border-gray-200 rounded-lg mb-4">
-            <table className="w-full text-sm text-left border-collapse">
-              <thead className="bg-gray-50 sticky top-0">
-                <tr>
-                  {headers.map((h) => (
-                    <th key={h} className="p-2 border-b font-semibold text-gray-700 whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {csvData.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50 border-b last:border-0">
-                    {row.map((cell, j) => (
-                      <td key={j} className="p-2 text-gray-600 whitespace-nowrap">{cell}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        )
 
         <div className="flex justify-end gap-3 mt-auto pt-2 border-t border-gray-100">
           <button onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-600 border border-slate-300 hover:bg-slate-300 rounded transition-colors cursor-pointer">
@@ -224,8 +171,8 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
           {!isUploaded && (
             <button 
               onClick={handleUpload}
-              disabled={csvData.length === 0 || isUploading}
-              className={`px-4 py-2 rounded transition-colors cursor-pointer ${csvData.length > 0 && !isUploading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+              disabled={!file || isUploading}
+              className={`px-4 py-2 rounded transition-colors cursor-pointer ${file && !isUploading ? 'bg-sky-500 text-sky-50 hover:bg-sky-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             >
               {isUploading ? "Uploading..." : "Upload"}
             </button>
