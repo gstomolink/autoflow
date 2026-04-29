@@ -12,6 +12,7 @@
   "menuWarehouse": "倉庫",
   "menuInventory": "在庫",
   "menuInventoryOrders": "在庫注文",
+  "inventoryAutomatedOrders": "自動発注",
   "menuCustomerOrders": "顧客注文",
   "menuSuppliers": "仕入先",
   "menuUsersRoles": "ユーザーと権限",

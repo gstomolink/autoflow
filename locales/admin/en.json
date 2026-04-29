@@ -12,6 +12,7 @@
   "menuWarehouse": "Warehouse",
   "menuInventory": "Inventory",
   "menuInventoryOrders": "Inventory Orders",
+  "inventoryAutomatedOrders": "Automated Orders",
   "menuCustomerOrders": "Customer Orders",
   "menuSuppliers": "Suppliers",
   "menuUsersRoles": "Users",
