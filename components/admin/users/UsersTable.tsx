@@ -7,6 +7,7 @@ import ViewUserModal from "./ViewUserModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import { apiFetch } from "@/lib/api";
 import { roleLabel } from "@/lib/auth";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 type ApiUser = {
   id: number;

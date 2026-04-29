@@ -19,7 +19,9 @@ export default function InventoryOrdersTabs({
         <button
           type="button"
           onClick={() => setTab("all")}
-          className={`pb-2 text-gray-600  ${tab === "all" && "border-b-2 border-sky-600 text-sky-600"}`}
+          className={`pb-2 text-gray-600 ${
+            tab === "all" ? "border-b-2 border-sky-600 text-sky-600" : ""
+          }`}
         >
           All Orders
         </button>
@@ -31,7 +33,7 @@ export default function InventoryOrdersTabs({
             tab === "auto" ? "border-b-2 border-sky-600 text-sky-600" : ""
           }`}
         >
-          {t("inventoryAutomatedOrders") || "Automated Orders"}
+          Automated Orders
         </button>
 
       </div>
