@@ -12,6 +12,7 @@ export default function AdminProductsPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [filters, setFilters] = useState<any>({});
+  const [tableKey, setTableKey] = useState(0);
 
   return (
     <div>
@@ -51,13 +52,18 @@ export default function AdminProductsPage() {
       </div>
 
       <ProductFilters onFilter={setFilters} />
-      <ProductTable filters={filters} />
+      <ProductTable key={tableKey} filters={filters} />
 
-      {showAdd && <AddProductModal onClose={() => setShowAdd(false)} />}
+      {showAdd && (
+        <AddProductModal
+          onClose={() => setShowAdd(false)}
+          onSaved={() => setTableKey((k) => k + 1)}
+        />
+      )}
       {showBulk && (
         <BulkImportProductModal 
           onClose={() => setShowBulk(false)} 
-          onSaved={() => setFilters({ ...filters })}
+          onSaved={() => setTableKey((k) => k + 1)}
         />
       )}
     </div>

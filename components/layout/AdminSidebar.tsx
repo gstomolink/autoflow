@@ -7,10 +7,10 @@ import { TranslationKey, useAdminI18n } from "./AdminI18nProvider";
 
 const menu: { key: TranslationKey; href: string }[] = [
   { key: "menuDashboard", href: "/admin/dashboard" },
+  // { key: "menuWarehouse", href: "/admin/warehouses" },
   { key: "menuShops", href: "/admin/shops" },
   { key: "menuCategories", href: "/admin/categories" },
   { key: "menuProducts", href: "/admin/products" },
-  { key: "menuWarehouse", href: "/admin/warehouses" },
   { key: "menuInventory", href: "/admin/inventory" },
   { key: "menuInventoryOrders", href: "/admin/inventory-orders" },
   { key: "menuCustomerOrders", href: "/admin/orders" },

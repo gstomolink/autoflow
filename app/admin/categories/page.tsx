@@ -11,6 +11,7 @@ export default function CategoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [filters, setFilters] = useState<any>({});
+  const [tableKey, setTableKey] = useState(0);
   const { t } = useAdminI18n();
 
   return (
@@ -55,19 +56,20 @@ export default function CategoriesPage() {
       {/* Filters */}
       <CategoryFilters onFilter={(f) => setFilters(f)} />
 
-      <CategoriesTable filters={filters} />
+      <CategoriesTable key={tableKey} filters={filters} />
 
       {showAdd && (
         <CategoryFormModal
           mode="add"
           onClose={() => setShowAdd(false)}
+          onSaved={() => setTableKey((k) => k + 1)}
         />
       )}
 
       {showBulk && (
         <BulkImportCategoryModal
           onClose={() => setShowBulk(false)}
-          onSaved={() => setFilters({ ...filters })}
+          onSaved={() => setTableKey((k) => k + 1)}
         />
       )}
     </div>

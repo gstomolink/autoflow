@@ -18,17 +18,6 @@ export default function CategoryFilters({ onFilter }: Props) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
       <div className="flex items-center gap-4">
-        {/* Category Filter */}
-        <select
-          onChange={(e) => onFilter({ category: e.target.value })}
-          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-        >
-          <option value="">All Categories</option>
-          <option value="Electronics">Burgers & sandwiches</option>
-          <option value="Accessories">Pizza</option>
-
-        </select>
-
         {/* Search Input */}
         <input
           type="text"
