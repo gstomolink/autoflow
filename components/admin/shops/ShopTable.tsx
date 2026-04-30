@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
 import ViewShopModal from "./ViewShopModal";
@@ -16,6 +16,7 @@ export default function ShopTable() {
   const { t } = useAdminI18n();
   const [data, setData] = useState<ShopRow[]>([]);
   const [viewItem, setViewItem] = useState<ShopRow | null>(null);
+  const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +39,17 @@ export default function ShopTable() {
     void load();
   }, [load]);
 
+  const filteredData = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter(
+      (row) =>
+        row.shopId.toLowerCase().includes(q) ||
+        row.name.toLowerCase().includes(q) ||
+        (row.address?.toLowerCase().includes(q) ?? false),
+    );
+  }, [data, search]);
+
   if (loading) {
     return <p className="text-slate-500">Loading…</p>;
   }
@@ -45,6 +57,15 @@ export default function ShopTable() {
   return (
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search shop..."
+          className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+        />
+      </div>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-gray-700">
           <thead className="bg-white">
@@ -56,7 +77,14 @@ export default function ShopTable() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row) => (
+            {filteredData.length === 0 ? (
+              <tr className="border-t border-gray-200">
+                <td className="p-6 text-center text-slate-500" colSpan={4}>
+                  No data
+                </td>
+              </tr>
+            ) : null}
+            {filteredData.map((row) => (
               <tr key={row.shopId} className="border-t border-gray-200">
                 <td className="p-3 font-mono text-slate-800">{row.shopId}</td>
                 <td className="p-3 font-medium">{row.name}</td>

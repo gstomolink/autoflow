@@ -1,15 +1,8 @@
 'use client';
 
-import { useState } from "react";
 import RecipesTable from "@/components/admin/recipes/RecipesTable";
-import RecipeFilters from "@/components/admin/recipes/RecipeFilters";
 
 export default function RecipesPage() {
-  const [filters, setFilters] = useState({
-    search: "",
-    category: ""
-  });
-
   return (
     <div className="text-gray-700">
 
@@ -18,9 +11,7 @@ export default function RecipesPage() {
         Manage product recipes and ingredient costing
       </p>
 
-
-
-      <RecipesTable filters={filters} />
+      <RecipesTable />
 
     </div>
   );

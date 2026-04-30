@@ -12,6 +12,7 @@ import { inventoryOrderStatusLabel } from "@/lib/inventory-order-statuses";
 
 type Line = {
   id: number;
+  productId: number;
   quantityOrdered: number;
   unitCost: string;
   product?: { name: string; sku: string };
@@ -122,7 +123,7 @@ export default function ManualOrdersTable({
           onClick={() => setAdd(true)}
           className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-4 py-2 rounded"
         >
-          "+ Add New Order"
+          Add New Order
         </button>
       </div>
 
@@ -132,7 +133,7 @@ export default function ManualOrdersTable({
             <th className="p-2">Order ID</th>
             <th className="p-2">Source</th>
             <th className="p-2">Supplier</th>
-            <th className="p-2">Lines</th>
+            <th className="p-2">Products</th>
             <th className="p-2">Delivery</th>
             <th className="p-2">Status</th>
             <th className="p-2">Actions</th>

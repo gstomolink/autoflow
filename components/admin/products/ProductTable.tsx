@@ -13,7 +13,6 @@ type ProductRow = {
   imageUrl: string | null;
   basePrice: string;
   categoryName: string;
-  supplierCode: string;
 };
 
 export default function ProductTable({ filters }: { filters: Record<string, string> }) {
@@ -81,26 +80,34 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
               <th className="p-3 text-left">{t("tableName")}</th>
               <th className="p-3 text-left">{t("tableCategory")}</th>
               <th className="p-3 text-left">{t("tablePrice")}</th>
-              <th className="p-3 text-left">{t("tableSupplierId")}</th>
               <th className="p-3 text-left">{t("tableActions")}</th>
             </tr>
           </thead>
 
           <tbody>
+            {filtered.length === 0 ? (
+              <tr className="border-t border-gray-200">
+                <td className="p-6 text-center text-slate-500" colSpan={6}>
+                  No data
+                </td>
+              </tr>
+            ) : null}
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-gray-200">
                 <td className="p-3">{p.sku}</td>
                 <td className="p-3">
                   <img
-                    src={p.imageUrl || "/products/p1.jpg"}
+                    src={p.imageUrl || "/product-placeholder.svg"}
                     alt=""
+                    onError={(e) => {
+                      e.currentTarget.src = "/product-placeholder.svg";
+                    }}
                     className="h-12 w-12 object-cover rounded"
                   />
                 </td>
                 <td className="p-3 font-medium">{p.name}</td>
                 <td className="p-3">{p.categoryName}</td>
                 <td className="p-3">${Number(p.basePrice).toFixed(2)}</td>
-                <td className="p-3">{p.supplierCode || "—"}</td>
                 <td className="p-3 space-x-2">
                   <button type="button" onClick={() => setViewItem(p)} className="px-2 py-1 bg-sky-500 text-sky-50 rounded hover:bg-sky-600 transition-colors cursor-pointer">{t("actionView")}</button>
                   <button type="button" onClick={() => setEditItem(p)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors cursor-pointer">{t("actionEdit")}</button>

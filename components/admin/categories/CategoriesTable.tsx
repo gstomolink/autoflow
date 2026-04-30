@@ -43,8 +43,9 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
 
   const filteredData = useMemo(() => {
     let data = categories;
-    if (filters?.category) {
-      data = data.filter((c) => c.name === filters.category);
+    if (filters?.search) {
+      const q = String(filters.search).trim().toLowerCase();
+      data = data.filter((c) => c.name.toLowerCase().includes(q));
     }
     return data;
   }, [filters, categories]);
@@ -80,6 +81,13 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
           </thead>
 
           <tbody>
+            {filteredData.length === 0 ? (
+              <tr className="border-t">
+                <td className="p-6 text-center text-slate-500" colSpan={6}>
+                  No data
+                </td>
+              </tr>
+            ) : null}
             {filteredData.map((cat) => (
               <tr key={cat.id} className="border-t">
                 <td className="p-3 text-gray-700">{cat.id}</td>

@@ -7,7 +7,6 @@ type Row = {
   imageUrl: string | null;
   basePrice: string;
   categoryName: string;
-  supplierCode: string;
 };
 
 export default function ViewProductModal({
@@ -35,8 +34,11 @@ export default function ViewProductModal({
         </div>
 
         <img
-          src={product.imageUrl || "/products/p1.jpg"}
+          src={product.imageUrl || "/product-placeholder.svg"}
           alt=""
+          onError={(e) => {
+            e.currentTarget.src = "/product-placeholder.svg";
+          }}
           className="h-32 w-32 object-cover rounded mb-4"
         />
 
@@ -45,7 +47,6 @@ export default function ViewProductModal({
           <p><b>Name:</b> {product.name}</p>
           <p><b>Category:</b> {product.categoryName}</p>
           <p><b>Price:</b> ${Number(product.basePrice).toFixed(2)}</p>
-          <p><b>Supplier:</b> {product.supplierCode || "—"}</p>
         </div>
 
         <div className="flex justify-end mt-4">

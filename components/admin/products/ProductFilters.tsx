@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { apiFetch } from "@/lib/api";
 
 type Props = {
   onFilter: (filters: any) => void;
@@ -11,6 +12,24 @@ export default function ProductFilters({ onFilter }: Props) {
   const { t } = useAdminI18n();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await apiFetch("/categories");
+        if (!res.ok) return;
+        const rows = (await res.json()) as Array<{ name: string }>;
+        const names = rows
+          .map((row) => row.name?.trim())
+          .filter((name): name is string => Boolean(name));
+        setCategories([...new Set(names)]);
+      } catch {
+        setCategories([]);
+      }
+    };
+    void loadCategories();
+  }, []);
 
   const handleSearch = () => {
     onFilter({
@@ -38,9 +57,11 @@ export default function ProductFilters({ onFilter }: Props) {
         className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
       >
         <option value="">All Categories</option>
-        <option>Electronics</option>
-        <option>Accessories</option>
-        <option>Apparel</option>
+        {categories.map((item) => (
+          <option key={item} value={item}>
+            {item}
+          </option>
+        ))}
       </select>
 
       {/* Search Button */}
