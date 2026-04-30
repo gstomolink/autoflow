@@ -11,9 +11,10 @@ type Props = {
     description: string | null;
   };
   onClose: () => void;
+  onSaved?: () => void;
 };
 
-export default function CategoryFormModal({ mode, data, onClose }: Props) {
+export default function CategoryFormModal({ mode, data, onClose, onSaved }: Props) {
   const [name, setName] = useState(data?.name ?? "");
   const [description, setDescription] = useState(data?.description ?? "");
   const [error, setError] = useState("");
@@ -37,6 +38,7 @@ export default function CategoryFormModal({ mode, data, onClose }: Props) {
         });
         if (!r.ok) throw new Error(await r.text());
       }
+      onSaved?.();
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");

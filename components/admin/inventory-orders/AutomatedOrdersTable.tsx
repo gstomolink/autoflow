@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 
+type UrgencyStatus = "on_track" | "next_week" | "urgent" | "order_passed";
+
 type Sug = {
   id: number;
   suggestedQty: number;
@@ -13,15 +15,37 @@ type Sug = {
   notifyBufferDays?: number | null;
   daysCover?: string | null;
   dailyUsageRate?: string | null;
+  maxOrderToDeliveryDays?: number | null;
+  daysUntilStockout?: string | null;
+  urgencyStatus?: UrgencyStatus | null;
+  recommendedOrderDate?: string | null;
+  aiConfidence?: string | null;
+  aiReason?: string | null;
+  status?: string;
   product?: { name: string; sku: string };
   supplier?: { name: string };
 };
+
+const urgencyStyles: Record<UrgencyStatus, string> = {
+  on_track: "bg-emerald-100 text-emerald-700",
+  next_week: "bg-amber-100 text-amber-700",
+  urgent: "bg-rose-100 text-rose-700",
+  order_passed: "bg-red-100 text-red-700",
+};
+
+function urgencyLabel(status?: UrgencyStatus | null) {
+  if (status === "next_week") return "Next week";
+  if (status === "urgent") return "Urgent";
+  if (status === "order_passed") return "Order passed";
+  return "On track";
+}
 
 export default function AutomatedOrdersTable() {
   const [rows, setRows] = useState<Sug[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [creatingOrderId, setCreatingOrderId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setError("");
@@ -46,7 +70,7 @@ export default function AutomatedOrdersTable() {
     setRunning(true);
     setError("");
     try {
-      const r = await apiFetch("/inventory-suggestions/run-replenishment", {
+      const r = await apiFetch("/inventory-suggestions/run-ai", {
         method: "POST",
       });
       if (!r.ok) throw new Error(await r.text());
@@ -55,6 +79,22 @@ export default function AutomatedOrdersTable() {
       setError(e instanceof Error ? e.message : "Run failed");
     } finally {
       setRunning(false);
+    }
+  };
+
+  const createOrder = async (suggestionId: number) => {
+    setCreatingOrderId(suggestionId);
+    setError("");
+    try {
+      const r = await apiFetch(`/inventory-suggestions/${suggestionId}/create-order`, {
+        method: "POST",
+      });
+      if (!r.ok) throw new Error(await r.text());
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to create order");
+    } finally {
+      setCreatingOrderId(null);
     }
   };
 
@@ -75,7 +115,7 @@ export default function AutomatedOrdersTable() {
           onClick={() => void runScan()}
           className="bg-violet-600 text-violet-50 hover:bg-violet-700 px-4 py-2 rounded disabled:opacity-50"
         >
-          {running ? "Running…" : "Run replenishment scan"}
+          {running ? "Running…" : "Run AI scan"}
         </button>
       </div>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
@@ -92,10 +132,22 @@ export default function AutomatedOrdersTable() {
             <th className="p-2 text-left">Forecast 30d</th>
             <th className="p-2 text-left">Suggested</th>
             <th className="p-2 text-left">Supplier</th>
+            <th className="p-2 text-left">AI timing</th>
+            <th className="p-2 text-left">Urgency</th>
+            <th className="p-2 text-left">Confidence</th>
+            <th className="p-2 text-left">Reason</th>
+            <th className="p-2 text-left">Action</th>
           </tr>
         </thead>
 
         <tbody>
+          {rows.length === 0 ? (
+            <tr className="border-t border-gray-200">
+              <td className="p-6 text-center text-slate-500" colSpan={15}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {rows.map((d) => (
             <tr key={d.id} className="border-t border-gray-200">
               <td className="p-2">{d.product?.name ?? "—"}</td>
@@ -112,6 +164,40 @@ export default function AutomatedOrdersTable() {
               <td className="p-2">{d.forecastQty}</td>
               <td className="p-2">{d.suggestedQty}</td>
               <td className="p-2">{d.supplier?.name ?? "—"}</td>
+              <td className="p-2">
+                {d.maxOrderToDeliveryDays != null
+                  ? `${d.maxOrderToDeliveryDays} days`
+                  : "—"}
+              </td>
+              <td className="p-2">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyStyles[d.urgencyStatus ?? "on_track"]}`}
+                >
+                  {urgencyLabel(d.urgencyStatus)}
+                </span>
+              </td>
+              <td className="p-2">
+                {d.aiConfidence != null
+                  ? `${Math.round(Number(d.aiConfidence) * 100)}%`
+                  : "—"}
+              </td>
+              <td className="p-2 max-w-72 truncate" title={d.aiReason ?? undefined}>
+                {d.aiReason ?? "—"}
+              </td>
+              <td className="p-2">
+                <button
+                  type="button"
+                  onClick={() => void createOrder(d.id)}
+                  disabled={creatingOrderId === d.id || d.status === "converted"}
+                  className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-3 py-1 rounded disabled:opacity-50"
+                >
+                  {d.status === "converted"
+                    ? "Converted"
+                    : creatingOrderId === d.id
+                      ? "Creating..."
+                      : "Create order"}
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

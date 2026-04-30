@@ -21,12 +21,11 @@ type Row = {
 export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const { t } = useAdminI18n();
 
-  const [data, setData] = useState<Row[]>([]);
-
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [threshold, setThreshold] = useState(20);
-  const [warehouse, setWarehouse] = useState("");
+  const [shop, setShop] = useState("");
+  const [product, setProduct] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -71,17 +70,38 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       );
     }
 
-    if (warehouse) {
-      d = d.filter((i) => i.warehouseName === warehouse);
+    if (shop) {
+      d = d.filter((i) => i.warehouseName === shop);
+    }
+
+    if (product) {
+      d = d.filter((i) => i.productName === product);
     }
 
     return d;
-  }, [search, warehouse, threshold, onlyLow, rows]);
+  }, [search, shop, product, threshold, onlyLow, rows]);
 
-  const warehouses = useMemo(() => {
+  const shops = useMemo(() => {
     const s = new Set(rows.map((r) => r.warehouseName));
     return [...s];
   }, [rows]);
+
+  const products = useMemo(() => {
+    const s = new Set(rows.map((r) => r.productName));
+    return [...s].sort((a, b) => a.localeCompare(b));
+  }, [rows]);
+
+  const applyFilters = () => {
+    setSearch(searchInput.trim());
+  };
+
+  const resetFilters = () => {
+    setSearch("");
+    setSearchInput("");
+    setShop("");
+    setProduct("");
+    setThreshold(20);
+  };
 
   if (loading) {
     return <p className="text-slate-500">Loading…</p>;
@@ -116,43 +136,66 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </button>
     </div>
 
-    <div className="flex justify-between items-center mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
-      <div className="flex gap-2 flex-wrap">
+    <div className="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-center gap-3 flex-wrap">
         <input
           placeholder="Search product..."
-          className="border border-gray-300 text-gray-700 px-3 py-2 rounded cursor-pointer"
+          value={searchInput}
+          className="border border-gray-300 text-gray-700 px-3 py-2 rounded-lg w-72"
           onChange={(e) => setSearchInput(e.target.value)}
-          onBlur={() => setSearch(searchInput)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              applyFilters();
+            }
+          }}
         />
 
         <select
-          value={warehouse}
-          onChange={(e)=>setWarehouse(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded"
+          value={product}
+          onChange={(e)=>setProduct(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
         >
-          <option value="">All Warehouses</option>
-          {warehouses.map((w) => (
+          <option value="">All Products</option>
+          {products.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+
+        <select
+          value={shop}
+          onChange={(e)=>setShop(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+        >
+          <option value="">All Shops</option>
+          {shops.map((w) => (
             <option key={w} value={w}>{w}</option>
           ))}
         </select>
 
-        <div className="flex items-center gap-2">
-          <label>{t("tableLowStockLevel")}</label>
+        <div className="flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg">
+          <label className="text-sm text-gray-700">{t("tableLowStockLevel")}</label>
           <input
             type="number"
             value={threshold}
             onChange={(e)=>setThreshold(Number(e.target.value))}
-            className="border border-gray-300 px-2 py-2 rounded w-24"
+            className="w-20 text-gray-700 focus:outline-none"
           />
         </div>
 
-        <button className="ml-auto bg-sky-500 text-white px-5 py-2 rounded hover:bg-sky-600">
+        <button
+          type="button"
+          onClick={applyFilters}
+          className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
+        >
           {t("actionSearch")}
         </button>
-      </div>
 
-      <button type="button" onClick={() => void load()} className="w-44 bg-sky-500 text-sky-50 px-5 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors">
-        {t("actionSearch")}
+      <button
+        type="button"
+        onClick={resetFilters}
+        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors cursor-pointer"
+      >
+        Reset
       </button>
     </div>
 
@@ -168,7 +211,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
           <th className="p-3">{t("tableProduct")}</th>
           <th className="p-3">{t("tableWarehouse")}</th>
           <th className="p-3">{t("tableStock")}</th>
-          <th className="p-3">{t("tableReserved")}</th>
+          {/* <th className="p-3">{t("tableReserved")}</th> */}
           <th className="p-3">{t("tableAvailable")}</th>
           <th className="p-3">{t("tableLowStockLevel")}</th>
           <th className="p-3">{t("tableStatus")}</th>
@@ -176,6 +219,13 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </thead>
 
       <tbody>
+        {filtered.length === 0 ? (
+          <tr className="border-t border-gray-300">
+            <td className="p-6 text-center text-slate-500" colSpan={6}>
+              No data
+            </td>
+          </tr>
+        ) : null}
         {filtered.map((i) => (
           <tr
             key={i.id}
@@ -186,7 +236,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
             <td className="p-3">{i.productName}</td>
             <td className="p-3">{i.warehouseName}</td>
             <td className="p-3">{i.quantityOnHand}</td>
-            <td className="p-3">{i.reservedQuantity}</td>
+            {/* <td className="p-3">{i.reservedQuantity}</td> */}
             <td className="p-3">{i.available}</td>
             <td className="p-3">{threshold}</td>
             <td className="p-3 font-bold">
@@ -197,7 +247,12 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </tbody>
     </table>
 
-    {showAdd && <AddStockModal onClose={() => { setShowAdd(false); void load(); }} />}
+    {showAdd && (
+      <AddStockModal
+        onClose={() => setShowAdd(false)}
+        onSaved={() => void load()}
+      />
+    )}
     {showAdjust && <StockAdjustmentModal onClose={() => setShowAdjust(false)} />}
     {showTransfer && <StockTransferModal onClose={() => setShowTransfer(false)} />}
   </div>

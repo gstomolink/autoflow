@@ -40,6 +40,13 @@ export default function RolesTable() {
         </thead>
 
         <tbody>
+          {roles.length === 0 ? (
+            <tr className="border-t border-gray-300">
+              <td className="p-6 text-center text-slate-500" colSpan={4}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {roles.map((r, i) => (
             <tr key={i} className="border-t border-gray-300">
               <td className="p-2">{r.name}</td>

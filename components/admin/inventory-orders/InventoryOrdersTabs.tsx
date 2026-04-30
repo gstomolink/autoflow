@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { InventoryOrdersFilterValues } from "./Filters";
 import ManualOrdersTable from "./ManualOrdersTable";
 import AutomatedOrdersTable from "./AutomatedOrdersTable";
+import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function InventoryOrdersTabs({
   filters,
@@ -11,6 +12,7 @@ export default function InventoryOrdersTabs({
   filters: InventoryOrdersFilterValues;
 }) {
   const [tab, setTab] = useState<"all" | "auto">("all");
+  const { t } = useAdminI18n();
 
   return (
     <div>

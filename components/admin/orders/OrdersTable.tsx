@@ -1,10 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import type { OrderFilterValues } from "./OrderFilters";
 
 type Props = {
+  filters: OrderFilterValues;
   onView: (order: unknown) => void;
 };
 
@@ -19,7 +21,7 @@ type Co = {
   paymentStatus: string;
 };
 
-export default function OrdersTable({ onView }: Props) {
+export default function OrdersTable({ filters, onView }: Props) {
   const { t } = useAdminI18n();
   const [orders, setOrders] = useState<Co[]>([]);
   const [error, setError] = useState("");
@@ -44,6 +46,29 @@ export default function OrdersTable({ onView }: Props) {
     void load();
   }, [load]);
 
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      const orderDate = String(o.createdAt).slice(0, 10);
+
+      if (filters.fromDate && orderDate < filters.fromDate) {
+        return false;
+      }
+      if (filters.toDate && orderDate > filters.toDate) {
+        return false;
+      }
+      if (filters.status && o.status.toLowerCase() !== filters.status.toLowerCase()) {
+        return false;
+      }
+      if (
+        filters.paymentType &&
+        o.paymentStatus.toLowerCase() !== filters.paymentType.toLowerCase()
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [orders, filters]);
+
   if (loading) {
     return <p className="text-slate-500 p-4">Loading…</p>;
   }
@@ -67,7 +92,14 @@ export default function OrdersTable({ onView }: Props) {
           </thead>
 
           <tbody>
-            {orders.map((o) => (
+            {filteredOrders.length === 0 ? (
+              <tr className="border-t">
+                <td className="p-6 text-center text-slate-500" colSpan={8}>
+                  No data
+                </td>
+              </tr>
+            ) : null}
+            {filteredOrders.map((o) => (
               <tr key={o.id} className="border-t">
                 <td className="p-3 font-medium text-gray-700">{o.orderNumber}</td>
                 <td className="p-3 text-gray-700">{String(o.createdAt).slice(0, 10)}</td>

@@ -85,6 +85,13 @@ export default function IngredientsTable() {
         </thead>
 
         <tbody>
+          {filteredData.length === 0 ? (
+            <tr className="border-t border-gray-300">
+              <td className="p-6 text-center text-slate-500" colSpan={9}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {filteredData.map((i, idx) => (
             <tr key={idx} className="border-t border-gray-300">
               <td className="p-2">{i.id}</td>

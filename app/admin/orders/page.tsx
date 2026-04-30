@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import OrdersTable from "@/components/admin/orders/OrdersTable";
-import OrderFilters from "@/components/admin/orders/OrderFilters";
+import OrderFilters, { type OrderFilterValues } from "@/components/admin/orders/OrderFilters";
 import OrderDetailsModal from "@/components/admin/orders/OrderDetailsModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 export default function OrdersPage() {
   const { t } = useAdminI18n();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [filters, setFilters] = useState<OrderFilterValues>({
+    fromDate: "",
+    toDate: "",
+    status: "",
+    paymentType: "",
+  });
 
   return (
     <div>
@@ -16,9 +22,9 @@ export default function OrdersPage() {
         {t("ordersTitle")}
       </h1>
 
-      <OrderFilters />
+      <OrderFilters values={filters} onChange={setFilters} />
 
-      <OrdersTable onView={(order) => setSelectedOrder(order)} />
+      <OrdersTable filters={filters} onView={(order) => setSelectedOrder(order)} />
 
       {selectedOrder && (
         <OrderDetailsModal
