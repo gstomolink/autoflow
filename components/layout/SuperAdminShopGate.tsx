@@ -9,11 +9,15 @@ import { getScopedShopId, setScopedShopId } from "@/lib/shop-scope";
 import SearchableShopCombobox from "./SearchableShopCombobox";
 import { useAdminI18n } from "./AdminI18nProvider";
 
-const EXEMPT_PATHS = ["/admin/shops"];
+const REQUIRED_PATHS = [
+  "/admin/inventory",
+  "/admin/inventory-orders",
+  "/admin/orders",
+];
 
-function isExemptPath(pathname: string | null): boolean {
+function isRequiredPath(pathname: string | null): boolean {
   if (!pathname) return false;
-  return EXEMPT_PATHS.some(
+  return REQUIRED_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }
@@ -29,13 +33,13 @@ export default function SuperAdminShopGate({
   const router = useRouter();
   const { t } = useAdminI18n();
   const user = getStoredUser();
-  const exempt = isExemptPath(pathname);
+  const isRequired = isRequiredPath(pathname);
 
   const needsPick = useMemo(
     () =>
       user?.role === USER_ROLES.SUPER_ADMIN &&
-      !exempt,
-    [user?.role, exempt],
+      isRequired,
+    [user?.role, isRequired],
   );
 
   const [activeShop, setActiveShop] = useState<string | null>(null);

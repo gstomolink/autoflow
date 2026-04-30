@@ -41,7 +41,7 @@ export default function ViewOrderModal({
         <p><b>Expected delivery:</b> {data.expectedDeliveryDate ? String(data.expectedDeliveryDate).slice(0, 10) : "—"}</p>
 
         <h3 className="font-semibold mt-4 mb-2">Lines</h3>
-        <table className="w-full text-sm border">
+        <table className="w-full border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500">
           <thead>
             <tr className="bg-gray-100">
               <th className="p-2 text-left">Product</th>

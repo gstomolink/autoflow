@@ -106,67 +106,76 @@ export default function AddUserModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-xl w-full max-w-lg text-gray-700 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between mb-4">
-          <h2 className="font-bold">Add User</h2>
-          <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-bold text-black mb-1">Add User</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
         </div>
 
 <form className="space-y-4" onSubmit={handleSubmit}>
 
   {/* FULL NAME */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Full Name *
     </label>
     <input
       required
       value={fullName}
       onChange={(e) => setFullName(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* USER ID */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       User ID *
     </label>
     <input
       required
       value={userId}
       onChange={(e) => setUserId(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* EMAIL */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Email
     </label>
     <input
       type="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* PHONE */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Phone
     </label>
     <input
       value={phone}
       onChange={(e) => setPhone(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* PASSWORD */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Password *
     </label>
     <input
@@ -174,20 +183,20 @@ export default function AddUserModal({ onClose }: Props) {
       type="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* STAFF TYPE */}
   {isStoreAdmin && (
     <div>
-      <label className="block text-sm text-gray-600 mb-1">
+      <label className="block text-sm text-gray-700 mb-1">
         Staff Type
       </label>
       <select
         value={staffType}
         onChange={(e) => setStaffType(e.target.value)}
-        className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+        className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
       >
         <option value="cashier">Cashier</option>
         <option value="inventory_staff">Inventory Staff</option>
@@ -201,11 +210,11 @@ export default function AddUserModal({ onClose }: Props) {
   )}
 
   {/* ACTIONS */}
-  <div className="flex justify-end gap-2 mt-4">
+  <div className="flex justify-end gap-3 pt-4 mt-6">
     <button
       type="button"
       onClick={onClose}
-      className="border border-gray-300 text-gray-700 px-4 py-2 rounded"
+      className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
     >
       Cancel
     </button>

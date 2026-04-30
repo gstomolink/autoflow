@@ -13,7 +13,7 @@ export default function ProceedModal({ data, onClose }: any) {
         <p><b>Delivery:</b> {data.date}</p>
 
         <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="border px-4 py-2 rounded">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors">
             Cancel
           </button>
           <button className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-4 py-2 rounded cursor-pointer">

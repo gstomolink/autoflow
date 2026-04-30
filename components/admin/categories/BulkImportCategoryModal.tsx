@@ -97,7 +97,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
 
           <button
             onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
             aria-label="Close modal"
           >
             <svg
@@ -139,10 +139,7 @@ export default function BulkImportCategoryModal({ onClose, onSaved }: { onClose:
             </p>
 
             <div className="flex flex-col gap-2 mb-4">
-              <label
-                htmlFor="categoryCsvFile"
-                className="w-64 px-4 py-2 text-sky-50 border bg-sky-500 hover:bg-sky-600 rounded cursor-pointer inline-flex items-center justify-center gap-2"
-              >
+              <label className="block text-sm text-gray-700 mb-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
