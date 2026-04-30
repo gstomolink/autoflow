@@ -1,13 +1,50 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 
 type Props = {
   onClose: () => void;
+  onSaved?: () => void;
 };
 
-export default function AddProductModal({ onClose }: Props) {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+type CategoryRow = {
+  id: number;
+  name: string;
+};
+
+export default function AddProductModal({ onClose, onSaved }: Props) {
+  const [sku, setSku] = useState("");
+  const [name, setName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [basePrice, setBasePrice] = useState("");
+  const [reorderPoint, setReorderPoint] = useState("0");
+  const [safetyStock, setSafetyStock] = useState("0");
+  const [avgDailySales, setAvgDailySales] = useState("0");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [loadingMasterData, setLoadingMasterData] = useState(true);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const loadMasterData = async () => {
+      setLoadingMasterData(true);
+      setError("");
+      try {
+        const categoryRes = await apiFetch("/categories");
+        if (!categoryRes.ok) throw new Error(await categoryRes.text());
+        const categoryRows = (await categoryRes.json()) as CategoryRow[];
+        setCategories(categoryRows);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to load form data");
+      } finally {
+        setLoadingMasterData(false);
+      }
+    };
+    void loadMasterData();
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -15,15 +52,38 @@ export default function AddProductModal({ onClose }: Props) {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result as string);
+      setImageUrl(String(reader.result ?? ""));
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Product Added Successfully!");
-    onClose();
+    setError("");
+    setSaving(true);
+    try {
+      const payload = {
+        sku: sku.trim(),
+        name: name.trim(),
+        categoryId: categoryId ? Number(categoryId) : undefined,
+        imageUrl: imageUrl.trim() || undefined,
+        basePrice: basePrice.trim() || "0",
+        reorderPoint: Number(reorderPoint || 0),
+        safetyStock: Number(safetyStock || 0),
+        avgDailySales: avgDailySales.trim() || "0",
+      };
+      const r = await apiFetch("/products", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      onSaved?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -54,8 +114,25 @@ export default function AddProductModal({ onClose }: Props) {
             <input
               required
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
               placeholder="Enter product name"
+            />
+          </div>
+
+          {/* SKU */}
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">
+              SKU
+            </label>
+            <input
+              required
+              type="text"
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
+              placeholder="Unique SKU"
             />
           </div>
 
@@ -64,23 +141,32 @@ export default function AddProductModal({ onClose }: Props) {
             <label className="block text-sm text-gray-700 mb-1">
               Category
             </label>
-            <select className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700">
-              <option>Electronics</option>
-              <option>Accessories</option>
-              <option>Apparel</option>
-              <option>Home & Living</option>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
+              disabled={loadingMasterData}
+            >
+              <option value="">Select category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={String(category.id)}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Price & Stock */}
+          {/* Pricing and planning */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-700 mb-1">
-                Price ($)
+                Base Price
               </label>
               <input
                 required
-                type="number"
+                type="text"
+                value={basePrice}
+                onChange={(e) => setBasePrice(e.target.value)}
                 className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
                 placeholder="0.00"
               />
@@ -88,39 +174,47 @@ export default function AddProductModal({ onClose }: Props) {
 
             <div>
               <label className="block text-sm text-gray-700 mb-1">
-                Stock Quantity
+                Avg Daily Sales
               </label>
               <input
-                required
-                type="number"
+                type="text"
+                value={avgDailySales}
+                onChange={(e) => setAvgDailySales(e.target.value)}
                 className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
                 placeholder="0"
               />
             </div>
           </div>
 
-          {/* Supplier */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">
-              Supplier
-            </label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
-              placeholder="Supplier name"
-            />
-          </div>
+          {/* Inventory thresholds */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">
+                Reorder Point
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={reorderPoint}
+                onChange={(e) => setReorderPoint(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
+                placeholder="0"
+              />
+            </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
-              placeholder="Product description"
-            />
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">
+                Safety Stock
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={safetyStock}
+                onChange={(e) => setSafetyStock(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700"
+                placeholder="0"
+              />
+            </div>
           </div>
 
           {/* Image Upload */}
@@ -128,6 +222,14 @@ export default function AddProductModal({ onClose }: Props) {
             <label className="block text-sm text-gray-700 mb-2">
               Product Image
             </label>
+
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-sky-500 text-gray-700 mb-3"
+              placeholder="https://example.com/product-image.jpg"
+            />
 
             <div className="flex items-center gap-4">
               <label className="cursor-pointer px-4 py-2 bg-sky-500 text-sky-50 rounded-lg hover:bg-sky-600 transition-colors">
@@ -140,15 +242,18 @@ export default function AddProductModal({ onClose }: Props) {
                 />
               </label>
 
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-20 w-20 object-cover rounded-lg border"
-                />
-              )}
+              <img
+                src={imageUrl || "/product-placeholder.svg"}
+                alt="Preview"
+                onError={(e) => {
+                  e.currentTarget.src = "/product-placeholder.svg";
+                }}
+                className="h-20 w-20 object-cover rounded-lg border"
+              />
             </div>
           </div>
+
+          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
@@ -162,9 +267,10 @@ export default function AddProductModal({ onClose }: Props) {
 
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-sky-500 text-sky-50 hover:bg-sky-600 transition-colors"
+              disabled={saving || loadingMasterData}
+              className="px-4 py-2 rounded-lg bg-sky-500 text-sky-50 hover:bg-sky-600 transition-colors disabled:opacity-50"
             >
-              Save Product
+              {saving ? "Saving..." : "Save Product"}
             </button>
           </div>
         </form>

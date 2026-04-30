@@ -122,7 +122,7 @@ export default function ManualOrdersTable({
           onClick={() => setAdd(true)}
           className="bg-sky-500 text-sky-50 hover:bg-sky-600 px-4 py-2 rounded"
         >
-          "+ Add New Order"
+          Add New Order
         </button>
       </div>
 

@@ -9,11 +9,12 @@ import { getScopedShopId, setScopedShopId } from "@/lib/shop-scope";
 import SearchableShopCombobox from "./SearchableShopCombobox";
 import { useAdminI18n } from "./AdminI18nProvider";
 
-const EXEMPT_PATHS = ["/admin/shops"];
 
-function isExemptPath(pathname: string | null): boolean {
+const INCLUDED_PATHS = ["/admin/inventory", "/admin/inventory-orders", "/admin/orders", "/admin/users-roles"];
+
+function isIncludedPath(pathname: string | null): boolean {
   if (!pathname) return false;
-  return EXEMPT_PATHS.some(
+  return INCLUDED_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }
@@ -29,14 +30,17 @@ export default function SuperAdminShopGate({
   const router = useRouter();
   const { t } = useAdminI18n();
   const user = getStoredUser();
-  const exempt = isExemptPath(pathname);
+  const included = isIncludedPath(pathname);
+  console.log("included", included);
 
   const needsPick = useMemo(
     () =>
       user?.role === USER_ROLES.SUPER_ADMIN &&
-      !exempt,
-    [user?.role, exempt],
+      included,
+    [user?.role, included],
   );
+
+  console.log("needsPick", needsPick);
 
   const [activeShop, setActiveShop] = useState<string | null>(null);
   const [shops, setShops] = useState<ShopRow[]>([]);
@@ -87,6 +91,7 @@ export default function SuperAdminShopGate({
   }
 
   if (activeShop) {
+    console.log("activeShop", activeShop);
     return <>{children}</>;
   }
 

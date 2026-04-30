@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import ViewSupplierModal from "./ViewSupplierModal";
 import EditSupplierModal from "./EditSupplierModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
@@ -18,6 +19,7 @@ type Sup = {
 
 export default function SupplierTable() {
   const { t } = useAdminI18n();
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [viewItem, setViewItem] = useState<Sup | null>(null);
   const [editItem, setEditItem] = useState<Sup | null>(null);
@@ -104,6 +106,18 @@ export default function SupplierTable() {
               <td className="p-3">{s.defaultLeadTimeDays ?? "—"}</td>
 
               <td className="p-3 space-x-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/admin/suppliers/${s.id}/products?supplierName=${encodeURIComponent(s.name)}`,
+                    )
+                  }
+                  className="px-2 py-1 bg-indigo-500 text-indigo-50 rounded hover:bg-indigo-600 transition-colors cursor-pointer"
+                >
+                  Manage Products
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setViewItem(s)}
