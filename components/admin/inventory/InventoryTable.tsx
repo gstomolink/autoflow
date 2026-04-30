@@ -219,6 +219,13 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </thead>
 
       <tbody>
+        {filtered.length === 0 ? (
+          <tr className="border-t border-gray-300">
+            <td className="p-6 text-center text-slate-500" colSpan={6}>
+              No data
+            </td>
+          </tr>
+        ) : null}
         {filtered.map((i) => (
           <tr
             key={i.id}

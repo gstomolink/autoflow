@@ -43,8 +43,14 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
   }, [load]);
 
   const filtered = useMemo(() => {
-    if (!filters?.name) return data;
-    return data.filter((w) => w.name === filters.name);
+    const q = String(filters?.search ?? "").trim().toLowerCase();
+    if (!q) return data;
+    return data.filter(
+      (w) =>
+        w.name.toLowerCase().includes(q) ||
+        w.code.toLowerCase().includes(q) ||
+        (w.address?.toLowerCase().includes(q) ?? false),
+    );
   }, [filters, data]);
 
   const deleteWarehouse = async (id: number) => {
@@ -78,6 +84,13 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
           </thead>
 
           <tbody>
+            {filtered.length === 0 ? (
+              <tr className="border-t border-gray-200">
+                <td className="p-6 text-center text-slate-500" colSpan={6}>
+                  No data
+                </td>
+              </tr>
+            ) : null}
             {filtered.map((w) => (
               <tr key={w.id} className="border-t border-gray-200">
                 <td className="p-3">{w.id}</td>

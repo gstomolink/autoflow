@@ -73,14 +73,16 @@ const data = [
   },
 ];
 
-export default function RecipesTable({ filters }: any) {
+export default function RecipesTable() {
   const [add, setAdd] = useState(false);
   const [view, setView] = useState<any>(null);
   const [edit, setEdit] = useState<any>(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
 
   const filtered = data.filter((r)=>
-    r.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-    (filters.category ? r.category === filters.category : true)
+    r.name.toLowerCase().includes(search.toLowerCase()) &&
+    (category ? r.category === category : true)
   );
 
   return (
@@ -101,13 +103,13 @@ export default function RecipesTable({ filters }: any) {
         <input
           type="text"
           placeholder="Search recipe..."
-          value={filters.search}
-          onChange={(e)=>filters.setSearch(e.target.value)}
+          value={search}
+          onChange={(e)=>setSearch(e.target.value)}
           className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
         />
         <select
-          value={filters.category}
-          onChange={(e)=>filters.setCategory(e.target.value)}
+          value={category}
+          onChange={(e)=>setCategory(e.target.value)}
           className="border border-gray-300 px-3 py-2 rounded-lg cursor-pointer"
         >
           <option value="">All Categories</option>
@@ -118,7 +120,7 @@ export default function RecipesTable({ filters }: any) {
         </select>
 
         <button
-          onClick={()=>{}}
+          type="button"
           className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600 cursor-pointer"
         >
           Search
@@ -140,6 +142,13 @@ export default function RecipesTable({ filters }: any) {
         </thead>
 
         <tbody>
+          {filtered.length === 0 ? (
+            <tr className="border-t border-gray-300">
+              <td className="p-6 text-center text-slate-500" colSpan={7}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {filtered.map((r, i)=>(
             <tr key={i} className="border-t border-gray-300">
               <td className="p-2">{r.id}</td>

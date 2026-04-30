@@ -96,6 +96,13 @@ export default function SupplierTable() {
         </thead>
 
         <tbody>
+          {filtered.length === 0 ? (
+            <tr className="border-t border-gray-300">
+              <td className="p-6 text-center text-slate-500" colSpan={7}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {filtered.map((s) => (
             <tr key={s.id} className="border-t border-gray-300">
               <td className="p-3">{s.id}</td>

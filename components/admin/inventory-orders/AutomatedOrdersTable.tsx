@@ -141,6 +141,13 @@ export default function AutomatedOrdersTable() {
         </thead>
 
         <tbody>
+          {rows.length === 0 ? (
+            <tr className="border-t border-gray-200">
+              <td className="p-6 text-center text-slate-500" colSpan={15}>
+                No data
+              </td>
+            </tr>
+          ) : null}
           {rows.map((d) => (
             <tr key={d.id} className="border-t border-gray-200">
               <td className="p-2">{d.product?.name ?? "—"}</td>

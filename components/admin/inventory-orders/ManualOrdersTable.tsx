@@ -12,6 +12,7 @@ import { inventoryOrderStatusLabel } from "@/lib/inventory-order-statuses";
 
 type Line = {
   id: number;
+  productId: number;
   quantityOrdered: number;
   unitCost: string;
   product?: { name: string; sku: string };
@@ -132,7 +133,7 @@ export default function ManualOrdersTable({
             <th className="p-2">Order ID</th>
             <th className="p-2">Source</th>
             <th className="p-2">Supplier</th>
-            <th className="p-2">Lines</th>
+            <th className="p-2">Products</th>
             <th className="p-2">Delivery</th>
             <th className="p-2">Status</th>
             <th className="p-2">Actions</th>

@@ -40,7 +40,7 @@ export default function ViewOrderModal({
         <p><b>Status:</b> {inventoryOrderStatusLabel(data.status)}</p>
         <p><b>Expected delivery:</b> {data.expectedDeliveryDate ? String(data.expectedDeliveryDate).slice(0, 10) : "—"}</p>
 
-        <h3 className="font-semibold mt-4 mb-2">Lines</h3>
+        <h3 className="font-semibold mt-4 mb-2">Products</h3>
         <table className="w-full text-sm border">
           <thead>
             <tr className="bg-gray-100">
