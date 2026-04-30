@@ -53,7 +53,7 @@ export default function AddShopModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
             aria-label="Close modal"
           >
             <svg
@@ -72,42 +72,42 @@ export default function AddShopModal({
 
         <form className="space-y-3" onSubmit={submit}>
           <div>
-            <label className="block text-sm text-slate-600 mb-1">{t("shopsFormId")}</label>
+            <label className="block text-sm text-gray-700 mb-1">{t("shopsFormId")}</label>
             <input
               required
               value={shopId}
               onChange={(e) => setShopId(e.target.value)}
               placeholder="shop-001"
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-600 mb-1">{t("shopsFormName")}</label>
+            <label className="block text-sm text-gray-700 mb-1">{t("shopsFormName")}</label>
             <input
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Main store"
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-600 mb-1">{t("shopsFormAddress")}</label>
+            <label className="block text-sm text-gray-700 mb-1">{t("shopsFormAddress")}</label>
             <textarea
               required
               rows={3}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder={t("shopsFormAddressPlaceholder")}
-              className="w-full border border-gray-300 p-2 rounded resize-y min-h-[4.5rem]"
+              className="w-full px-3 py-2 rounded resize-y min-h-[4.5rem] border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
           {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-          <div className="flex justify-end mt-4 gap-2">
+          <div className="flex justify-end gap-3 pt-4 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded cursor-pointer transition-colors"
+              className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
             >
               {t("actionCancel")}
             </button>

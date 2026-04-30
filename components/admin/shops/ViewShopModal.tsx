@@ -67,7 +67,7 @@ export default function ViewShopModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
             aria-label="Close modal"
           >
             <svg
@@ -98,7 +98,7 @@ export default function ViewShopModal({
 
         {registered ? (
           <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-            <label className="font-medium text-slate-800" htmlFor="shop-buffer">
+            <label className="block text-sm text-gray-700 mb-1">
               {t("shopsNotifyBufferLabel")}
             </label>
             <p className="text-xs text-slate-600 mt-1 mb-2">{t("shopsNotifyBufferHint")}</p>
@@ -109,7 +109,7 @@ export default function ViewShopModal({
               max={90}
               value={bufferDays}
               onChange={(e) => setBufferDays(Number(e.target.value))}
-              className="w-full border border-slate-300 rounded px-2 py-1.5"
+              className="w-full rounded px-2 py-1.5 border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
             {bufferError ? <p className="text-rose-600 text-xs mt-2">{bufferError}</p> : null}
             <button

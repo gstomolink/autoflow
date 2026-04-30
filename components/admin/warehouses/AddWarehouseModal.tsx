@@ -48,7 +48,7 @@ export default function AddWarehouseModal({
       <div className="bg-white p-6 rounded-xl w-full max-w-md text-gray-700">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-xl font-bold text-black mb-1">Add New Warehouse</h2>
-          <button type="button" onClick={onClose} className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded" aria-label="Close modal">
+          <button type="button" onClick={onClose} className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded" aria-label="Close modal">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
             </svg>
@@ -59,66 +59,66 @@ export default function AddWarehouseModal({
 
   {/* WAREHOUSE NAME */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Warehouse Name 
     </label>
     <input
       required
       value={name}
       onChange={(e) => setName(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* CODE */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Warehouse Code 
     </label>
     <input
       required
       value={code}
       onChange={(e) => setCode(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* ADDRESS */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Address 
     </label>
     <input
       required
       value={address}
       onChange={(e) => setAddress(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* MANAGER NAME */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Manager Name 
     </label>
     <input
       required
       value={managerName}
       onChange={(e) => setManagerName(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
   {/* CONTACT */}
   <div>
-    <label className="block text-sm text-gray-600 mb-1">
+    <label className="block text-sm text-gray-700 mb-1">
       Manager Contact 
     </label>
     <input
       required
       value={contactPhone}
       onChange={(e) => setContactPhone(e.target.value)}
-      className="w-full border border-gray-300 px-3 py-2 rounded text-gray-700"
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
     />
   </div>
 
@@ -128,11 +128,11 @@ export default function AddWarehouseModal({
   )}
 
   {/* ACTIONS */}
-  <div className="flex justify-end mt-4 gap-2">
+  <div className="flex justify-end gap-3 pt-4 mt-6">
     <button
       type="button"
       onClick={onClose}
-      className="px-4 py-2 border border-gray-300 text-gray-700 rounded cursor-pointer"
+      className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
     >
       Cancel
     </button>

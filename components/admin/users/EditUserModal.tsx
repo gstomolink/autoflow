@@ -37,9 +37,17 @@ export default function EditUserModal({
       <div className="bg-white p-6 rounded-xl w-full max-w-md text-gray-700">
 
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-bold">Edit User</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-bold text-black mb-1">Edit User</h2>
+          <button
+            onClick={onClose}
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
         </div>
 
         {/* FORM */}
@@ -47,55 +55,55 @@ export default function EditUserModal({
 
           {/* NAME */}
           <div>
-            <label className="text-sm font-medium">Name</label>
+            <label className="block text-sm text-gray-700 mb-1">Name</label>
             <input
               name="fullName"
               value={form.fullName}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           {/* USER ID (READ ONLY) */}
           <div>
-            <label className="text-sm font-medium">User ID</label>
+            <label className="block text-sm text-gray-700 mb-1">User ID</label>
             <input
               value={form.userId}
               disabled
-              className="w-full border border-gray-300 px-3 py-2 rounded bg-gray-100"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           {/* EMAIL */}
           <div>
-            <label className="text-sm font-medium">Email</label>
+            <label className="block text-sm text-gray-700 mb-1">Email</label>
             <input
               name="email"
               value={form.email ?? ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           {/* PHONE */}
           <div>
-            <label className="text-sm font-medium">Phone</label>
+            <label className="block text-sm text-gray-700 mb-1">Phone</label>
             <input
               name="phone"
               value={form.phone ?? ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           {/* ROLE */}
           <div>
-            <label className="text-sm font-medium">Role</label>
+            <label className="block text-sm text-gray-700 mb-1">Role</label>
             <select
               name="role"
               value={form.role}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             >
               <option value={1}>Admin</option>
               <option value={2}>Manager</option>
@@ -106,33 +114,33 @@ export default function EditUserModal({
 
           {/* SHOP */}
           <div>
-            <label className="text-sm font-medium">Shop</label>
+            <label className="block text-sm text-gray-700 mb-1">Shop</label>
             <input
               name="shopId"
               value={form.shopId ?? ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           {/* STAFF TYPE */}
           <div>
-            <label className="text-sm font-medium">Staff Type</label>
+            <label className="block text-sm text-gray-700 mb-1">Staff Type</label>
             <input
               name="staffType"
               value={form.staffType ?? ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded"
+              className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
         </div>
 
         {/* ACTIONS */}
-        <div className="flex justify-end gap-2 mt-5">
+        <div className="flex justify-end gap-3 pt-4 mt-6">
           <button
             onClick={onClose}
-            className="border border-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
           >
             Cancel
           </button>

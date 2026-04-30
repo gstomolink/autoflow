@@ -116,7 +116,7 @@ export default function ResetPasswordModal({
             
             {/* Current Password */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              <label className="block text-sm text-gray-700 mb-1">
                 Current Password
               </label>
               <div className="relative">
@@ -125,7 +125,7 @@ export default function ResetPasswordModal({
                   value={current}
                   onChange={(e) => setCurrent(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none px-4 py-2.5 rounded-xl transition-all text-slate-800 placeholder:text-slate-400"
+                  className="w-full outline-none px-4 py-2.5 rounded-xl transition-all border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
                 />
                 <button 
                   type="button"
@@ -139,7 +139,7 @@ export default function ResetPasswordModal({
 
             {/* New Password */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              <label className="block text-sm text-gray-700 mb-1">
                 New Password
               </label>
               <div className="relative">
@@ -148,7 +148,7 @@ export default function ResetPasswordModal({
                   value={newPass}
                   onChange={(e) => setNewPass(e.target.value)}
                   placeholder="Create new password"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none px-4 py-2.5 rounded-xl transition-all text-slate-800 placeholder:text-slate-400"
+                  className="w-full outline-none px-4 py-2.5 rounded-xl transition-all border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
                 />
                 <button 
                   type="button"
@@ -162,7 +162,7 @@ export default function ResetPasswordModal({
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              <label className="block text-sm text-gray-700 mb-1">
                 Confirm New Password
               </label>
               <div className="relative">
@@ -171,7 +171,7 @@ export default function ResetPasswordModal({
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   placeholder="Repeat new password"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none px-4 py-2.5 rounded-xl transition-all text-slate-800 placeholder:text-slate-400"
+                  className="w-full outline-none px-4 py-2.5 rounded-xl transition-all border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
                 />
                 <button 
                   type="button"
@@ -189,7 +189,7 @@ export default function ResetPasswordModal({
           <div className="flex gap-3 mt-8">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors"
             >
               Cancel
             </button>

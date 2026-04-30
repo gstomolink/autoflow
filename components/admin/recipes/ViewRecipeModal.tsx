@@ -22,7 +22,7 @@ export default function ViewRecipeModal({ data, onClose }: any) {
         </div>
 
         <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
-        <table className="w-full mb-4 border">
+        <table className="w-full mb-4 border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-2">Ingredient</th>

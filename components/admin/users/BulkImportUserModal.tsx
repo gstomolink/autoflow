@@ -94,7 +94,7 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
 
           <button
             onClick={onClose}
-            className="cursor-pointer text-slate-600 hover:text-slate-900 transition-colors p-1 rounded"
+            className="cursor-pointer text-gray-700 hover:text-gray-900 transition-colors p-1 rounded"
             aria-label="Close modal"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-6 h-6" aria-hidden="true">
@@ -122,7 +122,7 @@ export default function BulkImportUserModal({ onClose, onSaved }: { onClose: () 
             </p>
 
             <div className="flex flex-col gap-2 mb-4">
-              <label className="w-64 px-4 py-2 bg-sky-500 text-sky-50 rounded cursor-pointer hover:bg-sky-600 transition-colors text-center inline-flex items-center justify-center gap-2">
+              <label className="block text-sm text-gray-700 mb-1">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
                 </svg>

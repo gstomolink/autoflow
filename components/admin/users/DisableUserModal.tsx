@@ -11,7 +11,7 @@ export default function DisableUserModal({ data, onClose }: any) {
         <p className="mt-2"><b>{data.name}</b></p>
 
         <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="border px-4 py-2 rounded">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-200 border border-slate-300 hover:bg-slate-300 text-slate-600 transition-colors">Cancel</button>
           <button className="bg-rose-500 text-white px-4 py-2 rounded">Disable</button>
         </div>
 
