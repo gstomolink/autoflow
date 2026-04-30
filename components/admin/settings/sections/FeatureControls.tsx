@@ -4,9 +4,9 @@ import { useState } from "react";
 
 const initialFeatures = [
   "Dashboard",
+  "Warehouses",
   "Categories",
   "Products",
-  "Warehouses",
   "Recipes",
   "Inventory",
   "Inventory Orders",
