@@ -39,30 +39,36 @@ export default function ProductFilters({ onFilter }: Props) {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex items-center gap-4">
+    <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex items-end gap-4">
       
       {/* Search Input */}
-      <input
-        type="text"
-        placeholder="Search by product name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border border-gray-300 px-3 py-2 rounded-lg w-72 text-gray-700"
-      />
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Search</label>
+        <input
+          type="text"
+          placeholder="Search by product name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded-lg w-72 text-gray-700"
+        />
+      </div>
 
       {/* Category Filter */}
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-      >
-        <option value="">All Categories</option>
-        {categories.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Category</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+        >
+          <option value="">All Categories</option>
+          {categories.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Search Button */}
       <button

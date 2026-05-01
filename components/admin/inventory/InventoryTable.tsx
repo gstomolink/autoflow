@@ -136,49 +136,58 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       </button>
     </div>
 
-    <div className="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-center gap-3 flex-wrap">
-        <input
-          placeholder="Search product..."
-          value={searchInput}
-          className="border border-gray-300 text-gray-700 px-3 py-2 rounded-lg w-72"
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              applyFilters();
-            }
-          }}
-        />
+    <div className="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-end gap-3 flex-wrap">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Search</label>
+          <input
+            placeholder="Search product..."
+            value={searchInput}
+            className="border border-gray-300 text-gray-700 px-3 py-2 rounded-lg w-72"
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                applyFilters();
+              }
+            }}
+          />
+        </div>
 
-        <select
-          value={product}
-          onChange={(e)=>setProduct(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-        >
-          <option value="">All Products</option>
-          {products.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Product</label>
+          <select
+            value={product}
+            onChange={(e)=>setProduct(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+          >
+            <option value="">All Products</option>
+            {products.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          value={shop}
-          onChange={(e)=>setShop(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-        >
-          <option value="">All Shops</option>
-          {shops.map((w) => (
-            <option key={w} value={w}>{w}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Shop</label>
+          <select
+            value={shop}
+            onChange={(e)=>setShop(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+          >
+            <option value="">All Shops</option>
+            {shops.map((w) => (
+              <option key={w} value={w}>{w}</option>
+            ))}
+          </select>
+        </div>
 
-        <div className="flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg">
-          <label className="text-sm text-gray-700">{t("tableLowStockLevel")}</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">{t("tableLowStockLevel")}</label>
           <input
             type="number"
             value={threshold}
             onChange={(e)=>setThreshold(Number(e.target.value))}
-            className="w-20 text-gray-700 focus:outline-none"
+            className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700 w-32 focus:outline-none"
           />
         </div>
 

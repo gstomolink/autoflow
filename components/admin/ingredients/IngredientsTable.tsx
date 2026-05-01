@@ -48,9 +48,10 @@ export default function IngredientsTable() {
       </div>
 
       {/* SEARCH BAR */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-end gap-4">
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Search Ingredient</label>
           <input
             type="text"
             placeholder="Search ingredient..."

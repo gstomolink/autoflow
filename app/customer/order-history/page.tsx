@@ -66,29 +66,36 @@ export default function OrderHistoryPage() {
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white border rounded-xl p-4 shadow-sm mb-6 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-        <input
-          type="text"
-          placeholder="Search by Order ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-        />
+      <div className="bg-white border rounded-xl p-4 shadow-sm mb-6 flex flex-col lg:flex-row gap-4 lg:items-end lg:justify-between">
+        
+        <div className="flex flex-col gap-1 flex-1">
+          <label className="text-sm font-medium text-gray-700">Search Order</label>
+          <input
+            type="text"
+            placeholder="Search by Order ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+        </div>
 
-        <div className="flex flex-wrap gap-2">
-          {["All", "Pending", "Shipping", "Delivered", "Cancelled", "Failed"].map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(s as any)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium border transition
-                ${filter === s
-                  ? "bg-purple-600 text-white border-purple-600"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
-            >
-              {s}
-            </button>
-          ))}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Filter Status</label>
+          <div className="flex flex-wrap gap-2">
+            {["All", "Pending", "Shipping", "Delivered", "Cancelled", "Failed"].map((s) => (
+              <button
+                key={s}
+                onClick={() => setFilter(s as any)}
+                className={`px-3 py-1 rounded-lg text-sm font-medium border transition
+                  ${filter === s
+                    ? "bg-purple-600 text-white border-purple-600"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

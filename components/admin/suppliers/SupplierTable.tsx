@@ -70,12 +70,15 @@ export default function SupplierTable() {
   return (
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
-      <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-xl shadow-sm">
-        <input
-          placeholder="Search suppliers..."
-          onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
-        />
+      <div className="flex justify-between items-end mb-4 bg-white p-4 rounded-xl shadow-sm">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Search</label>
+          <input
+            placeholder="Search suppliers..."
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
+          />
+        </div>
 
         <button type="button" onClick={() => void load()} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
           {t("actionSearch")}

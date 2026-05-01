@@ -67,20 +67,23 @@ export default function NearExpiryTab() {
     <div>
 
       {/* FILTER BAR */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4 flex-wrap text-gray-700">
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-end gap-4 flex-wrap text-gray-700">
 
         {/* SEARCH */}
-        <input
-          type="text"
-          placeholder="Search ingredient..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-60 border border-gray-300 px-3 py-2 rounded-lg"
-        />
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Search Ingredient</label>
+          <input
+            type="text"
+            placeholder="Search ingredient..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-60 border border-gray-300 px-3 py-2 rounded-lg"
+          />
+        </div>
 
         {/* DATE PICKER */}
-        <div className="flex items-center gap-2">
-            <label>Expiring Before:</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Expiring Before</label>
           <input
             type="date"
             value={selectedDate}
@@ -90,18 +93,21 @@ export default function NearExpiryTab() {
         </div>
 
         {/* RANGE FILTER */}
-        <select
-          value={range}
-          onChange={(e) => setRange(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded-lg"
-        >
-          <option value="">Select Range</option>
-          <option value="1w">1 Week</option>
-          <option value="2w">2 Weeks</option>
-          <option value="1m">1 Month</option>
-          <option value="2m">2 Months</option>
-          <option value="3m">3 Months</option>
-        </select>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Date Range</label>
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg"
+          >
+            <option value="">Select Range</option>
+            <option value="1w">1 Week</option>
+            <option value="2w">2 Weeks</option>
+            <option value="1m">1 Month</option>
+            <option value="2m">2 Months</option>
+            <option value="3m">3 Months</option>
+          </select>
+        </div>
 
         {/* SEARCH BUTTON */}
         <button

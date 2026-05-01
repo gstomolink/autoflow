@@ -2,27 +2,33 @@
 
 export default function RecipeFilters({ filters, setFilters }: any) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
+    <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-end gap-4">
 
-      <input
-        type="text"
-        placeholder="Search product..."
-        value={filters.search}
-        onChange={(e)=>setFilters({...filters, search:e.target.value})}
-        className="w-72 border border-gray-300 px-3 py-2 rounded-lg"
-      />
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Search</label>
+        <input
+          type="text"
+          placeholder="Search product..."
+          value={filters.search}
+          onChange={(e)=>setFilters({...filters, search:e.target.value})}
+          className="w-72 border border-gray-300 px-3 py-2 rounded-lg"
+        />
+      </div>
 
-      <select
-        value={filters.category}
-        onChange={(e)=>setFilters({...filters, category:e.target.value})}
-        className="border border-gray-300 px-3 py-2 rounded-lg"
-      >
-        <option value="">All Categories</option>
-        <option>Burger</option>
-        <option>Pizza</option>
-        <option>Rice</option>
-        <option>Pasta</option>
-      </select>
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Category</label>
+        <select
+          value={filters.category}
+          onChange={(e)=>setFilters({...filters, category:e.target.value})}
+          className="border border-gray-300 px-3 py-2 rounded-lg"
+        >
+          <option value="">All Categories</option>
+          <option>Burger</option>
+          <option>Pizza</option>
+          <option>Rice</option>
+          <option>Pasta</option>
+        </select>
+      </div>
 
       <button className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg">
         Search
