@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
 import ViewShopModal from "./ViewShopModal";
@@ -16,16 +16,20 @@ export default function ShopTable() {
   const { t } = useAdminI18n();
   const [data, setData] = useState<ShopRow[]>([]);
   const [viewItem, setViewItem] = useState<ShopRow | null>(null);
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (search?: string) => {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/shops");
+      const q = search?.trim();
+      const path =
+        q && q.length > 0
+          ? `/shops?search=${encodeURIComponent(q)}`
+          : "/shops";
+      const r = await apiFetch(path);
       if (!r.ok) throw new Error(await r.text());
       setData(await r.json());
     } catch (e) {
@@ -40,16 +44,9 @@ export default function ShopTable() {
     void load();
   }, [load]);
 
-  const filteredData = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return data;
-    return data.filter(
-      (row) =>
-        row.shopId.toLowerCase().includes(q) ||
-        row.name.toLowerCase().includes(q) ||
-        (row.address?.toLowerCase().includes(q) ?? false),
-    );
-  }, [data, search]);
+  const runSearch = () => {
+    void load(searchInput);
+  };
 
   if (loading) {
     return <p className="text-slate-500">Loading…</p>;
@@ -58,32 +55,46 @@ export default function ShopTable() {
   return (
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
-<div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex justify-between items-end">
-  
-  {/* LEFT SIDE */}
-  <div className="flex flex-col gap-1">
-    <label className="text-sm font-medium text-gray-700">
-      Search
-    </label>
-
-    <input
-      type="text"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      placeholder="Search shop..."
-      className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-    />
-  </div>
-
-  {/* RIGHT SIDE BUTTON */}
-  <button
-    onClick={() => setSearch(search)}
-    className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600"
-  >
-    Search
-  </button>
-
-</div>
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap items-end gap-3 justify-between">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700" htmlFor="shop-search">
+            Search
+          </label>
+          <input
+            id="shop-search"
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                runSearch();
+              }
+            }}
+            placeholder="Shop ID or name…"
+            className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+          />
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={runSearch}
+            className="bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchInput("");
+              void load();
+            }}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-gray-700">
           <thead className="bg-white">
@@ -95,14 +106,14 @@ export default function ShopTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredData.length === 0 ? (
+            {data.length === 0 ? (
               <tr className="border-t border-gray-200">
                 <td className="p-6 text-center text-slate-500" colSpan={4}>
                   No data
                 </td>
               </tr>
             ) : null}
-            {filteredData.map((row) => (
+            {data.map((row) => (
               <tr key={row.shopId} className="border-t border-gray-200">
                 <td className="p-3 font-mono text-slate-800">{row.shopId}</td>
                 <td className="p-3 font-medium">{row.name}</td>
@@ -126,7 +137,7 @@ export default function ShopTable() {
         <ViewShopModal
           data={viewItem}
           onClose={() => setViewItem(null)}
-          onSaved={() => void load()}
+          onSaved={() => void load(searchInput)}
         />
       ) : null}
     </>
