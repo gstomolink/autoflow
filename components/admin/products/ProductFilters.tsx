@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 
 type Props = {
   onFilter: (filters: any) => void;
@@ -17,9 +18,12 @@ export default function ProductFilters({ onFilter }: Props) {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const res = await apiFetch("/categories");
+        const res = await apiFetch(
+          `/categories?page=1&limit=${LIST_FETCH_LIMIT}`,
+        );
         if (!res.ok) return;
-        const rows = (await res.json()) as Array<{ name: string }>;
+        const body = await readPaginatedJson<{ name: string }>(res);
+        const rows = body.items;
         const names = rows
           .map((row) => row.name?.trim())
           .filter((name): name is string => Boolean(name));
@@ -70,13 +74,26 @@ export default function ProductFilters({ onFilter }: Props) {
         </select>
       </div>
 
-      {/* Search Button */}
-      <button
-        onClick={handleSearch}
-        className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
-      >
-        {t("actionSearch")}
-      </button>
+      <div className="ml-auto flex gap-2">
+        <button
+          type="button"
+          onClick={handleSearch}
+          className="bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
+        >
+          {t("actionSearch")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setSearch("");
+            setCategory("");
+            onFilter({ name: "", category: "" });
+          }}
+          className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+        >
+          Clear
+        </button>
+      </div>
 
     </div>
   );

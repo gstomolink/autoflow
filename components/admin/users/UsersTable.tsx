@@ -7,6 +7,13 @@ import ViewUserModal from "./ViewUserModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import { apiFetch } from "@/lib/api";
 import { roleLabel } from "@/lib/auth";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
 type ApiUser = {
@@ -29,6 +36,7 @@ export default function UsersTable() {
   const [view, setView] = useState<ApiUser | null>(null);
   const [edit, setEdit] = useState<ApiUser | null>(null);
   const [rows, setRows] = useState<ApiUser[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
   const [resetUser, setResetUser] = useState<any>(null);
@@ -37,12 +45,15 @@ export default function UsersTable() {
     setLoadError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/users");
+      const r = await apiFetch(
+        `/users?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) {
         const t = await r.text();
         throw new Error(t || r.statusText);
       }
-      setRows(await r.json());
+      const body = await readPaginatedJson<ApiUser>(r);
+      setRows(body.items);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Failed to load users");
       setRows([]);
@@ -73,6 +84,15 @@ export default function UsersTable() {
     return d;
   }, [search, roleFilter, rows]);
 
+  const pagedRows = useMemo(
+    () => slicePage(filtered, listPage, PAGE_SIZE),
+    [filtered, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [search, roleFilter]);
+
   return (
     <div>
       {loadError ? (
@@ -93,6 +113,7 @@ export default function UsersTable() {
             <label className="text-sm font-medium text-gray-700">Search</label>
             <input
               placeholder="Search name, email, phone..."
+              value={search}
               className="border border-gray-300 px-3 py-2 rounded"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -113,18 +134,28 @@ export default function UsersTable() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => void load()}
-          className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
-        >
-          Search
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => void load()}
+            className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
 
       {loading ? (
         <p className="text-slate-500">Loading…</p>
       ) : (
+        <>
         <table className="w-full bg-white shadow rounded text-gray-700">
           <thead className="bg-white text-left border-b border-gray-200">
             <tr>
@@ -146,7 +177,7 @@ export default function UsersTable() {
                 </td>
               </tr>
             ) : null}
-            {filtered.map((u) => (
+            {pagedRows.map((u) => (
               <tr key={u.id} className="border-t border-gray-300">
                 <td className="p-2">{u.userId}</td>
                 <td className="p-2">{u.fullName}</td>
@@ -183,6 +214,13 @@ export default function UsersTable() {
             ))}
           </tbody>
         </table>
+        <TablePagination
+          page={listPage}
+          total={filtered.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setListPage}
+        />
+        </>
       )}
 
       {add && (

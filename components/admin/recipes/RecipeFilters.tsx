@@ -30,9 +30,20 @@ export default function RecipeFilters({ filters, setFilters }: any) {
         </select>
       </div>
 
-      <button className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg">
-        Search
-      </button>
+      <div className="ml-auto flex gap-2">
+        <button type="button" className="bg-sky-500 text-white px-5 py-2 rounded-lg cursor-pointer">
+          Search
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            setFilters({ ...(filters ?? {}), search: "", category: "" })
+          }
+          className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
+        >
+          Clear
+        </button>
+      </div>
 
     </div>
   );

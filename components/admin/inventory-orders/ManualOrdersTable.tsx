@@ -8,6 +8,13 @@ import ViewOrderModal from "./ViewOrderModal";
 import ProceedModal from "./ProceedModal";
 import type { InventoryOrdersFilterValues } from "./Filters";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 import { inventoryOrderStatusLabel } from "@/lib/inventory-order-statuses";
 
 type Line = {
@@ -47,6 +54,7 @@ export default function ManualOrdersTable({
   const [edit, setEdit] = useState<InvOrder | null>(null);
   const [proceed, setProceed] = useState<InvOrder | null>(null);
   const [rows, setRows] = useState<InvOrder[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -54,9 +62,12 @@ export default function ManualOrdersTable({
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/inventory-orders");
+      const r = await apiFetch(
+        `/inventory-orders?source=manual&page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setRows(await r.json());
+      const body = await readPaginatedJson<InvOrder>(r);
+      setRows(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setRows([]);
@@ -104,6 +115,15 @@ export default function ManualOrdersTable({
     return out;
   }, [rows, filters]);
 
+  const pagedRows = useMemo(
+    () => slicePage(filteredRows, listPage, PAGE_SIZE),
+    [filteredRows, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [filters]);
+
   const hasActiveFilters =
     Boolean(filters.status.trim()) ||
     Boolean(filters.month.trim()) ||
@@ -150,7 +170,7 @@ export default function ManualOrdersTable({
               </td>
             </tr>
           ) : null}
-          {filteredRows.map((d) => (
+          {pagedRows.map((d) => (
             <tr key={d.id} className="border-t border-gray-200">
               <td className="p-2">{d.orderNumber}</td>
               <td className="p-2 capitalize">{d.source ?? "—"}</td>
@@ -209,6 +229,12 @@ export default function ManualOrdersTable({
           ))}
         </tbody>
       </table>
+      <TablePagination
+        page={listPage}
+        total={filteredRows.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setListPage}
+      />
 
       {add && <AddOrderModal onClose={() => { setAdd(false); void load(); }} />}
       {view && <ViewOrderModal data={view} onClose={() => setView(null)} />}

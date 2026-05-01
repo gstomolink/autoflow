@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 
 export default function AddOrderModal({ onClose }: { onClose: () => void }) {
   const [suppliers, setSuppliers] = useState<{ id: number; name: string }[]>([]);
@@ -18,8 +19,13 @@ export default function AddOrderModal({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     void (async () => {
-      const rs = await apiFetch("/suppliers");
-      if (rs.ok) setSuppliers(await rs.json());
+      const rs = await apiFetch(
+        `/suppliers?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
+      if (rs.ok) {
+        const body = await readPaginatedJson<{ id: number; name: string }>(rs);
+        setSuppliers(body.items);
+      }
     })();
   }, []);
 

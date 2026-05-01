@@ -5,6 +5,13 @@ import EditProductModal from "./EditProductModal";
 import ViewProductModal from "./ViewProductModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type ProductRow = {
   id: number;
@@ -18,6 +25,7 @@ type ProductRow = {
 export default function ProductTable({ filters }: { filters: Record<string, string> }) {
   const { t } = useAdminI18n();
   const [products, setProducts] = useState<ProductRow[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [editItem, setEditItem] = useState<ProductRow | null>(null);
   const [viewItem, setViewItem] = useState<ProductRow | null>(null);
   const [error, setError] = useState("");
@@ -27,9 +35,12 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/products");
+      const r = await apiFetch(
+        `/products?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setProducts(await r.json());
+      const body = await readPaginatedJson<ProductRow>(r);
+      setProducts(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setProducts([]);
@@ -53,6 +64,15 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
     }
     return data;
   }, [filters, products]);
+
+  const pagedRows = useMemo(
+    () => slicePage(filtered, listPage, PAGE_SIZE),
+    [filtered, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [filters]);
 
   const deleteProduct = async (id: number) => {
     if (!confirm("Delete this product?")) return;
@@ -92,7 +112,7 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
                 </td>
               </tr>
             ) : null}
-            {filtered.map((p) => (
+            {pagedRows.map((p) => (
               <tr key={p.id} className="border-t border-gray-200">
                 <td className="p-3">{p.sku}</td>
                 <td className="p-3">
@@ -118,6 +138,12 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
           </tbody>
         </table>
       </div>
+        <TablePagination
+          page={listPage}
+          total={filtered.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setListPage}
+        />
 
       {editItem && <EditProductModal product={editItem} onClose={() => { setEditItem(null); void load(); }} />}
       {viewItem && <ViewProductModal product={viewItem} onClose={() => setViewItem(null)} />}

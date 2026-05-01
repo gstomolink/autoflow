@@ -99,12 +99,24 @@ export default function InventoryTransactions({ type }: Props) {
     </div>
   </div>
 
-  {/* Right side button */}
-  <button
-    className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors"
-  >
-    {t("actionSearch")}
-  </button>
+  <div className="flex gap-2 shrink-0">
+    <button
+      type="button"
+      className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer whitespace-nowrap hover:bg-sky-600 transition-colors"
+    >
+      {t("actionSearch")}
+    </button>
+    <button
+      type="button"
+      onClick={() => {
+        setSearch("");
+        setWarehouse("");
+      }}
+      className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer whitespace-nowrap"
+    >
+      Clear
+    </button>
+  </div>
 
 </div>
 

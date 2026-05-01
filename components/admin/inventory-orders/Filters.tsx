@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 import { INVENTORY_ORDER_STATUS_OPTIONS } from "@/lib/inventory-order-statuses";
 
 type SupplierOpt = { id: number; name: string };
@@ -30,10 +31,12 @@ export default function Filters({ values, onChange }: Props) {
 
   useEffect(() => {
     void (async () => {
-      const r = await apiFetch("/suppliers");
+      const r = await apiFetch(
+        `/suppliers?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) return;
-      const data = (await r.json()) as { id: number; name: string }[];
-      setSuppliers(data);
+      const body = await readPaginatedJson<{ id: number; name: string }>(r);
+      setSuppliers(body.items);
     })();
   }, []);
 
@@ -105,20 +108,16 @@ export default function Filters({ values, onChange }: Props) {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={() =>
-            onChange({
-              status: "",
-              month: "",
-              supplierId: "",
-              productSearch: "",
-            })
-          }
-          className="border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50"
-        >
-          Clear filters
-        </button>
+        <div className="flex gap-2 items-end shrink-0">
+          <button
+            type="button"
+            onClick={() => patch({ productSearch: "" })}
+            className="border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 cursor-pointer"
+          >
+            Clear
+          </button>
+         
+        </div>
       </div>
     </div>
   );

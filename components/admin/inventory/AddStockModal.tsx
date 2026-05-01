@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 
 type Props = {
   onClose: () => void;
@@ -27,9 +28,12 @@ export default function AddStockModal({ onClose, onSaved }: Props) {
       setLoading(true);
       setError("");
       try {
-        const productRes = await apiFetch("/products");
+        const productRes = await apiFetch(
+          `/products?page=1&limit=${LIST_FETCH_LIMIT}`,
+        );
         if (!productRes.ok) throw new Error(await productRes.text());
-        setProducts((await productRes.json()) as ProductRow[]);
+        const body = await readPaginatedJson<ProductRow>(productRes);
+        setProducts(body.items);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load form data");
       } finally {
