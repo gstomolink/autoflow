@@ -16,6 +16,8 @@ type ShopRow = {
   replenishmentNotifyBufferDays: number | null;
 };
 
+type StoreType = "all" | "parent" | "child";
+
 export default function ShopTable() {
   const { t } = useAdminI18n();
   const user = getStoredUser();
@@ -24,6 +26,11 @@ export default function ShopTable() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [activeSearch, setActiveSearch] = useState("");
+  const [storeType, setStoreType] = useState<StoreType>("all");
+  const [activeStoreType, setActiveStoreType] = useState<StoreType>("all");
+  const [parentShopId, setParentShopId] = useState("");
+  const [activeParentShopId, setActiveParentShopId] = useState("");
+  const [parentOptions, setParentOptions] = useState<ShopRow[]>([]);
   const [viewItem, setViewItem] = useState<ShopRow | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState("");
@@ -39,6 +46,12 @@ export default function ShopTable() {
       });
       const q = activeSearch.trim();
       if (q) params.set("search", q);
+      if (activeStoreType !== "all") {
+        params.set("storeType", activeStoreType);
+      }
+      if (activeStoreType === "child" && activeParentShopId) {
+        params.set("parentShopId", activeParentShopId);
+      }
       const r = await apiFetch(`/shops?${params.toString()}`);
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<ShopRow>(r);
@@ -51,14 +64,44 @@ export default function ShopTable() {
     } finally {
       setLoading(false);
     }
-  }, [activeSearch, page]);
+  }, [activeParentShopId, activeSearch, activeStoreType, page]);
 
   useEffect(() => {
     void doLoad();
   }, [doLoad]);
 
+  useEffect(() => {
+    if (isStoreAdmin) return;
+    void (async () => {
+      try {
+        const params = new URLSearchParams({
+          page: "1",
+          limit: "1000",
+          storeType: "parent",
+        });
+        const r = await apiFetch(`/shops?${params.toString()}`);
+        if (!r.ok) {
+          setParentOptions([]);
+          return;
+        }
+        const body = await readPaginatedJson<ShopRow>(r);
+        setParentOptions(body.items);
+      } catch {
+        setParentOptions([]);
+      }
+    })();
+  }, [isStoreAdmin]);
+
+  useEffect(() => {
+    if (storeType !== "child") {
+      setParentShopId("");
+    }
+  }, [storeType]);
+
   const runSearch = () => {
     setActiveSearch(searchInput.trim());
+    setActiveStoreType(storeType);
+    setActiveParentShopId(storeType === "child" ? parentShopId : "");
     setPage(1);
   };
 
@@ -70,24 +113,63 @@ export default function ShopTable() {
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap items-end gap-3 justify-between">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700" htmlFor="shop-search">
-            Search
-          </label>
-          <input
-            id="shop-search"
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                runSearch();
-              }
-            }}
-            placeholder="Shop ID or name…"
-            className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-          />
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700" htmlFor="shop-search">
+              Search
+            </label>
+            <input
+              id="shop-search"
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  runSearch();
+                }
+              }}
+              placeholder="Shop ID or name…"
+              className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+            />
+          </div>
+          {!isStoreAdmin ? (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700" htmlFor="store-type-filter">
+                Store Type
+              </label>
+              <select
+                id="store-type-filter"
+                value={storeType}
+                onChange={(e) => setStoreType(e.target.value as StoreType)}
+                className="w-40 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+              >
+                <option value="all">All</option>
+                <option value="parent">Parent</option>
+                <option value="child">Child</option>
+              </select>
+            </div>
+          ) : null}
+          {!isStoreAdmin && storeType === "child" ? (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700" htmlFor="parent-shop-filter">
+                Parent Store
+              </label>
+              <select
+                id="parent-shop-filter"
+                value={parentShopId}
+                onChange={(e) => setParentShopId(e.target.value)}
+                className="w-56 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+              >
+                <option value="">All parent stores</option>
+                {parentOptions.map((row) => (
+                  <option key={row.shopId} value={row.shopId}>
+                    {row.name} ({row.shopId})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
         </div>
         <div className="flex gap-2">
           <button
@@ -101,6 +183,10 @@ export default function ShopTable() {
             type="button"
             onClick={() => {
               setSearchInput("");
+              setStoreType("all");
+              setActiveStoreType("all");
+              setParentShopId("");
+              setActiveParentShopId("");
               setActiveSearch("");
               setPage(1);
             }}
