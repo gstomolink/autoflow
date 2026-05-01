@@ -3,6 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 import type { OrderFilterValues } from "./OrderFilters";
 
 type Props = {
@@ -24,6 +31,7 @@ type Co = {
 export default function OrdersTable({ filters, onView }: Props) {
   const { t } = useAdminI18n();
   const [orders, setOrders] = useState<Co[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -31,9 +39,12 @@ export default function OrdersTable({ filters, onView }: Props) {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/customer-orders");
+      const r = await apiFetch(
+        `/customer-orders?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setOrders(await r.json());
+      const body = await readPaginatedJson<Co>(r);
+      setOrders(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setOrders([]);
@@ -69,6 +80,15 @@ export default function OrdersTable({ filters, onView }: Props) {
     });
   }, [orders, filters]);
 
+  const pagedOrders = useMemo(
+    () => slicePage(filteredOrders, listPage, PAGE_SIZE),
+    [filteredOrders, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [filters]);
+
   if (loading) {
     return <p className="text-slate-500 p-4">Loading…</p>;
   }
@@ -99,7 +119,7 @@ export default function OrdersTable({ filters, onView }: Props) {
                 </td>
               </tr>
             ) : null}
-            {filteredOrders.map((o) => (
+            {pagedOrders.map((o) => (
               <tr key={o.id} className="border-t">
                 <td className="p-3 font-medium text-gray-700">{o.orderNumber}</td>
                 <td className="p-3 text-gray-700">{String(o.createdAt).slice(0, 10)}</td>
@@ -135,6 +155,12 @@ export default function OrdersTable({ filters, onView }: Props) {
           </tbody>
         </table>
       </div>
+        <TablePagination
+          page={listPage}
+          total={filteredOrders.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setListPage}
+        />
     </div>
   );
 }

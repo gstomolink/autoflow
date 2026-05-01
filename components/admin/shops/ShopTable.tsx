@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import { PAGE_SIZE, readPaginatedJson } from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 import ViewShopModal from "./ViewShopModal";
 
 type ShopRow = {
@@ -15,37 +17,45 @@ type ShopRow = {
 export default function ShopTable() {
   const { t } = useAdminI18n();
   const [data, setData] = useState<ShopRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [activeSearch, setActiveSearch] = useState("");
   const [viewItem, setViewItem] = useState<ShopRow | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async (search?: string) => {
+  const doLoad = useCallback(async () => {
     setError("");
     setLoading(true);
     try {
-      const q = search?.trim();
-      const path =
-        q && q.length > 0
-          ? `/shops?search=${encodeURIComponent(q)}`
-          : "/shops";
-      const r = await apiFetch(path);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      const q = activeSearch.trim();
+      if (q) params.set("search", q);
+      const r = await apiFetch(`/shops?${params.toString()}`);
       if (!r.ok) throw new Error(await r.text());
-      setData(await r.json());
+      const body = await readPaginatedJson<ShopRow>(r);
+      setData(body.items);
+      setTotal(body.total);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setData([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeSearch, page]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void doLoad();
+  }, [doLoad]);
 
   const runSearch = () => {
-    void load(searchInput);
+    setActiveSearch(searchInput.trim());
+    setPage(1);
   };
 
   if (loading) {
@@ -87,11 +97,12 @@ export default function ShopTable() {
             type="button"
             onClick={() => {
               setSearchInput("");
-              void load();
+              setActiveSearch("");
+              setPage(1);
             }}
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            Clear
+            Cancel
           </button>
         </div>
       </div>
@@ -132,12 +143,18 @@ export default function ShopTable() {
           </tbody>
         </table>
       </div>
+        <TablePagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          onPageChange={setPage}
+        />
 
       {viewItem ? (
         <ViewShopModal
           data={viewItem}
           onClose={() => setViewItem(null)}
-          onSaved={() => void load(searchInput)}
+          onSaved={() => void doLoad()}
         />
       ) : null}
     </>

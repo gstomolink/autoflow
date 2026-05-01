@@ -5,6 +5,13 @@ import ViewWarehouseModal from "./ViewWarehouseModal";
 import EditWarehouseModal from "./EditWarehouseModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type Wh = {
   id: number;
@@ -18,6 +25,7 @@ type Wh = {
 export default function WarehouseTable({ filters }: { filters: Record<string, string> }) {
   const { t } = useAdminI18n();
   const [data, setData] = useState<Wh[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [viewItem, setViewItem] = useState<Wh | null>(null);
   const [editItem, setEditItem] = useState<Wh | null>(null);
   const [error, setError] = useState("");
@@ -27,9 +35,12 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/warehouses");
+      const r = await apiFetch(
+        `/warehouses?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setData(await r.json());
+      const body = await readPaginatedJson<Wh>(r);
+      setData(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setData([]);
@@ -52,6 +63,15 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
         (w.address?.toLowerCase().includes(q) ?? false),
     );
   }, [filters, data]);
+
+  const pagedRows = useMemo(
+    () => slicePage(filtered, listPage, PAGE_SIZE),
+    [filtered, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [filters]);
 
   const deleteWarehouse = async (id: number) => {
     if (!confirm("Delete warehouse?")) return;
@@ -91,7 +111,7 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
                 </td>
               </tr>
             ) : null}
-            {filtered.map((w) => (
+            {pagedRows.map((w) => (
               <tr key={w.id} className="border-t border-gray-200">
                 <td className="p-3">{w.id}</td>
                 <td className="p-3 font-medium">{w.name}</td>
@@ -126,6 +146,12 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
             ))}
           </tbody>
         </table>
+        <TablePagination
+          page={listPage}
+          total={filtered.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setListPage}
+        />
       </div>
 
       {viewItem && (

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { PAGE_SIZE, readPaginatedJson } from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type UrgencyStatus = "on_track" | "next_week" | "urgent" | "order_passed";
 
@@ -42,29 +44,37 @@ function urgencyLabel(status?: UrgencyStatus | null) {
 
 export default function AutomatedOrdersTable() {
   const [rows, setRows] = useState<Sug[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [creatingOrderId, setCreatingOrderId] = useState<number | null>(null);
+  const [refreshToken, setRefreshToken] = useState(0);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (pageNum: number) => {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/inventory-suggestions");
+      const r = await apiFetch(
+        `/inventory-suggestions?page=${pageNum}&limit=${PAGE_SIZE}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setRows(await r.json());
+      const body = await readPaginatedJson<Sug>(r);
+      setRows(body.items);
+      setTotal(body.total);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setRows([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void load(page);
+  }, [load, page, refreshToken]);
 
   const runScan = async () => {
     setRunning(true);
@@ -74,7 +84,8 @@ export default function AutomatedOrdersTable() {
         method: "POST",
       });
       if (!r.ok) throw new Error(await r.text());
-      setRows(await r.json());
+      setPage(1);
+      setRefreshToken((x) => x + 1);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Run failed");
     } finally {
@@ -90,7 +101,7 @@ export default function AutomatedOrdersTable() {
         method: "POST",
       });
       if (!r.ok) throw new Error(await r.text());
-      await load();
+      await load(page);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create order");
     } finally {
@@ -202,6 +213,12 @@ export default function AutomatedOrdersTable() {
           ))}
         </tbody>
       </table>
+      <TablePagination
+        page={page}
+        total={total}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

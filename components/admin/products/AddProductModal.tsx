@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 
 type Props = {
   onClose: () => void;
@@ -33,10 +34,12 @@ export default function AddProductModal({ onClose, onSaved }: Props) {
       setLoadingMasterData(true);
       setError("");
       try {
-        const categoryRes = await apiFetch("/categories");
+        const categoryRes = await apiFetch(
+          `/categories?page=1&limit=${LIST_FETCH_LIMIT}`,
+        );
         if (!categoryRes.ok) throw new Error(await categoryRes.text());
-        const categoryRows = (await categoryRes.json()) as CategoryRow[];
-        setCategories(categoryRows);
+        const categoryBody = await readPaginatedJson<CategoryRow>(categoryRes);
+        setCategories(categoryBody.items);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load form data");
       } finally {

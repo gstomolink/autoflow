@@ -6,6 +6,13 @@ import ViewSupplierModal from "./ViewSupplierModal";
 import EditSupplierModal from "./EditSupplierModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type Sup = {
   id: number;
@@ -24,6 +31,7 @@ export default function SupplierTable() {
   const [viewItem, setViewItem] = useState<Sup | null>(null);
   const [editItem, setEditItem] = useState<Sup | null>(null);
   const [suppliers, setSuppliers] = useState<Sup[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -31,9 +39,12 @@ export default function SupplierTable() {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/suppliers");
+      const r = await apiFetch(
+        `/suppliers?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setSuppliers(await r.json());
+      const body = await readPaginatedJson<Sup>(r);
+      setSuppliers(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setSuppliers([]);
@@ -52,6 +63,15 @@ export default function SupplierTable() {
       s.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [search, suppliers]);
+
+  const pagedRows = useMemo(
+    () => slicePage(filtered, listPage, PAGE_SIZE),
+    [filtered, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [search]);
 
   const deleteSupplier = async (id: number) => {
     if (!confirm("Delete supplier?")) return;
@@ -90,7 +110,7 @@ export default function SupplierTable() {
             onClick={() => setSearch("")}
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            Clear
+            Cancel
           </button>
         </div>
       </div>
@@ -116,7 +136,7 @@ export default function SupplierTable() {
               </td>
             </tr>
           ) : null}
-          {filtered.map((s) => (
+          {pagedRows.map((s) => (
             <tr key={s.id} className="border-t border-gray-300">
               <td className="p-3">{s.id}</td>
               <td className="p-3 font-medium">{s.name}</td>
@@ -166,6 +186,12 @@ export default function SupplierTable() {
           ))}
         </tbody>
       </table>
+      <TablePagination
+        page={listPage}
+        total={filtered.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setListPage}
+      />
 
       {viewItem && (
         <ViewSupplierModal data={viewItem} onClose={() => setViewItem(null)} />

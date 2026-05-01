@@ -6,6 +6,13 @@ import StockTransferModal from "./StockTransferModal";
 import AddStockModal from "./AddStockModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type Row = {
   id: number;
@@ -27,6 +34,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const [shop, setShop] = useState("");
   const [product, setProduct] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -38,9 +46,12 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/inventory-stock");
+      const r = await apiFetch(
+        `/inventory-stock?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setRows(await r.json());
+      const body = await readPaginatedJson<Row>(r);
+      setRows(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setRows([]);
@@ -81,6 +92,15 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     return d;
   }, [search, shop, product, threshold, onlyLow, rows]);
 
+  const pagedRows = useMemo(
+    () => slicePage(filtered, listPage, PAGE_SIZE),
+    [filtered, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [search, shop, product, threshold, onlyLow]);
+
   const shops = useMemo(() => {
     const s = new Set(rows.map((r) => r.warehouseName));
     return [...s];
@@ -105,6 +125,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     setShop("");
     setProduct("");
     setThreshold(20);
+    setListPage(1);
   };
 
   if (loading) {
@@ -208,11 +229,16 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
             onClick={clearSearch}
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            Clear
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors cursor-pointer"
+          >
+            Reset
           </button>
         </div>
-
-    
     </div>
 
     <div className="mb-4">
@@ -242,7 +268,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
             </td>
           </tr>
         ) : null}
-        {filtered.map((i) => (
+        {pagedRows.map((i) => (
           <tr
             key={i.id}
             className={`border-t border-gray-300 ${
@@ -262,6 +288,12 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
         ))}
       </tbody>
     </table>
+    <TablePagination
+      page={listPage}
+      total={filtered.length}
+      pageSize={PAGE_SIZE}
+      onPageChange={setListPage}
+    />
 
     {showAdd && (
       <AddStockModal

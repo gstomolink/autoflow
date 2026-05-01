@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { USER_ROLES, getStoredUser } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 import { getScopedShopId, setScopedShopId } from "@/lib/shop-scope";
 import SearchableShopCombobox from "./SearchableShopCombobox";
 import { useAdminI18n } from "./AdminI18nProvider";
@@ -62,13 +63,16 @@ export default function SuperAdminShopGate({
     setLoadError("");
     void (async () => {
       try {
-        const r = await apiFetch("/shops");
+        const r = await apiFetch(
+          `/shops?page=1&limit=${LIST_FETCH_LIMIT}`,
+        );
         if (!r.ok) {
           setLoadError(await r.text());
           setShops([]);
           return;
         }
-        setShops((await r.json()) as ShopRow[]);
+        const body = await readPaginatedJson<ShopRow>(r);
+        setShops(body.items);
       } catch {
         setLoadError("Could not load shops");
         setShops([]);

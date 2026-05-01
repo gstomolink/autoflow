@@ -5,6 +5,13 @@ import CategoryFormModal from "./CategoryFormModal";
 import ViewCategoryModal from "./ViewCategoryModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import {
+  LIST_FETCH_LIMIT,
+  PAGE_SIZE,
+  readPaginatedJson,
+  slicePage,
+} from "@/lib/paginated";
+import TablePagination from "@/components/admin/common/TablePagination";
 
 type Cat = {
   id: number;
@@ -17,6 +24,7 @@ type Cat = {
 export default function CategoriesTable({ filters }: { filters: Record<string, string> }) {
   const { t } = useAdminI18n();
   const [categories, setCategories] = useState<Cat[]>([]);
+  const [listPage, setListPage] = useState(1);
   const [editItem, setEditItem] = useState<Cat | null>(null);
   const [viewItem, setViewItem] = useState<Cat | null>(null);
   const [error, setError] = useState("");
@@ -26,9 +34,12 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch("/categories");
+      const r = await apiFetch(
+        `/categories?page=1&limit=${LIST_FETCH_LIMIT}`,
+      );
       if (!r.ok) throw new Error(await r.text());
-      setCategories(await r.json());
+      const body = await readPaginatedJson<Cat>(r);
+      setCategories(body.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
       setCategories([]);
@@ -49,6 +60,15 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
     }
     return data;
   }, [filters, categories]);
+
+  const pagedRows = useMemo(
+    () => slicePage(filteredData, listPage, PAGE_SIZE),
+    [filteredData, listPage],
+  );
+
+  useEffect(() => {
+    setListPage(1);
+  }, [filters]);
 
   const deleteCategory = async (id: number) => {
     if (!confirm("Delete category?")) return;
@@ -88,7 +108,7 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
                 </td>
               </tr>
             ) : null}
-            {filteredData.map((cat) => (
+            {pagedRows.map((cat) => (
               <tr key={cat.id} className="border-t">
                 <td className="p-3 text-gray-700">{cat.id}</td>
                 <td className="p-3 font-medium text-gray-700">{cat.name}</td>
@@ -125,6 +145,12 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
           </tbody>
         </table>
       </div>
+      <TablePagination
+        page={listPage}
+        total={filteredData.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setListPage}
+      />
 
       {editItem && (
         <CategoryFormModal

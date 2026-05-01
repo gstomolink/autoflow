@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 
 type SupplierProductRow = {
   linkId: number;
@@ -51,12 +52,13 @@ export default function SupplierProductsPage() {
     try {
       const [linkedRes, productsRes] = await Promise.all([
         apiFetch(`/suppliers/${supplierId}/products`),
-        apiFetch("/products"),
+        apiFetch(`/products?page=1&limit=${LIST_FETCH_LIMIT}`),
       ]);
       if (!linkedRes.ok) throw new Error(await linkedRes.text());
       if (!productsRes.ok) throw new Error(await productsRes.text());
       setRows((await linkedRes.json()) as SupplierProductRow[]);
-      setProducts((await productsRes.json()) as ProductRow[]);
+      const productBody = await readPaginatedJson<ProductRow>(productsRes);
+      setProducts(productBody.items);
     } catch (e) {
       setRows([]);
       setProducts([]);
