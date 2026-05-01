@@ -99,25 +99,32 @@ export default function RecipesTable() {
       </div>
 
       {/*  SEARCH BAR */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
-        <input
-          type="text"
-          placeholder="Search recipe..."
-          value={search}
-          onChange={(e)=>setSearch(e.target.value)}
-          className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-        />
-        <select
-          value={category}
-          onChange={(e)=>setCategory(e.target.value)}
-          className="border border-gray-300 px-3 py-2 rounded-lg cursor-pointer"
-        >
-          <option value="">All Categories</option>
-          <option value="Burger">Burger</option>
-          <option value="Pizza">Pizza</option>
-          <option value="Rice">Rice</option>
-          <option value="Pasta">Pasta</option>
-        </select>
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Search Recipe</label>
+          <input
+            type="text"
+            placeholder="Search recipe..."
+            value={search}
+            onChange={(e)=>setSearch(e.target.value)}
+            className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Category</label>
+          <select
+            value={category}
+            onChange={(e)=>setCategory(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg cursor-pointer text-gray-700"
+          >
+            <option value="">All Categories</option>
+            <option value="Burger">Burger</option>
+            <option value="Pizza">Pizza</option>
+            <option value="Rice">Rice</option>
+            <option value="Pasta">Pasta</option>
+          </select>
+        </div>
 
         <button
           type="button"

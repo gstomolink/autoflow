@@ -70,27 +70,33 @@ export default function InventoryTransactions({ type }: Props) {
   return (
     <div>
       {/* FILTER LINE */}
-      <div className="flex items-center justify-between mb-4 gap-3 text-gray-700">
+      <div className="flex items-end justify-between mb-4 gap-3 text-gray-700 bg-white p-4 rounded-xl shadow-sm">
   
   {/* Left side (Search + Dropdown) */}
-  <div className="flex gap-2 flex-1">
-    <input
-      placeholder="Search product..."
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-    className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-    />
+  <div className="flex gap-4 flex-1">
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-700">Search</label>
+      <input
+        placeholder="Search product..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+      />
+    </div>
 
-    <select
-      value={warehouse}
-      onChange={(e) => setWarehouse(e.target.value)}
-      className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700 cursor-pointer"
-    >
-      <option value="">All Warehouses</option>
-      <option>Main Warehouse</option>
-      <option>Galle Branch</option>
-      <option>Matara Depot</option>
-    </select>
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-700">Warehouse</label>
+      <select
+        value={warehouse}
+        onChange={(e) => setWarehouse(e.target.value)}
+        className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700 cursor-pointer"
+      >
+        <option value="">All Warehouses</option>
+        <option>Main Warehouse</option>
+        <option>Galle Branch</option>
+        <option>Matara Depot</option>
+      </select>
+    </div>
   </div>
 
   {/* Right side button */}

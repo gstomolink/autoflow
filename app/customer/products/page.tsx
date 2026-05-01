@@ -44,26 +44,32 @@ export default function ProductsPage() {
       </div>
 
       {/* Search & Filter */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <input
-          type="text"
-          placeholder="Search products by name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-black"
-        />
+      <div className="flex flex-col md:flex-row gap-4 mb-8 md:items-end">
+        <div className="flex flex-col gap-1 flex-1">
+          <label className="text-sm font-medium text-gray-700">Search Product</label>
+          <input
+            type="text"
+            placeholder="Search products by name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-black"
+          />
+        </div>
 
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-black"
-        >
-          {categories.map((cat) => (
-            <option key={cat} className="text-black">
-              {cat}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Category</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-black"
+          >
+            {categories.map((cat) => (
+              <option key={cat} className="text-black">
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Promotions */}

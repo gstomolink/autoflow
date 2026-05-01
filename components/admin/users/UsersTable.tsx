@@ -87,24 +87,30 @@ export default function UsersTable() {
         </button>
       </div>
 
-      <div className="flex justify-between items-center mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
-        <div className="flex gap-2">
-          <input
-            placeholder="Search name, email, phone..."
-            className="border border-gray-300 px-3 py-2 rounded"
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="flex justify-between items-end mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">Search</label>
+            <input
+              placeholder="Search name, email, phone..."
+              className="border border-gray-300 px-3 py-2 rounded"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="border border-gray-300 px-3 py-2 rounded"
-          >
-            <option value="">All Roles</option>
-            <option value="Super Admin">Super Admin</option>
-            <option value="Store Admin">Store Admin</option>
-            <option value="Store Staff">Store Staff</option>
-          </select>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">Role</label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="border border-gray-300 px-3 py-2 rounded"
+            >
+              <option value="">All Roles</option>
+              <option value="Super Admin">Super Admin</option>
+              <option value="Store Admin">Store Admin</option>
+              <option value="Store Staff">Store Staff</option>
+            </select>
+          </div>
         </div>
 
         <button

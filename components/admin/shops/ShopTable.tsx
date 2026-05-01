@@ -19,6 +19,7 @@ export default function ShopTable() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  
 
   const load = useCallback(async () => {
     setError("");
@@ -57,15 +58,32 @@ export default function ShopTable() {
   return (
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search shop..."
-          className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-        />
-      </div>
+<div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex justify-between items-end">
+  
+  {/* LEFT SIDE */}
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-medium text-gray-700">
+      Search
+    </label>
+
+    <input
+      type="text"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      placeholder="Search shop..."
+      className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
+    />
+  </div>
+
+  {/* RIGHT SIDE BUTTON */}
+  <button
+    onClick={() => setSearch(search)}
+    className="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600"
+  >
+    Search
+  </button>
+
+</div>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-gray-700">
           <thead className="bg-white">
