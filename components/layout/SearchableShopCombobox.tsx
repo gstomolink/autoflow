@@ -103,21 +103,7 @@ export default function SearchableShopCombobox({
           }}
           className={`min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 disabled:bg-slate-100 ${inputClassName}`}
         />
-        {allowClear && value ? (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => {
-              onChange("");
-              setQuery("");
-              setOpen(false);
-            }}
-            className="shrink-0 rounded-md border border-slate-300 px-2 text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-            aria-label="Clear shop"
-          >
-            ×
-          </button>
-        ) : null}
+       
       </div>
 
       {open && !disabled ? (

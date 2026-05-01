@@ -32,7 +32,6 @@ export default function SuperAdminShopGate({
   const { t } = useAdminI18n();
   const user = getStoredUser();
   const included = isIncludedPath(pathname);
-  console.log("included", included);
 
   const needsPick = useMemo(
     () =>
@@ -40,8 +39,6 @@ export default function SuperAdminShopGate({
       included,
     [user?.role, included],
   );
-
-  console.log("needsPick", needsPick);
 
   const [activeShop, setActiveShop] = useState<string | null>(null);
   const [shops, setShops] = useState<ShopRow[]>([]);
@@ -95,7 +92,6 @@ export default function SuperAdminShopGate({
   }
 
   if (activeShop) {
-    console.log("activeShop", activeShop);
     return <>{children}</>;
   }
 
