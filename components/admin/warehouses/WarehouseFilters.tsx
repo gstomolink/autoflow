@@ -31,13 +31,25 @@ export default function WarehouseFilters({ onFilter }: any) {
         />
       </div>
 
-      {/* Search Button */}
-      <button
-        onClick={handleSearch}
-        className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap shrink-0"
-      >
-        {t("actionSearch")}
-      </button>
+      <div className="ml-auto flex gap-2 shrink-0">
+        <button
+          type="button"
+          onClick={handleSearch}
+          className="bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+        >
+          {t("actionSearch")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setSearch("");
+            onFilter({ search: "" });
+          }}
+          className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors whitespace-nowrap cursor-pointer"
+        >
+          Clear
+        </button>
+      </div>
 
     </div>
   );

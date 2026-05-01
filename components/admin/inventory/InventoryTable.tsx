@@ -95,9 +95,13 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     setSearch(searchInput.trim());
   };
 
-  const resetFilters = () => {
+  const clearSearch = () => {
     setSearch("");
     setSearchInput("");
+  };
+
+  const resetFilters = () => {
+    clearSearch();
     setShop("");
     setProduct("");
     setThreshold(20);
@@ -191,21 +195,24 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={applyFilters}
-          className="ml-auto bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
-        >
-          {t("actionSearch")}
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            type="button"
+            onClick={applyFilters}
+            className="bg-sky-500 text-sky-50 px-5 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer"
+          >
+            {t("actionSearch")}
+          </button>
+          <button
+            type="button"
+            onClick={clearSearch}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Clear
+          </button>
+        </div>
 
-      <button
-        type="button"
-        onClick={resetFilters}
-        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors cursor-pointer"
-      >
-        Reset
-      </button>
+    
     </div>
 
     <div className="mb-4">

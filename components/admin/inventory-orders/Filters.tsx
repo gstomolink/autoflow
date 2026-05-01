@@ -105,20 +105,16 @@ export default function Filters({ values, onChange }: Props) {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={() =>
-            onChange({
-              status: "",
-              month: "",
-              supplierId: "",
-              productSearch: "",
-            })
-          }
-          className="border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50"
-        >
-          Clear filters
-        </button>
+        <div className="flex gap-2 items-end shrink-0">
+          <button
+            type="button"
+            onClick={() => patch({ productSearch: "" })}
+            className="border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 cursor-pointer"
+          >
+            Clear
+          </button>
+         
+        </div>
       </div>
     </div>
   );

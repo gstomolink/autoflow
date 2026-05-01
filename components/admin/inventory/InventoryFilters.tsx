@@ -23,6 +23,7 @@ export default function InventoryFilters({ onFilter }: any) {
         <label className="text-sm font-medium text-gray-700">Search Product</label>
         <input
           name="product"
+          value={filters.product}
           placeholder="Search by product..."
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded w-60 text-gray-700 cursor-pointer"
@@ -34,6 +35,7 @@ export default function InventoryFilters({ onFilter }: any) {
         <label className="text-sm font-medium text-gray-700">Warehouse</label>
         <select
           name="warehouse"
+          value={filters.warehouse}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded text-gray-700 cursor-pointer"
         >
@@ -50,6 +52,7 @@ export default function InventoryFilters({ onFilter }: any) {
         <label className="text-sm font-medium text-gray-700">Status</label>
         <select
           name="status"
+          value={filters.status}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded text-gray-700 cursor-pointer"
         >
@@ -59,16 +62,19 @@ export default function InventoryFilters({ onFilter }: any) {
         </select>
       </div>
 
-      {/* Reset Button */}
       <button
+        type="button"
         onClick={() => {
-          setFilters({ product: "", warehouse: "", status: "" });
-          onFilter({});
+          const cleared = { ...filters, product: "" };
+          setFilters(cleared);
+          onFilter(cleared);
         }}
-        className="px-4 py-2 bg-gray-200 rounded cursor-pointer"
+        className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
       >
-        Reset
+        Clear
       </button>
+
+      
     </div>
   );
 }

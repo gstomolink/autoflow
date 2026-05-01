@@ -75,14 +75,24 @@ export default function SupplierTable() {
           <label className="text-sm font-medium text-gray-700">Search</label>
           <input
             placeholder="Search suppliers..."
+            value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
           />
         </div>
 
-        <button type="button" onClick={() => void load()} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
-          {t("actionSearch")}
-        </button>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => void load()} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
+            {t("actionSearch")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       <table className="w-full bg-white rounded shadow text-gray-700">

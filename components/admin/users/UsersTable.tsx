@@ -93,6 +93,7 @@ export default function UsersTable() {
             <label className="text-sm font-medium text-gray-700">Search</label>
             <input
               placeholder="Search name, email, phone..."
+              value={search}
               className="border border-gray-300 px-3 py-2 rounded"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -113,13 +114,22 @@ export default function UsersTable() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => void load()}
-          className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
-        >
-          Search
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => void load()}
+            className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       {loading ? (

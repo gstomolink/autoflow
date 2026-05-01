@@ -63,6 +63,13 @@ export default function NearExpiryTab() {
     setFilteredData(result);
   };
 
+  const handleClear = () => {
+    setSearch("");
+    setSelectedDate("");
+    setRange("");
+    setFilteredData(data);
+  };
+
   return (
     <div>
 
@@ -103,13 +110,22 @@ export default function NearExpiryTab() {
           <option value="3m">3 Months</option>
         </select>
 
-        {/* SEARCH BUTTON */}
-        <button
-          onClick={handleSearch}
-          className="ml-auto bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600"
-        >
-          Search
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="bg-sky-500 text-white px-5 py-2 rounded-lg hover:bg-sky-600 cursor-pointer"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       {/* TABLE */}
