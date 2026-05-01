@@ -6,16 +6,20 @@ import { apiFetch } from "@/lib/api";
 import { PAGE_SIZE, readPaginatedJson } from "@/lib/paginated";
 import TablePagination from "@/components/admin/common/TablePagination";
 import ViewShopModal from "./ViewShopModal";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 
 type ShopRow = {
   shopId: string;
   name: string;
   address: string | null;
+  parentShopId: string | null;
   replenishmentNotifyBufferDays: number | null;
 };
 
 export default function ShopTable() {
   const { t } = useAdminI18n();
+  const user = getStoredUser();
+  const isStoreAdmin = user?.role === USER_ROLES.STORE_ADMIN;
   const [data, setData] = useState<ShopRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -112,6 +116,7 @@ export default function ShopTable() {
             <tr>
               <th className="p-3 text-left">{t("shopsFormId")}</th>
               <th className="p-3 text-left">{t("tableName")}</th>
+              <th className="p-3 text-left">Store Type</th>
               <th className="p-3 text-left">{t("tableAddress")}</th>
               <th className="p-3 text-left">{t("tableActions")}</th>
             </tr>
@@ -119,7 +124,7 @@ export default function ShopTable() {
           <tbody>
             {data.length === 0 ? (
               <tr className="border-t border-gray-200">
-                <td className="p-6 text-center text-slate-500" colSpan={4}>
+                <td className="p-6 text-center text-slate-500" colSpan={5}>
                   No data
                 </td>
               </tr>
@@ -128,6 +133,13 @@ export default function ShopTable() {
               <tr key={row.shopId} className="border-t border-gray-200">
                 <td className="p-3 font-mono text-slate-800">{row.shopId}</td>
                 <td className="p-3 font-medium">{row.name}</td>
+                <td className="p-3 text-slate-600">
+                  {isStoreAdmin && !row.parentShopId
+                    ? "Primary Shop"
+                    : row.parentShopId
+                      ? `Sub (${row.parentShopId})`
+                      : "Parent"}
+                </td>
                 <td className="p-3 max-w-xs text-slate-600">{row.address ?? "—"}</td>
                 <td className="p-3">
                   <button

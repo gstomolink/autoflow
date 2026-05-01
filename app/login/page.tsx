@@ -42,7 +42,20 @@ export default function LoginPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Login failed");
+        let message = "Login failed";
+        try {
+          const err = await response.json();
+          if (Array.isArray(err?.message)) {
+            message = err.message.join(", ");
+          } else if (typeof err?.message === "string") {
+            message = err.message;
+          } else if (typeof err?.error === "string") {
+            message = err.error;
+          }
+        } catch {
+          message = await response.text();
+        }
+        throw new Error(message || "Login failed");
       }
 
       const data = await response.json();
@@ -52,8 +65,12 @@ export default function LoginPage() {
       router.push(
         resolveAfterLoginPath(next, data.user.role as number),
       );
-    } catch {
-      setErrorMessage("Invalid credentials. Check user id, password, and shop id.");
+    } catch (e) {
+      const msg =
+        e instanceof Error && e.message
+          ? e.message
+          : "Invalid credentials. Check user id, password, and shop id.";
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }

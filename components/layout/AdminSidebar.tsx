@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { TranslationKey, useAdminI18n } from "./AdminI18nProvider";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 
 const menu: { key: TranslationKey; href: string }[] = [
   { key: "menuDashboard", href: "/admin/dashboard" },
@@ -27,7 +28,24 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useAdminI18n();
+  const user = getStoredUser();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const visibleMenu = menu.filter((item) => {
+    if (user?.role === USER_ROLES.SUPER_ADMIN) return true;
+    if (user?.role === USER_ROLES.STORE_ADMIN) {
+      return item.href !== "/admin/settings";
+    }
+    if (user?.role === USER_ROLES.STORE_STAFF) {
+      return [
+        "/admin/dashboard",
+        "/admin/inventory",
+        "/admin/inventory-orders",
+        "/admin/orders",
+      ].includes(item.href);
+    }
+    return true;
+  });
 
   const confirmLogout = () => {
     localStorage.clear();
@@ -48,7 +66,7 @@ export default function AdminSidebar() {
 
       {/* Menu */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {menu.map((item) => {
+        {visibleMenu.map((item) => {
           const active = pathname === item.href;
 
           return (

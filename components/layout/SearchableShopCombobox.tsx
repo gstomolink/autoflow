@@ -34,27 +34,28 @@ export default function SearchableShopCombobox({
     () => shops.find((s) => s.shopId === value),
     [shops, value],
   );
+  const selectedLabel = selectedShop
+    ? formatShopSelectLabel(selectedShop)
+    : placeholder;
 
   return (
-    <div className={`flex items-stretch gap-1 ${className}`}>
-      <div className="flex items-stretch gap-1">
-        <select
-          id={id}
-          aria-label={ariaLabel}
-          disabled={disabled}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 disabled:bg-slate-100"
-        >
-          <option value="">{placeholder}</option>
-          {shops.map((shop) => (
-            <option key={shop.shopId} value={shop.shopId}>
-              {formatShopSelectLabel(shop)}
-            </option>
-          ))}
-        </select>
-      </div>
-      
+    <div className={`w-full ${className}`}>
+      <select
+        id={id}
+        aria-label={ariaLabel}
+        disabled={disabled}
+        value={value}
+        title={selectedLabel}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-800 disabled:bg-slate-100"
+      >
+        <option value="">{placeholder}</option>
+        {shops.map((shop) => (
+          <option key={shop.shopId} value={shop.shopId}>
+            {formatShopSelectLabel(shop)}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

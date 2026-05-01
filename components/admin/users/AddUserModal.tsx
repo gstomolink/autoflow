@@ -22,6 +22,9 @@ export default function AddUserModal({ onClose }: Props) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState(
+    isSuper ? USER_ROLES.STORE_ADMIN : USER_ROLES.STORE_STAFF,
+  );
   const [staffType, setStaffType] = useState("cashier");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -38,6 +41,7 @@ export default function AddUserModal({ onClose }: Props) {
       password,
       email: email || undefined,
       phone: phone || undefined,
+      role,
     };
 
     if (isSuper) {
@@ -47,12 +51,15 @@ export default function AddUserModal({ onClose }: Props) {
         setSaving(false);
         return;
       }
-      body.role = USER_ROLES.STORE_ADMIN;
       body.shopId = sid;
+      if (role === USER_ROLES.STORE_STAFF) {
+        body.staffType = staffType;
+      }
     } else if (isStoreAdmin) {
-      body.role = USER_ROLES.STORE_STAFF;
       body.shopId = actor?.shopId ?? undefined;
-      body.staffType = staffType;
+      if (role === USER_ROLES.STORE_STAFF) {
+        body.staffType = staffType;
+      }
     } else {
       setError("Not allowed");
       setSaving(false);
@@ -187,8 +194,30 @@ export default function AddUserModal({ onClose }: Props) {
     />
   </div>
 
+  {/* ROLE */}
+  <div>
+    <label className="block text-sm text-gray-700 mb-1">
+      User Role
+    </label>
+    <select
+      value={String(role)}
+      onChange={(e) => setRole(Number(e.target.value))}
+      className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 focus:ring-2 focus:ring-sky-500"
+    >
+      {isSuper ? (
+        <>
+          <option value={String(USER_ROLES.STORE_ADMIN)}>Store Admin</option>
+          <option value={String(USER_ROLES.STORE_STAFF)}>Store Staff</option>
+        </>
+      ) : null}
+      {isStoreAdmin ? (
+        <option value={String(USER_ROLES.STORE_STAFF)}>Store Staff</option>
+      ) : null}
+    </select>
+  </div>
+
   {/* STAFF TYPE */}
-  {isStoreAdmin && (
+  {(isStoreAdmin || isSuper) && role === USER_ROLES.STORE_STAFF && (
     <div>
       <label className="block text-sm text-gray-700 mb-1">
         Staff Type

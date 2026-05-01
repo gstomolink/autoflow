@@ -1,6 +1,5 @@
 'use client';
 
-import ShopScopeSelect from "./ShopScopeSelect";
 import { Language, useAdminI18n } from "./AdminI18nProvider";
 
 export default function AdminHeader() {
@@ -13,7 +12,6 @@ export default function AdminHeader() {
       </div>
 
       <div className="flex items-center gap-4 flex-wrap justify-end">
-        <ShopScopeSelect />
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value as Language)}

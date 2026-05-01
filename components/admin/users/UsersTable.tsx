@@ -6,7 +6,7 @@ import EditUserModal from "./EditUserModal";
 import ViewUserModal from "./ViewUserModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import { apiFetch } from "@/lib/api";
-import { roleLabel } from "@/lib/auth";
+import { USER_ROLES, getStoredUser, roleLabel } from "@/lib/auth";
 import {
   LIST_FETCH_LIMIT,
   PAGE_SIZE,
@@ -15,6 +15,8 @@ import {
 } from "@/lib/paginated";
 import TablePagination from "@/components/admin/common/TablePagination";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import PageShopScopeFilter from "@/components/layout/PageShopScopeFilter";
+import { requestShopScopeApply } from "@/lib/shop-scope";
 
 type ApiUser = {
   id: number;
@@ -29,6 +31,7 @@ type ApiUser = {
 
 export default function UsersTable() {
   const { t } = useAdminI18n();
+  const actor = getStoredUser();
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
@@ -93,6 +96,23 @@ export default function UsersTable() {
     setListPage(1);
   }, [search, roleFilter]);
 
+  const roleOptions = useMemo(() => {
+    if (actor?.role === USER_ROLES.SUPER_ADMIN) {
+      return ["Super Admin", "Store Admin", "Store Staff"];
+    }
+    if (actor?.role === USER_ROLES.STORE_ADMIN) {
+      return ["Store Staff"];
+    }
+    return [];
+  }, [actor?.role]);
+
+  useEffect(() => {
+    if (!roleFilter) return;
+    if (!roleOptions.includes(roleFilter)) {
+      setRoleFilter("");
+    }
+  }, [roleFilter, roleOptions]);
+
   return (
     <div>
       {loadError ? (
@@ -108,7 +128,8 @@ export default function UsersTable() {
       </div>
 
       <div className="flex justify-between items-end mb-4 flex-wrap gap-3 bg-white p-4 rounded-xl shadow-sm">
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap">
+          <PageShopScopeFilter mode="master" />
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">Search</label>
             <input
@@ -127,9 +148,11 @@ export default function UsersTable() {
               className="border border-gray-300 px-3 py-2 rounded"
             >
               <option value="">All Roles</option>
-              <option value="Super Admin">Super Admin</option>
-              <option value="Store Admin">Store Admin</option>
-              <option value="Store Staff">Store Staff</option>
+              {roleOptions.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -137,7 +160,10 @@ export default function UsersTable() {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => void load()}
+            onClick={() => {
+              requestShopScopeApply();
+              void load();
+            }}
             className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
           >
             Search

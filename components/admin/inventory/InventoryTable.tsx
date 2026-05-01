@@ -12,7 +12,9 @@ import {
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { requestShopScopeApply } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
+import PageShopScopeFilter from "@/components/layout/PageShopScopeFilter";
 
 type Row = {
   id: number;
@@ -31,7 +33,6 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [threshold, setThreshold] = useState(20);
-  const [shop, setShop] = useState("");
   const [product, setProduct] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [listPage, setListPage] = useState(1);
@@ -81,16 +82,12 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       );
     }
 
-    if (shop) {
-      d = d.filter((i) => i.warehouseName === shop);
-    }
-
     if (product) {
       d = d.filter((i) => i.productName === product);
     }
 
     return d;
-  }, [search, shop, product, threshold, onlyLow, rows]);
+  }, [search, product, threshold, onlyLow, rows]);
 
   const pagedRows = useMemo(
     () => slicePage(filtered, listPage, PAGE_SIZE),
@@ -99,12 +96,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
 
   useEffect(() => {
     setListPage(1);
-  }, [search, shop, product, threshold, onlyLow]);
-
-  const shops = useMemo(() => {
-    const s = new Set(rows.map((r) => r.warehouseName));
-    return [...s];
-  }, [rows]);
+  }, [search, product, threshold, onlyLow]);
 
   const products = useMemo(() => {
     const s = new Set(rows.map((r) => r.productName));
@@ -112,6 +104,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   }, [rows]);
 
   const applyFilters = () => {
+    requestShopScopeApply();
     setSearch(searchInput.trim());
   };
 
@@ -122,7 +115,6 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
 
   const resetFilters = () => {
     clearSearch();
-    setShop("");
     setProduct("");
     setThreshold(20);
     setListPage(1);
@@ -162,6 +154,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     </div>
 
     <div className="bg-white p-4 rounded-xl shadow-sm mb-4 flex items-end gap-3 flex-wrap">
+        <PageShopScopeFilter mode="ops" />
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Search</label>
           <input
@@ -188,20 +181,6 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
             <option value="">All Products</option>
             {products.map((p) => (
               <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Shop</label>
-          <select
-            value={shop}
-            onChange={(e)=>setShop(e.target.value)}
-            className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
-          >
-            <option value="">All Shops</option>
-            {shops.map((w) => (
-              <option key={w} value={w}>{w}</option>
             ))}
           </select>
         </div>

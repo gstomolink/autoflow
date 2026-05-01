@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 import { INVENTORY_ORDER_STATUS_OPTIONS } from "@/lib/inventory-order-statuses";
+import { requestShopScopeApply } from "@/lib/shop-scope";
+import PageShopScopeFilter from "@/components/layout/PageShopScopeFilter";
 
 type SupplierOpt = { id: number; name: string };
 
@@ -21,6 +23,7 @@ type Props = {
 
 export default function Filters({ values, onChange }: Props) {
   const [suppliers, setSuppliers] = useState<SupplierOpt[]>([]);
+  const [searchInput, setSearchInput] = useState(values.productSearch);
 
   const patch = useCallback(
     (partial: Partial<InventoryOrdersFilterValues>) => {
@@ -40,9 +43,19 @@ export default function Filters({ values, onChange }: Props) {
     })();
   }, []);
 
+  useEffect(() => {
+    setSearchInput(values.productSearch);
+  }, [values.productSearch]);
+
+  const applySearch = () => {
+    requestShopScopeApply();
+    patch({ productSearch: searchInput.trim() });
+  };
+
   return (
     <div className="bg-white p-4 rounded-xl shadow mb-6">
       <div className="flex flex-wrap gap-3 items-end">
+        <PageShopScopeFilter mode="ops" />
         <div className="flex flex-col gap-1">
           <label className="text-sm text-slate-600" htmlFor="inv-order-month">
             Month
@@ -101,8 +114,14 @@ export default function Filters({ values, onChange }: Props) {
           <input
             id="inv-order-search"
             type="search"
-            value={values.productSearch}
-            onChange={(e) => patch({ productSearch: e.target.value })}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                applySearch();
+              }
+            }}
             placeholder="Search…"
             className="border border-gray-300 text-gray-700 p-2 rounded w-full max-w-md"
           />
@@ -111,7 +130,17 @@ export default function Filters({ values, onChange }: Props) {
         <div className="flex gap-2 items-end shrink-0">
           <button
             type="button"
-            onClick={() => patch({ productSearch: "" })}
+            onClick={applySearch}
+            className="bg-sky-500 text-sky-50 px-4 py-2 rounded hover:bg-sky-600 cursor-pointer"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchInput("");
+              patch({ productSearch: "" });
+            }}
             className="border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 cursor-pointer"
           >
             Clear

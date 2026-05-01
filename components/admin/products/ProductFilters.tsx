@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
+import { requestShopScopeApply } from "@/lib/shop-scope";
+import PageShopScopeFilter from "@/components/layout/PageShopScopeFilter";
 
 type Props = {
   onFilter: (filters: any) => void;
@@ -11,6 +14,8 @@ type Props = {
 
 export default function ProductFilters({ onFilter }: Props) {
   const { t } = useAdminI18n();
+  const user = getStoredUser();
+  const isStoreAdmin = user?.role === USER_ROLES.STORE_ADMIN;
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
@@ -36,6 +41,7 @@ export default function ProductFilters({ onFilter }: Props) {
   }, []);
 
   const handleSearch = () => {
+    requestShopScopeApply();
     onFilter({
       name: search,
       category: category,
@@ -43,7 +49,8 @@ export default function ProductFilters({ onFilter }: Props) {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex items-end gap-4">
+    <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap items-end gap-4">
+      {isStoreAdmin ? null : <PageShopScopeFilter mode="master" />}
       
       {/* Search Input */}
       <div className="flex flex-col gap-1">

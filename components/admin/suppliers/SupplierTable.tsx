@@ -6,13 +6,16 @@ import ViewSupplierModal from "./ViewSupplierModal";
 import EditSupplierModal from "./EditSupplierModal";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 import {
   LIST_FETCH_LIMIT,
   PAGE_SIZE,
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { requestShopScopeApply } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
+import PageShopScopeFilter from "@/components/layout/PageShopScopeFilter";
 
 type Sup = {
   id: number;
@@ -27,6 +30,8 @@ type Sup = {
 export default function SupplierTable() {
   const { t } = useAdminI18n();
   const router = useRouter();
+  const user = getStoredUser();
+  const isStoreAdmin = user?.role === USER_ROLES.STORE_ADMIN;
   const [search, setSearch] = useState("");
   const [viewItem, setViewItem] = useState<Sup | null>(null);
   const [editItem, setEditItem] = useState<Sup | null>(null);
@@ -91,18 +96,24 @@ export default function SupplierTable() {
     <>
       {error ? <p className="text-rose-600 text-sm mb-2">{error}</p> : null}
       <div className="flex justify-between items-end mb-4 bg-white p-4 rounded-xl shadow-sm">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Search</label>
-          <input
-            placeholder="Search suppliers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
-          />
+        <div className="flex flex-wrap items-end gap-4">
+          {isStoreAdmin ? null : <PageShopScopeFilter mode="master" />}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">Search</label>
+            <input
+              placeholder="Search suppliers..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
+            />
+          </div>
         </div>
 
         <div className="flex gap-2">
-          <button type="button" onClick={() => void load()} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
+          <button type="button" onClick={() => {
+            requestShopScopeApply();
+            void load();
+          }} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
             {t("actionSearch")}
           </button>
           <button

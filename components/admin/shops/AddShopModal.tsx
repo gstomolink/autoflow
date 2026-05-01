@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 import { apiFetch } from "@/lib/api";
+import { LIST_FETCH_LIMIT, readPaginatedJson } from "@/lib/paginated";
 import { setScopedShopId } from "@/lib/shop-scope";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 
 export default function AddShopModal({
   onClose,
@@ -15,11 +17,44 @@ export default function AddShopModal({
 }) {
   const { t } = useAdminI18n();
   const router = useRouter();
+  const user = getStoredUser();
+  const isStoreAdmin = user?.role === USER_ROLES.STORE_ADMIN;
   const [shopId, setShopId] = useState("");
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [storeType, setStoreType] = useState<"parent" | "sub">("parent");
+  const [parentShopId, setParentShopId] = useState("");
+  const [parentOptions, setParentOptions] = useState<
+    { shopId: string; name: string; parentShopId: string | null }[]
+  >([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const r = await apiFetch(`/shops?page=1&limit=${LIST_FETCH_LIMIT}`);
+      if (!r.ok) return;
+      const body = await readPaginatedJson<{
+        shopId: string;
+        name: string;
+        parentShopId: string | null;
+      }>(r);
+      const parentRows = body.items.filter((s) => !s.parentShopId);
+      setParentOptions(parentRows);
+      if (isStoreAdmin && user?.shopId) {
+        const own = body.items.find((s) => s.shopId === user.shopId);
+        const ownParent = own?.parentShopId || own?.shopId || user.shopId;
+        if (parentRows.some((p) => p.shopId === ownParent)) {
+          setParentShopId(ownParent);
+        }
+      }
+    })();
+  }, [isStoreAdmin, user?.shopId]);
+
+  useEffect(() => {
+    if (!isStoreAdmin) return;
+    setStoreType("sub");
+  }, [isStoreAdmin]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,9 +64,21 @@ export default function AddShopModal({
       const id = shopId.trim();
       const display = name.trim();
       const addr = address.trim();
+      const parent =
+        isStoreAdmin || storeType === "sub"
+          ? parentShopId.trim() || undefined
+          : undefined;
+      if ((isStoreAdmin || storeType === "sub") && !parent) {
+        throw new Error("parent store is required for sub store");
+      }
       const r = await apiFetch("/shops", {
         method: "POST",
-        body: JSON.stringify({ shopId: id, name: display, address: addr }),
+        body: JSON.stringify({
+          shopId: id,
+          name: display,
+          address: addr,
+          parentShopId: parent,
+        }),
       });
       if (!r.ok) throw new Error(await r.text());
       setScopedShopId(id);
@@ -71,6 +118,43 @@ export default function AddShopModal({
         </div>
 
         <form className="space-y-3" onSubmit={submit}>
+          {isStoreAdmin ? null : (
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Store Type</label>
+              <select
+                value={storeType}
+                onChange={(e) => setStoreType(e.target.value as "parent" | "sub")}
+                className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 focus:ring-2 focus:ring-sky-500"
+              >
+                <option value="parent">Parent Store</option>
+                <option value="sub">Sub Store</option>
+              </select>
+            </div>
+          )}
+          {isStoreAdmin || storeType === "sub" ? (
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Parent Store</label>
+              <select
+                value={parentShopId}
+                onChange={(e) => setParentShopId(e.target.value)}
+                className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 focus:ring-2 focus:ring-sky-500"
+                required
+                disabled={isStoreAdmin}
+              >
+                <option value="">Select parent store</option>
+                {parentOptions.map((p) => (
+                  <option key={p.shopId} value={p.shopId}>
+                    {p.name} ({p.shopId})
+                  </option>
+                ))}
+              </select>
+              {isStoreAdmin ? (
+                <p className="mt-1 text-xs text-slate-500">
+                  your child shop will be linked under your primary shop
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <div>
             <label className="block text-sm text-gray-700 mb-1">{t("shopsFormId")}</label>
             <input

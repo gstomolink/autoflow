@@ -1,16 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AddShopModal from "@/components/admin/shops/AddShopModal";
 import BulkImportShopModal from "@/components/admin/shops/BulkImportShopModal";
 import ShopTable from "@/components/admin/shops/ShopTable";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 
 export default function AdminShopsPage() {
   const { t } = useAdminI18n();
+  const router = useRouter();
+  const user = getStoredUser();
+  const canAccess =
+    user?.role === USER_ROLES.SUPER_ADMIN || user?.role === USER_ROLES.STORE_ADMIN;
   const [showAdd, setShowAdd] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [tableKey, setTableKey] = useState(0);
+
+  useEffect(() => {
+    if (canAccess) return;
+    router.replace("/admin/dashboard");
+  }, [canAccess, router]);
+
+  if (!canAccess) {
+    return null;
+  }
 
   return (
     <div>
@@ -29,23 +44,25 @@ export default function AdminShopsPage() {
             {t("addShop")}
           </button>
 
-          <button
-            onClick={() => setShowBulk(true)}
-            className="px-4 py-2 bg-transparent text-slate-600 border border-slate-400 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2 cursor-pointer"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="w-4 h-4"
-              aria-hidden="true"
+          {user?.role === USER_ROLES.SUPER_ADMIN ? (
+            <button
+              onClick={() => setShowBulk(true)}
+              className="px-4 py-2 bg-transparent text-slate-600 border border-slate-400 rounded-lg hover:bg-slate-100 transition-colors inline-flex items-center gap-2 cursor-pointer"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-            </svg>
-            <span>{t("bulkImportCsv")}</span>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="w-4 h-4"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+              </svg>
+              <span>{t("bulkImportCsv")}</span>
+            </button>
+          ) : null}
         </div>
       </div>
 

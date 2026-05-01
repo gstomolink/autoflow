@@ -3,7 +3,7 @@
 import AdminSidebar from "@/components/layout/AdminSidebar";
 import AdminHeader from "@/components/layout/AdminHeader";
 import { AdminI18nProvider } from "@/components/layout/AdminI18nProvider";
-import SuperAdminShopGate from "@/components/layout/SuperAdminShopGate";
+import EnsureShopScope from "@/components/layout/EnsureShopScope";
 import RequireAuth from "@/components/auth/require-auth";
 
 export default function AdminAuthLayout({
@@ -19,7 +19,7 @@ export default function AdminAuthLayout({
           <div className="flex-1 flex flex-col min-w-0">
             <AdminHeader />
             <main className="flex-1 overflow-y-auto p-6">
-              <SuperAdminShopGate>{children}</SuperAdminShopGate>
+              <EnsureShopScope>{children}</EnsureShopScope>
             </main>
           </div>
         </AdminI18nProvider>

@@ -19,7 +19,6 @@ export default function InventoryTabs() {
 
   return (
     <div>
-
       {/* TABS */}
       <div className="flex gap-4 border-b mb-6">
         {tabs.map((tab) => (

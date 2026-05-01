@@ -60,4 +60,4 @@ export default function SupplierPage() {
       )}
     </div>
   );
-}
+}

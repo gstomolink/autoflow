@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { USER_ROLES, getStoredUser } from "@/lib/auth";
 
 type Row = {
   fullName: string;
@@ -19,12 +20,29 @@ export default function EditUserModal({
   data: Row;
   onClose: () => void;
 }) {
+  const actor = getStoredUser();
+  const allowedRoleOptions =
+    actor?.role === USER_ROLES.SUPER_ADMIN
+      ? [
+          { value: USER_ROLES.SUPER_ADMIN, label: "Super Admin" },
+          { value: USER_ROLES.STORE_ADMIN, label: "Store Admin" },
+          { value: USER_ROLES.STORE_STAFF, label: "Store Staff" },
+        ]
+      : actor?.role === USER_ROLES.STORE_ADMIN
+        ? [{ value: USER_ROLES.STORE_STAFF, label: "Store Staff" }]
+        : [];
+
   const [form, setForm] = useState<Row>(data);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "role") {
+      setForm({ ...form, role: Number(value) });
+      return;
+    }
+    setForm({ ...form, [name]: value });
   };
 
   const handleSave = () => {
@@ -105,10 +123,11 @@ export default function EditUserModal({
               onChange={handleChange}
               className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 placeholder:text-gray-300 focus:ring-2 focus:ring-sky-500"
             >
-              <option value={1}>Admin</option>
-              <option value={2}>Manager</option>
-              <option value={3}>Cashier</option>
-              <option value={4}>Staff</option>
+              {allowedRoleOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
 

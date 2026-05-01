@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import InventoryTabs from "@/components/admin/inventory/InventoryTabs";
 import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 
