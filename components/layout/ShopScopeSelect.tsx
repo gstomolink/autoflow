@@ -55,7 +55,7 @@ export default function ShopScopeSelect() {
   }
 
   return (
-    <div className="w-[280px]">
+    <div className="w-[210px]">
       <SearchableShopCombobox
         shops={shops}
         value={selectedShopId}
