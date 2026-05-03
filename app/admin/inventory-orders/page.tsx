@@ -15,6 +15,7 @@ const initialFilters: InventoryOrdersFilterValues = {
 };
 
 export default function InventoryOrdersPage() {
+  const [draftFilters, setDraftFilters] = useState<InventoryOrdersFilterValues>(initialFilters);
   const [filters, setFilters] = useState<InventoryOrdersFilterValues>(initialFilters);
   const { t } = useAdminI18n();
 
@@ -29,7 +30,11 @@ export default function InventoryOrdersPage() {
         </p>
       </div>
 
-      <Filters values={filters} onChange={setFilters} />
+      <Filters
+        values={draftFilters}
+        onChange={setDraftFilters}
+        onSearch={() => setFilters(draftFilters)}
+      />
       <InventoryOrdersTabs filters={filters} />
     </div>
   );

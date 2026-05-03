@@ -34,8 +34,14 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      const q = String(filters?.search ?? "").trim();
+      if (q) params.set("search", q);
       const r = await apiFetch(
-        `/categories?page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/categories?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<Cat>(r);
@@ -46,24 +52,15 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filteredData = useMemo(() => {
-    let data = categories;
-    if (filters?.search) {
-      const q = String(filters.search).trim().toLowerCase();
-      data = data.filter((c) => c.name.toLowerCase().includes(q));
-    }
-    return data;
-  }, [filters, categories]);
-
   const pagedRows = useMemo(
-    () => slicePage(filteredData, listPage, PAGE_SIZE),
-    [filteredData, listPage],
+    () => slicePage(categories, listPage, PAGE_SIZE),
+    [categories, listPage],
   );
 
   useEffect(() => {
@@ -101,7 +98,7 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
           </thead>
 
           <tbody>
-            {filteredData.length === 0 ? (
+            {categories.length === 0 ? (
               <tr className="border-t">
                 <td className="p-6 text-center text-slate-500" colSpan={6}>
                   No data
@@ -147,7 +144,7 @@ export default function CategoriesTable({ filters }: { filters: Record<string, s
       </div>
       <TablePagination
         page={listPage}
-        total={filteredData.length}
+        total={categories.length}
         pageSize={PAGE_SIZE}
         onPageChange={setListPage}
       />

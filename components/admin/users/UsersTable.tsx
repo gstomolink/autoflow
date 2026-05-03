@@ -34,6 +34,7 @@ export default function UsersTable() {
   const actor = getStoredUser();
 
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [add, setAdd] = useState(false);
   const [view, setView] = useState<ApiUser | null>(null);
@@ -48,9 +49,13 @@ export default function UsersTable() {
     setLoadError("");
     setLoading(true);
     try {
-      const r = await apiFetch(
-        `/users?page=1&limit=${LIST_FETCH_LIMIT}`,
-      );
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      if (search.trim()) params.set("search", search.trim());
+      if (roleFilter.trim()) params.set("role", roleFilter.trim());
+      const r = await apiFetch(`/users?${params.toString()}`);
       if (!r.ok) {
         const t = await r.text();
         throw new Error(t || r.statusText);
@@ -63,33 +68,15 @@ export default function UsersTable() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [roleFilter, search]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filtered = useMemo(() => {
-    let d = rows;
-    if (search) {
-      const q = search.toLowerCase();
-      d = d.filter(
-        (u) =>
-          u.fullName.toLowerCase().includes(q) ||
-          (u.email?.toLowerCase().includes(q) ?? false) ||
-          (u.phone?.includes(search) ?? false) ||
-          u.userId.toLowerCase().includes(q),
-      );
-    }
-    if (roleFilter) {
-      d = d.filter((u) => roleLabel(u.role) === roleFilter);
-    }
-    return d;
-  }, [search, roleFilter, rows]);
-
   const pagedRows = useMemo(
-    () => slicePage(filtered, listPage, PAGE_SIZE),
-    [filtered, listPage],
+    () => slicePage(rows, listPage, PAGE_SIZE),
+    [rows, listPage],
   );
 
   useEffect(() => {
@@ -98,17 +85,23 @@ export default function UsersTable() {
 
   const roleOptions = useMemo(() => {
     if (actor?.role === USER_ROLES.SUPER_ADMIN) {
-      return ["Super Admin", "Store Admin", "Store Staff"];
+      return [
+        { value: String(USER_ROLES.SUPER_ADMIN), label: "Super Admin" },
+        { value: String(USER_ROLES.STORE_ADMIN), label: "Store Admin" },
+        { value: String(USER_ROLES.STORE_STAFF), label: "Store Staff" },
+      ];
     }
     if (actor?.role === USER_ROLES.STORE_ADMIN) {
-      return ["Store Staff"];
+      return [
+        { value: String(USER_ROLES.STORE_STAFF), label: "Store Staff" },
+      ];
     }
     return [];
   }, [actor?.role]);
 
   useEffect(() => {
     if (!roleFilter) return;
-    if (!roleOptions.includes(roleFilter)) {
+    if (!roleOptions.some((opt) => opt.value === roleFilter)) {
       setRoleFilter("");
     }
   }, [roleFilter, roleOptions]);
@@ -134,9 +127,16 @@ export default function UsersTable() {
             <label className="text-sm font-medium text-gray-700">Search</label>
             <input
               placeholder="Search name, email, phone..."
-              value={search}
+              value={searchInput}
               className="border border-gray-300 px-3 py-2 rounded"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  requestShopScopeApply();
+                  setSearch(searchInput.trim());
+                }
+              }}
             />
           </div>
 
@@ -149,8 +149,8 @@ export default function UsersTable() {
             >
               <option value="">All Roles</option>
               {roleOptions.map((role) => (
-                <option key={role} value={role}>
-                  {role}
+                <option key={role.value} value={role.value}>
+                  {role.label}
                 </option>
               ))}
             </select>
@@ -162,7 +162,7 @@ export default function UsersTable() {
             type="button"
             onClick={() => {
               requestShopScopeApply();
-              void load();
+              setSearch(searchInput.trim());
             }}
             className="bg-sky-500 text-sky-50 px-4 py-2 rounded cursor-pointer hover:bg-sky-600 transition-colors"
           >
@@ -170,7 +170,11 @@ export default function UsersTable() {
           </button>
           <button
             type="button"
-            onClick={() => setSearch("")}
+            onClick={() => {
+              setSearchInput("");
+              setSearch("");
+              setRoleFilter("");
+            }}
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             Cancel
@@ -196,7 +200,7 @@ export default function UsersTable() {
           </thead>
 
           <tbody>
-            {filtered.length === 0 ? (
+            {rows.length === 0 ? (
               <tr className="border-t border-gray-300">
                 <td className="p-6 text-center text-slate-500" colSpan={7}>
                   No data
@@ -242,7 +246,7 @@ export default function UsersTable() {
         </table>
         <TablePagination
           page={listPage}
-          total={filtered.length}
+          total={rows.length}
           pageSize={PAGE_SIZE}
           onPageChange={setListPage}
         />

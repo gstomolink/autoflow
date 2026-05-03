@@ -19,9 +19,10 @@ export type InventoryOrdersFilterValues = {
 type Props = {
   values: InventoryOrdersFilterValues;
   onChange: (next: InventoryOrdersFilterValues) => void;
+  onSearch?: () => void;
 };
 
-export default function Filters({ values, onChange }: Props) {
+export default function Filters({ values, onChange, onSearch }: Props) {
   const [suppliers, setSuppliers] = useState<SupplierOpt[]>([]);
   const [searchInput, setSearchInput] = useState(values.productSearch);
 
@@ -50,6 +51,7 @@ export default function Filters({ values, onChange }: Props) {
   const applySearch = () => {
     requestShopScopeApply();
     patch({ productSearch: searchInput.trim() });
+    onSearch?.();
   };
 
   return (

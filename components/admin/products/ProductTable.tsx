@@ -11,6 +11,7 @@ import {
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { SHOP_SCOPE_CHANGE_EVENT } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
 
 type ProductRow = {
@@ -20,6 +21,7 @@ type ProductRow = {
   imageUrl: string | null;
   basePrice: string;
   categoryName: string;
+  supplierCode: string;
 };
 
 export default function ProductTable({ filters }: { filters: Record<string, string> }) {
@@ -35,8 +37,16 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      const q = String(filters?.name ?? "").trim();
+      if (q) params.set("search", q);
+      const category = String(filters?.category ?? "").trim();
+      if (category) params.set("category", category);
       const r = await apiFetch(
-        `/products?page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/products?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<ProductRow>(r);
@@ -47,27 +57,25 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filtered = useMemo(() => {
-    let data = products;
-    if (filters?.name) {
-      const q = String(filters.name).toLowerCase();
-      data = data.filter((p) => p.name.toLowerCase().includes(q));
-    }
-    if (filters?.category) {
-      data = data.filter((p) => p.categoryName === filters.category);
-    }
-    return data;
-  }, [filters, products]);
+  useEffect(() => {
+    const handleShopScopeChange = () => {
+      void load();
+    };
+    window.addEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    return () => {
+      window.removeEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    };
+  }, [load]);
 
   const pagedRows = useMemo(
-    () => slicePage(filtered, listPage, PAGE_SIZE),
-    [filtered, listPage],
+    () => slicePage(products, listPage, PAGE_SIZE),
+    [products, listPage],
   );
 
   useEffect(() => {
@@ -105,7 +113,7 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
           </thead>
 
           <tbody>
-            {filtered.length === 0 ? (
+            {products.length === 0 ? (
               <tr className="border-t border-gray-200">
                 <td className="p-6 text-center text-slate-500" colSpan={6}>
                   No data
@@ -140,7 +148,7 @@ export default function ProductTable({ filters }: { filters: Record<string, stri
       </div>
         <TablePagination
           page={listPage}
-          total={filtered.length}
+          total={products.length}
           pageSize={PAGE_SIZE}
           onPageChange={setListPage}
         />

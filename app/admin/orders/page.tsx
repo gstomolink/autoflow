@@ -9,6 +9,12 @@ import { useAdminI18n } from "@/components/layout/AdminI18nProvider";
 export default function OrdersPage() {
   const { t } = useAdminI18n();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [draftFilters, setDraftFilters] = useState<OrderFilterValues>({
+    fromDate: "",
+    toDate: "",
+    status: "",
+    paymentType: "",
+  });
   const [filters, setFilters] = useState<OrderFilterValues>({
     fromDate: "",
     toDate: "",
@@ -22,7 +28,11 @@ export default function OrdersPage() {
         {t("ordersTitle")}
       </h1>
 
-      <OrderFilters values={filters} onChange={setFilters} />
+      <OrderFilters
+        values={draftFilters}
+        onChange={setDraftFilters}
+        onSearch={() => setFilters(draftFilters)}
+      />
 
       <OrdersTable filters={filters} onView={(order) => setSelectedOrder(order)} />
 

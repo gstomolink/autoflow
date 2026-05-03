@@ -9,6 +9,7 @@ import {
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { SHOP_SCOPE_CHANGE_EVENT } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
 import type { OrderFilterValues } from "./OrderFilters";
 
@@ -39,8 +40,16 @@ export default function OrdersTable({ filters, onView }: Props) {
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      if (filters.fromDate) params.set("fromDate", filters.fromDate);
+      if (filters.toDate) params.set("toDate", filters.toDate);
+      if (filters.status) params.set("status", filters.status);
+      if (filters.paymentType) params.set("paymentType", filters.paymentType);
       const r = await apiFetch(
-        `/customer-orders?page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/customer-orders?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<Co>(r);
@@ -51,38 +60,25 @@ export default function OrdersTable({ filters, onView }: Props) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filteredOrders = useMemo(() => {
-    return orders.filter((o) => {
-      const orderDate = String(o.createdAt).slice(0, 10);
-
-      if (filters.fromDate && orderDate < filters.fromDate) {
-        return false;
-      }
-      if (filters.toDate && orderDate > filters.toDate) {
-        return false;
-      }
-      if (filters.status && o.status.toLowerCase() !== filters.status.toLowerCase()) {
-        return false;
-      }
-      if (
-        filters.paymentType &&
-        o.paymentStatus.toLowerCase() !== filters.paymentType.toLowerCase()
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [orders, filters]);
+  useEffect(() => {
+    const handleShopScopeChange = () => {
+      void load();
+    };
+    window.addEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    return () => {
+      window.removeEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    };
+  }, [load]);
 
   const pagedOrders = useMemo(
-    () => slicePage(filteredOrders, listPage, PAGE_SIZE),
-    [filteredOrders, listPage],
+    () => slicePage(orders, listPage, PAGE_SIZE),
+    [orders, listPage],
   );
 
   useEffect(() => {
@@ -112,7 +108,7 @@ export default function OrdersTable({ filters, onView }: Props) {
           </thead>
 
           <tbody>
-            {filteredOrders.length === 0 ? (
+            {orders.length === 0 ? (
               <tr className="border-t">
                 <td className="p-6 text-center text-slate-500" colSpan={8}>
                   No data
@@ -157,7 +153,7 @@ export default function OrdersTable({ filters, onView }: Props) {
       </div>
         <TablePagination
           page={listPage}
-          total={filteredOrders.length}
+          total={orders.length}
           pageSize={PAGE_SIZE}
           onPageChange={setListPage}
         />

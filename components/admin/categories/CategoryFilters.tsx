@@ -32,6 +32,12 @@ export default function CategoryFilters({ onFilter }: Props) {
           placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSearch();
+            }
+          }}
           className="w-72 border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
         />
       </div>

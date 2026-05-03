@@ -60,6 +60,12 @@ export default function ProductFilters({ onFilter }: Props) {
           placeholder="Search by product name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSearch();
+            }
+          }}
           className="border border-gray-300 px-3 py-2 rounded-lg w-72 text-gray-700"
         />
       </div>

@@ -33,7 +33,9 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [threshold, setThreshold] = useState(20);
+  const [thresholdInput, setThresholdInput] = useState(20);
   const [product, setProduct] = useState("");
+  const [productInput, setProductInput] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [listPage, setListPage] = useState(1);
   const [error, setError] = useState("");
@@ -47,8 +49,16 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      if (search.trim()) params.set("search", search.trim());
+      if (product.trim()) params.set("product", product.trim());
+      if (Number.isFinite(threshold)) params.set("threshold", String(threshold));
+      if (onlyLow) params.set("onlyLow", "1");
       const r = await apiFetch(
-        `/inventory-stock?page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/inventory-stock?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<Row>(r);
@@ -59,7 +69,7 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [onlyLow, product, search, threshold]);
 
   useEffect(() => {
     void load();
@@ -76,18 +86,8 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
       d = d.filter((i) => i.quantityOnHand < threshold);
     }
 
-    if (search) {
-      d = d.filter((i) =>
-        i.productName.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-
-    if (product) {
-      d = d.filter((i) => i.productName === product);
-    }
-
     return d;
-  }, [search, product, threshold, onlyLow, rows]);
+  }, [threshold, onlyLow, rows]);
 
   const pagedRows = useMemo(
     () => slicePage(filtered, listPage, PAGE_SIZE),
@@ -106,17 +106,21 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
   const applyFilters = () => {
     requestShopScopeApply();
     setSearch(searchInput.trim());
+    setProduct(productInput);
+    setThreshold(thresholdInput);
   };
 
   const clearSearch = () => {
     setSearch("");
     setSearchInput("");
+    setProduct("");
+    setProductInput("");
+    setThreshold(20);
+    setThresholdInput(20);
   };
 
   const resetFilters = () => {
     clearSearch();
-    setProduct("");
-    setThreshold(20);
     setListPage(1);
   };
 
@@ -174,8 +178,8 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Product</label>
           <select
-            value={product}
-            onChange={(e)=>setProduct(e.target.value)}
+            value={productInput}
+            onChange={(e)=>setProductInput(e.target.value)}
             className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700"
           >
             <option value="">All Products</option>
@@ -189,8 +193,8 @@ export default function InventoryTable({ onlyLow }: { onlyLow?: boolean }) {
           <label className="text-sm font-medium text-gray-700">{t("tableLowStockLevel")}</label>
           <input
             type="number"
-            value={threshold}
-            onChange={(e)=>setThreshold(Number(e.target.value))}
+            value={thresholdInput}
+            onChange={(e)=>setThresholdInput(Number(e.target.value))}
             className="border border-gray-300 px-3 py-2 rounded-lg text-gray-700 w-32 focus:outline-none"
           />
         </div>

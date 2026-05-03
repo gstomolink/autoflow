@@ -14,6 +14,7 @@ import {
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { SHOP_SCOPE_CHANGE_EVENT } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
 import { inventoryOrderStatusLabel } from "@/lib/inventory-order-statuses";
 
@@ -62,8 +63,19 @@ export default function ManualOrdersTable({
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        source: "manual",
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      if (filters.status.trim()) params.set("status", filters.status.trim());
+      if (filters.month.trim()) params.set("month", filters.month.trim());
+      if (filters.supplierId.trim()) params.set("supplierId", filters.supplierId.trim());
+      if (filters.productSearch.trim()) {
+        params.set("productSearch", filters.productSearch.trim());
+      }
       const r = await apiFetch(
-        `/inventory-orders?source=manual&page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/inventory-orders?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<InvOrder>(r);
@@ -74,50 +86,25 @@ export default function ManualOrdersTable({
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filteredRows = useMemo(() => {
-    let out = rows;
-    const { status, month, supplierId, productSearch } = filters;
-
-    if (status.trim()) {
-      out = out.filter((r) => r.status === status);
-    }
-    if (month.trim()) {
-      const ym = month.trim();
-      out = out.filter((r) => {
-        const byDelivery = monthKeyFromDate(r.expectedDeliveryDate);
-        const byCreated = monthKeyFromDate(r.createdAt);
-        return byDelivery === ym || byCreated === ym;
-      });
-    }
-    if (supplierId.trim()) {
-      out = out.filter(
-        (r) => String(r.supplier?.id ?? "") === supplierId.trim(),
-      );
-    }
-    const q = productSearch.trim().toLowerCase();
-    if (q) {
-      out = out.filter(
-        (r) =>
-          r.orderNumber.toLowerCase().includes(q) ||
-          (r.lines?.some(
-            (l) =>
-              l.product?.name?.toLowerCase().includes(q) ||
-              l.product?.sku?.toLowerCase().includes(q),
-          ) ?? false),
-      );
-    }
-    return out;
-  }, [rows, filters]);
+  useEffect(() => {
+    const handleShopScopeChange = () => {
+      void load();
+    };
+    window.addEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    return () => {
+      window.removeEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    };
+  }, [load]);
 
   const pagedRows = useMemo(
-    () => slicePage(filteredRows, listPage, PAGE_SIZE),
-    [filteredRows, listPage],
+    () => slicePage(rows, listPage, PAGE_SIZE),
+    [rows, listPage],
   );
 
   useEffect(() => {
@@ -161,7 +148,7 @@ export default function ManualOrdersTable({
         </thead>
 
         <tbody>
-          {filteredRows.length === 0 ? (
+          {rows.length === 0 ? (
             <tr>
               <td className="p-4 text-slate-500 text-center" colSpan={7}>
                 {hasActiveFilters
@@ -231,7 +218,7 @@ export default function ManualOrdersTable({
       </table>
       <TablePagination
         page={listPage}
-        total={filteredRows.length}
+        total={rows.length}
         pageSize={PAGE_SIZE}
         onPageChange={setListPage}
       />

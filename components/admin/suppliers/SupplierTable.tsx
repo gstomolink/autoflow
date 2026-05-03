@@ -33,6 +33,7 @@ export default function SupplierTable() {
   const user = getStoredUser();
   const isStoreAdmin = user?.role === USER_ROLES.STORE_ADMIN;
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [viewItem, setViewItem] = useState<Sup | null>(null);
   const [editItem, setEditItem] = useState<Sup | null>(null);
   const [suppliers, setSuppliers] = useState<Sup[]>([]);
@@ -44,9 +45,12 @@ export default function SupplierTable() {
     setError("");
     setLoading(true);
     try {
-      const r = await apiFetch(
-        `/suppliers?page=1&limit=${LIST_FETCH_LIMIT}`,
-      );
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      if (search.trim()) params.set("search", search.trim());
+      const r = await apiFetch(`/suppliers?${params.toString()}`);
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<Sup>(r);
       setSuppliers(body.items);
@@ -56,22 +60,15 @@ export default function SupplierTable() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filtered = useMemo(() => {
-    if (!search) return suppliers;
-    return suppliers.filter((s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, suppliers]);
-
   const pagedRows = useMemo(
-    () => slicePage(filtered, listPage, PAGE_SIZE),
-    [filtered, listPage],
+    () => slicePage(suppliers, listPage, PAGE_SIZE),
+    [suppliers, listPage],
   );
 
   useEffect(() => {
@@ -102,8 +99,15 @@ export default function SupplierTable() {
             <label className="text-sm font-medium text-gray-700">Search</label>
             <input
               placeholder="Search suppliers..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  requestShopScopeApply();
+                  setSearch(searchInput.trim());
+                }
+              }}
               className="border border-gray-300 text-gray-700 px-3 py-2 rounded w-72 cursor-pointer"
             />
           </div>
@@ -112,13 +116,16 @@ export default function SupplierTable() {
         <div className="flex gap-2">
           <button type="button" onClick={() => {
             requestShopScopeApply();
-            void load();
+            setSearch(searchInput.trim());
           }} className="bg-sky-500 text-sky-50 px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors cursor-pointer">
             {t("actionSearch")}
           </button>
           <button
             type="button"
-            onClick={() => setSearch("")}
+            onClick={() => {
+              setSearchInput("");
+              setSearch("");
+            }}
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             Cancel
@@ -140,7 +147,7 @@ export default function SupplierTable() {
         </thead>
 
         <tbody>
-          {filtered.length === 0 ? (
+          {suppliers.length === 0 ? (
             <tr className="border-t border-gray-300">
               <td className="p-6 text-center text-slate-500" colSpan={7}>
                 No data
@@ -199,7 +206,7 @@ export default function SupplierTable() {
       </table>
       <TablePagination
         page={listPage}
-        total={filtered.length}
+        total={suppliers.length}
         pageSize={PAGE_SIZE}
         onPageChange={setListPage}
       />

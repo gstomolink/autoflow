@@ -11,6 +11,7 @@ import {
   readPaginatedJson,
   slicePage,
 } from "@/lib/paginated";
+import { SHOP_SCOPE_CHANGE_EVENT } from "@/lib/shop-scope";
 import TablePagination from "@/components/admin/common/TablePagination";
 
 type Wh = {
@@ -35,8 +36,14 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
     setError("");
     setLoading(true);
     try {
+      const params = new URLSearchParams({
+        page: "1",
+        limit: String(LIST_FETCH_LIMIT),
+      });
+      const q = String(filters?.search ?? "").trim();
+      if (q) params.set("search", q);
       const r = await apiFetch(
-        `/warehouses?page=1&limit=${LIST_FETCH_LIMIT}`,
+        `/warehouses?${params.toString()}`,
       );
       if (!r.ok) throw new Error(await r.text());
       const body = await readPaginatedJson<Wh>(r);
@@ -47,26 +54,25 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const filtered = useMemo(() => {
-    const q = String(filters?.search ?? "").trim().toLowerCase();
-    if (!q) return data;
-    return data.filter(
-      (w) =>
-        w.name.toLowerCase().includes(q) ||
-        w.code.toLowerCase().includes(q) ||
-        (w.address?.toLowerCase().includes(q) ?? false),
-    );
-  }, [filters, data]);
+  useEffect(() => {
+    const handleShopScopeChange = () => {
+      void load();
+    };
+    window.addEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    return () => {
+      window.removeEventListener(SHOP_SCOPE_CHANGE_EVENT, handleShopScopeChange);
+    };
+  }, [load]);
 
   const pagedRows = useMemo(
-    () => slicePage(filtered, listPage, PAGE_SIZE),
-    [filtered, listPage],
+    () => slicePage(data, listPage, PAGE_SIZE),
+    [data, listPage],
   );
 
   useEffect(() => {
@@ -104,7 +110,7 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
           </thead>
 
           <tbody>
-            {filtered.length === 0 ? (
+            {data.length === 0 ? (
               <tr className="border-t border-gray-200">
                 <td className="p-6 text-center text-slate-500" colSpan={6}>
                   No data
@@ -148,7 +154,7 @@ export default function WarehouseTable({ filters }: { filters: Record<string, st
         </table>
         <TablePagination
           page={listPage}
-          total={filtered.length}
+          total={data.length}
           pageSize={PAGE_SIZE}
           onPageChange={setListPage}
         />
